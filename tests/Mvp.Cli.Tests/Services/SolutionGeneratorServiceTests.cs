@@ -119,9 +119,8 @@ public class SolutionGeneratorServiceTests
 
             await _sut.GenerateAsync("ReadmeTest", tempDir);
 
-            var expectedSrcDir = Path.Combine(tempDir, "ReadmeTest", "src");
             _appGeneratorMock.Verify(
-                s => s.GenerateAsync("ReadmeTest", expectedSrcDir, It.IsAny<CancellationToken>()),
+                s => s.GenerateAsync("ReadmeTest", model.SrcDirectory, It.IsAny<CancellationToken>()),
                 Times.Once);
         }
         finally

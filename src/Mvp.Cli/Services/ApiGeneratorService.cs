@@ -21,7 +21,7 @@ public class ApiGeneratorService : IApiGeneratorService
     {
         _logger.LogInformation("Generating .NET Web API project: {Name}", name);
 
-        var project = await _projectFactory.CreateWebApi($"{name}.Api", outputPath);
+        var project = await _projectFactory.CreateWebApi($"{name}.Api", outputPath, null);
         await _artifactGenerator.GenerateAsync(project);
 
         _logger.LogInformation("Successfully generated .NET Web API project: {Name}.Api", name);
