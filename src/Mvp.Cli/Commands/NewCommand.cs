@@ -16,6 +16,7 @@ public static class NewCommand
         command.AddCommand(NewApiLibraryCommand.Create(services));
         command.AddCommand(NewComponentsLibraryCommand.Create(services));
         command.AddCommand(NewDomainLibraryCommand.Create(services));
+        command.AddCommand(NewDotNetAngularJwtAuthenticatedMvpCommand.Create(services));
 
         return command;
     }

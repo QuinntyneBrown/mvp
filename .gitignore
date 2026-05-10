@@ -46,3 +46,6 @@ coverage/
 
 # Global dotnet tool
 /tools/
+
+# Local generation output from `mvp new dotnet-angular-jwt-mvp`
+/out/

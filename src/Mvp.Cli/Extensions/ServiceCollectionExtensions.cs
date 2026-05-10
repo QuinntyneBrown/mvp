@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Mvp.Cli.Manifests;
 using Mvp.Cli.Services;
 
 namespace Mvp.Cli.Extensions;
@@ -15,6 +16,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAppGeneratorService, AppGeneratorService>();
         services.AddSingleton<IAngularLibraryGeneratorService, AngularLibraryGeneratorService>();
         services.AddSingleton<ISolutionGeneratorService, SolutionGeneratorService>();
+        services.AddSingleton<IMvpManifestLoader, YamlMvpManifestLoader>();
+        services.AddSingleton<IDotNetAngularJwtAuthenticatedMvpGeneratorService, DotNetAngularJwtAuthenticatedMvpGeneratorService>();
         return services;
     }
 }

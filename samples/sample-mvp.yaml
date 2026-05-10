@@ -1,0 +1,31 @@
+# Sample manifest for `mvp new dotnet-angular-jwt-mvp --config samples/sample-mvp.yaml --output ./out`
+name: Acme
+
+entities:
+  - name: Project
+    properties:
+      - name: Title
+        type: string
+      - name: Description
+        type: string
+      - name: BudgetCents
+        type: long
+
+  - name: Task
+    properties:
+      - name: Title
+        type: string
+      - name: IsComplete
+        type: bool
+
+pages:
+  - name: Projects
+    route: projects
+    requiresAuth: true
+  - name: Settings
+    route: settings
+    requiresAuth: true
+
+components:
+  - name: ProjectCard
+    library: domain
