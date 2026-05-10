@@ -1,3 +1,6 @@
+using CodeGenerator.Core.Artifacts.Abstractions;
+using CodeGenerator.DotNet.Artifacts.Projects;
+using CodeGenerator.DotNet.Artifacts.Projects.Factories;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Mvp.Cli.Services;
@@ -7,54 +10,35 @@ namespace Mvp.Cli.Tests.Services;
 
 public class ApiGeneratorServiceTests
 {
-    private readonly Mock<IProcessRunner> _processRunnerMock;
+    private readonly Mock<IProjectFactory> _projectFactoryMock;
+    private readonly Mock<IArtifactGenerator> _artifactGeneratorMock;
     private readonly Mock<ILogger<ApiGeneratorService>> _loggerMock;
     private readonly ApiGeneratorService _sut;
 
     public ApiGeneratorServiceTests()
     {
-        _processRunnerMock = new Mock<IProcessRunner>();
+        _projectFactoryMock = new Mock<IProjectFactory>();
+        _artifactGeneratorMock = new Mock<IArtifactGenerator>();
         _loggerMock = new Mock<ILogger<ApiGeneratorService>>();
-        _sut = new ApiGeneratorService(_processRunnerMock.Object, _loggerMock.Object);
+        _sut = new ApiGeneratorService(_projectFactoryMock.Object, _artifactGeneratorMock.Object, _loggerMock.Object);
     }
 
     [Fact]
-    public async Task GenerateAsync_CreatesApiDirectory()
+    public async Task GenerateAsync_CallsProjectFactoryWithCorrectArgs()
     {
         var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         try
         {
             Directory.CreateDirectory(tempDir);
-            _processRunnerMock
-                .Setup(r => r.RunAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(0);
+            var project = new ProjectModel();
+            _projectFactoryMock
+                .Setup(f => f.CreateWebApi("TestApi.Api", tempDir, null))
+                .ReturnsAsync(project);
 
             await _sut.GenerateAsync("TestApi", tempDir);
 
-            Assert.True(Directory.Exists(Path.Combine(tempDir, "TestApi.Api")));
-        }
-        finally
-        {
-            if (Directory.Exists(tempDir))
-                Directory.Delete(tempDir, recursive: true);
-        }
-    }
-
-    [Fact]
-    public async Task GenerateAsync_CallsDotnetNewWebapi()
-    {
-        var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        try
-        {
-            Directory.CreateDirectory(tempDir);
-            _processRunnerMock
-                .Setup(r => r.RunAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(0);
-
-            await _sut.GenerateAsync("MyApi", tempDir);
-
-            _processRunnerMock.Verify(
-                r => r.RunAsync("dotnet", It.Is<string>(a => a.Contains("webapi") && a.Contains("MyApi.Api")), It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            _projectFactoryMock.Verify(
+                f => f.CreateWebApi("TestApi.Api", tempDir, null),
                 Times.Once);
         }
         finally
@@ -65,15 +49,43 @@ public class ApiGeneratorServiceTests
     }
 
     [Fact]
-    public async Task GenerateAsync_WhenProcessFails_ThrowsInvalidOperationException()
+    public async Task GenerateAsync_CallsArtifactGeneratorWithProject()
     {
         var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         try
         {
             Directory.CreateDirectory(tempDir);
-            _processRunnerMock
-                .Setup(r => r.RunAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(1);
+            var project = new ProjectModel();
+            _projectFactoryMock
+                .Setup(f => f.CreateWebApi(It.IsAny<string>(), It.IsAny<string>(), null))
+                .ReturnsAsync(project);
+
+            await _sut.GenerateAsync("MyApi", tempDir);
+
+            _artifactGeneratorMock.Verify(
+                g => g.GenerateAsync(project),
+                Times.Once);
+        }
+        finally
+        {
+            if (Directory.Exists(tempDir))
+                Directory.Delete(tempDir, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task GenerateAsync_WhenArtifactGeneratorThrows_PropagatesException()
+    {
+        var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        try
+        {
+            Directory.CreateDirectory(tempDir);
+            _projectFactoryMock
+                .Setup(f => f.CreateWebApi(It.IsAny<string>(), It.IsAny<string>(), null))
+                .ReturnsAsync(new ProjectModel());
+            _artifactGeneratorMock
+                .Setup(g => g.GenerateAsync(It.IsAny<object>()))
+                .ThrowsAsync(new InvalidOperationException("generation failed"));
 
             await Assert.ThrowsAsync<InvalidOperationException>(
                 () => _sut.GenerateAsync("FailApi", tempDir));

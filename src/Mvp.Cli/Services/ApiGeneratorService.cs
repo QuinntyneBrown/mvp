@@ -1,15 +1,19 @@
+using CodeGenerator.Core.Artifacts.Abstractions;
+using CodeGenerator.DotNet.Artifacts.Projects.Factories;
 using Microsoft.Extensions.Logging;
 
 namespace Mvp.Cli.Services;
 
 public class ApiGeneratorService : IApiGeneratorService
 {
-    private readonly IProcessRunner _processRunner;
+    private readonly IProjectFactory _projectFactory;
+    private readonly IArtifactGenerator _artifactGenerator;
     private readonly ILogger<ApiGeneratorService> _logger;
 
-    public ApiGeneratorService(IProcessRunner processRunner, ILogger<ApiGeneratorService> logger)
+    public ApiGeneratorService(IProjectFactory projectFactory, IArtifactGenerator artifactGenerator, ILogger<ApiGeneratorService> logger)
     {
-        _processRunner = processRunner;
+        _projectFactory = projectFactory;
+        _artifactGenerator = artifactGenerator;
         _logger = logger;
     }
 
@@ -17,17 +21,8 @@ public class ApiGeneratorService : IApiGeneratorService
     {
         _logger.LogInformation("Generating .NET Web API project: {Name}", name);
 
-        var apiDir = Path.Combine(outputPath, $"{name}.Api");
-        Directory.CreateDirectory(apiDir);
-
-        var exitCode = await _processRunner.RunAsync(
-            "dotnet",
-            $"new webapi -n {name}.Api --no-openapi -o \"{apiDir}\"",
-            outputPath,
-            cancellationToken);
-
-        if (exitCode != 0)
-            throw new InvalidOperationException($"Failed to create .NET Web API project '{name}.Api'. Exit code: {exitCode}");
+        var project = await _projectFactory.CreateWebApi($"{name}.Api", outputPath);
+        await _artifactGenerator.GenerateAsync(project);
 
         _logger.LogInformation("Successfully generated .NET Web API project: {Name}.Api", name);
     }

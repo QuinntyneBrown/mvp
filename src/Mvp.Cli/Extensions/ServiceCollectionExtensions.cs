@@ -7,6 +7,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMvpServices(this IServiceCollection services)
     {
+        services.AddDotNetServices();
         services.AddSingleton<IProcessRunner, ProcessRunner>();
         services.AddSingleton<IApiGeneratorService, ApiGeneratorService>();
         services.AddSingleton<IAppGeneratorService, AppGeneratorService>();

@@ -1,22 +1,24 @@
+using CodeGenerator.DotNet.Artifacts.Solutions.Factories;
+using CodeGenerator.DotNet.Artifacts.Solutions.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Mvp.Cli.Services;
 
 public class SolutionGeneratorService : ISolutionGeneratorService
 {
-    private readonly IProcessRunner _processRunner;
-    private readonly IApiGeneratorService _apiGeneratorService;
+    private readonly ISolutionFactory _solutionFactory;
+    private readonly ISolutionService _solutionService;
     private readonly IAppGeneratorService _appGeneratorService;
     private readonly ILogger<SolutionGeneratorService> _logger;
 
     public SolutionGeneratorService(
-        IProcessRunner processRunner,
-        IApiGeneratorService apiGeneratorService,
+        ISolutionFactory solutionFactory,
+        ISolutionService solutionService,
         IAppGeneratorService appGeneratorService,
         ILogger<SolutionGeneratorService> logger)
     {
-        _processRunner = processRunner;
-        _apiGeneratorService = apiGeneratorService;
+        _solutionFactory = solutionFactory;
+        _solutionService = solutionService;
         _appGeneratorService = appGeneratorService;
         _logger = logger;
     }
@@ -25,115 +27,11 @@ public class SolutionGeneratorService : ISolutionGeneratorService
     {
         _logger.LogInformation("Generating full-stack MVP solution: {Name}", name);
 
-        var solutionDir = Path.Combine(outputPath, name);
-        Directory.CreateDirectory(solutionDir);
-
-        var srcDir = Path.Combine(solutionDir, "src");
-        Directory.CreateDirectory(srcDir);
-
-        // Create .sln file
-        var exitCode = await _processRunner.RunAsync(
-            "dotnet",
-            $"new sln -n {name}",
-            solutionDir,
-            cancellationToken);
-
-        if (exitCode != 0)
-            throw new InvalidOperationException($"Failed to create solution file '{name}.sln'. Exit code: {exitCode}");
-
-        // Rename .slnx to .sln if dotnet created the new format
-        var slnxFile = Path.Combine(solutionDir, $"{name}.slnx");
-        var slnFile = Path.Combine(solutionDir, $"{name}.sln");
-        if (File.Exists(slnxFile) && !File.Exists(slnFile))
-        {
-            File.Delete(slnxFile);
-            WriteLegacySlnFile(slnFile, name);
-        }
-
-        // Generate API and Angular app
-        await _apiGeneratorService.GenerateAsync(name, srcDir, cancellationToken);
-        await _appGeneratorService.GenerateAsync(name, srcDir, cancellationToken);
-
-        // Add API project to solution
-        var apiProject = Path.Combine(srcDir, $"{name}.Api", $"{name}.Api.csproj");
-        if (File.Exists(apiProject))
-        {
-            await _processRunner.RunAsync(
-                "dotnet",
-                $"sln \"{slnFile}\" add \"{apiProject}\"",
-                solutionDir,
-                cancellationToken);
-        }
-
-        // Write root README
-        File.WriteAllText(Path.Combine(solutionDir, "README.md"), GetReadme(name));
+        var model = await _solutionFactory.Create(name, $"{name}.Api", "webapi", string.Empty, outputPath);
+        await _solutionService.Create(model);
+        await _appGeneratorService.GenerateAsync(name, model.SrcDirectory, cancellationToken);
 
         _logger.LogInformation("Successfully generated full-stack MVP solution: {Name}", name);
-        _logger.LogInformation("Solution created at: {Path}", solutionDir);
+        _logger.LogInformation("Solution created at: {Path}", model.SolutionDirectory);
     }
-
-    private static void WriteLegacySlnFile(string path, string name)
-    {
-        var apiProjectGuid = Guid.NewGuid().ToString("B").ToUpperInvariant();
-        var solutionGuid = Guid.NewGuid().ToString("B").ToUpperInvariant();
-        var content = string.Join("\r\n",
-            "",
-            "Microsoft Visual Studio Solution File, Format Version 12.00",
-            "# Visual Studio Version 17",
-            "VisualStudioVersion = 17.0.31903.59",
-            "MinimumVisualStudioVersion = 10.0.40219.1",
-            $"Project(\"{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}}\") = \"{name}.Api\", \"src\\{name}.Api\\{name}.Api.csproj\", \"{apiProjectGuid}\"",
-            "EndProject",
-            "Global",
-            "\tGlobalSection(SolutionConfigurationPlatforms) = preSolution",
-            "\t\tDebug|Any CPU = Debug|Any CPU",
-            "\t\tRelease|Any CPU = Release|Any CPU",
-            "\tEndGlobalSection",
-            "\tGlobalSection(ProjectConfigurationPlatforms) = postSolution",
-            $"\t\t{apiProjectGuid}.Debug|Any CPU.ActiveCfg = Debug|Any CPU",
-            $"\t\t{apiProjectGuid}.Debug|Any CPU.Build.0 = Debug|Any CPU",
-            $"\t\t{apiProjectGuid}.Release|Any CPU.ActiveCfg = Release|Any CPU",
-            $"\t\t{apiProjectGuid}.Release|Any CPU.Build.0 = Release|Any CPU",
-            "\tEndGlobalSection",
-            "\tGlobalSection(SolutionProperties) = preSolution",
-            "\t\tHideSolutionNode = FALSE",
-            "\tEndGlobalSection",
-            "\tGlobalSection(ExtensibilityGlobals) = postSolution",
-            $"\t\tSolutionGuid = {solutionGuid}",
-            "\tEndGlobalSection",
-            "EndGlobal",
-            "");
-        File.WriteAllText(path, content);
-    }
-
-    private static string GetReadme(string name) => $"""
-        # {name}
-
-        Full-stack MVP solution generated by the `mvp` CLI tool.
-
-        ## Structure
-
-        ```
-        {name}/
-        ├── src/
-        │   ├── {name}.Api/          # ASP.NET Core Web API
-        │   └── {name}.App/          # Angular application
-        └── {name}.sln               # Visual Studio solution
-        ```
-
-        ## Getting Started
-
-        ### API
-        ```bash
-        cd src/{name}.Api
-        dotnet run
-        ```
-
-        ### Angular App
-        ```bash
-        cd src/{name}.App
-        npm install
-        npm start
-        ```
-        """;
 }
