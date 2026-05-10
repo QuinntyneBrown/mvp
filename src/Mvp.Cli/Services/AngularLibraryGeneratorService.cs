@@ -108,7 +108,8 @@ public class AngularLibraryGeneratorService : IAngularLibraryGeneratorService
 
     private static string ToKebabCase(string value)
     {
-        var normalizedValue = Regex.Replace(value, "([a-z0-9])([A-Z])", "$1-$2");
+        var normalizedValue = Regex.Replace(value, "([A-Z]+)([A-Z][a-z])", "$1-$2");
+        normalizedValue = Regex.Replace(normalizedValue, "([a-z0-9])([A-Z])", "$1-$2");
         normalizedValue = Regex.Replace(normalizedValue, "[^A-Za-z0-9]+", "-");
         return normalizedValue.Trim('-').ToLowerInvariant();
     }
