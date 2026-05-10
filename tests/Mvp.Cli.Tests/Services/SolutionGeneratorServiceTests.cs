@@ -1,3 +1,6 @@
+using CodeGenerator.DotNet.Artifacts.Solutions;
+using CodeGenerator.DotNet.Artifacts.Solutions.Factories;
+using CodeGenerator.DotNet.Artifacts.Solutions.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Mvp.Cli.Services;
@@ -7,40 +10,46 @@ namespace Mvp.Cli.Tests.Services;
 
 public class SolutionGeneratorServiceTests
 {
-    private readonly Mock<IProcessRunner> _processRunnerMock;
-    private readonly Mock<IApiGeneratorService> _apiGeneratorMock;
+    private readonly Mock<ISolutionFactory> _solutionFactoryMock;
+    private readonly Mock<ISolutionService> _solutionServiceMock;
     private readonly Mock<IAppGeneratorService> _appGeneratorMock;
     private readonly Mock<ILogger<SolutionGeneratorService>> _loggerMock;
     private readonly SolutionGeneratorService _sut;
 
     public SolutionGeneratorServiceTests()
     {
-        _processRunnerMock = new Mock<IProcessRunner>();
-        _apiGeneratorMock = new Mock<IApiGeneratorService>();
+        _solutionFactoryMock = new Mock<ISolutionFactory>();
+        _solutionServiceMock = new Mock<ISolutionService>();
         _appGeneratorMock = new Mock<IAppGeneratorService>();
         _loggerMock = new Mock<ILogger<SolutionGeneratorService>>();
 
         _sut = new SolutionGeneratorService(
-            _processRunnerMock.Object,
-            _apiGeneratorMock.Object,
+            _solutionFactoryMock.Object,
+            _solutionServiceMock.Object,
             _appGeneratorMock.Object,
             _loggerMock.Object);
     }
 
     [Fact]
-    public async Task GenerateAsync_CreatesDirectoryAndCallsProcessRunner()
+    public async Task GenerateAsync_CallsSolutionFactoryAndService()
     {
         var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         try
         {
-            _processRunnerMock
-                .Setup(r => r.RunAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(0);
+            var model = new SolutionModel("TestSolution", tempDir);
+            _solutionFactoryMock
+                .Setup(f => f.Create("TestSolution", "TestSolution.Api", "webapi", string.Empty, tempDir))
+                .ReturnsAsync(model);
+            _solutionServiceMock
+                .Setup(s => s.Create(model))
+                .Returns(Task.CompletedTask);
 
             await _sut.GenerateAsync("TestSolution", tempDir);
 
-            Assert.True(Directory.Exists(Path.Combine(tempDir, "TestSolution")));
-            Assert.True(Directory.Exists(Path.Combine(tempDir, "TestSolution", "src")));
+            _solutionFactoryMock.Verify(
+                f => f.Create("TestSolution", "TestSolution.Api", "webapi", string.Empty, tempDir),
+                Times.Once);
+            _solutionServiceMock.Verify(s => s.Create(model), Times.Once);
         }
         finally
         {
@@ -50,23 +59,20 @@ public class SolutionGeneratorServiceTests
     }
 
     [Fact]
-    public async Task GenerateAsync_CallsApiAndAppGenerators()
+    public async Task GenerateAsync_CallsAppGenerator()
     {
         var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         try
         {
-            _processRunnerMock
-                .Setup(r => r.RunAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(0);
+            var model = new SolutionModel("MyApp", tempDir);
+            _solutionFactoryMock
+                .Setup(f => f.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(model);
 
             await _sut.GenerateAsync("MyApp", tempDir);
 
-            _apiGeneratorMock.Verify(
-                s => s.GenerateAsync("MyApp", It.IsAny<string>(), It.IsAny<CancellationToken>()),
-                Times.Once);
-
             _appGeneratorMock.Verify(
-                s => s.GenerateAsync("MyApp", It.IsAny<string>(), It.IsAny<CancellationToken>()),
+                s => s.GenerateAsync("MyApp", model.SrcDirectory, It.IsAny<CancellationToken>()),
                 Times.Once);
         }
         finally
@@ -77,14 +83,18 @@ public class SolutionGeneratorServiceTests
     }
 
     [Fact]
-    public async Task GenerateAsync_WhenProcessRunnerFails_ThrowsInvalidOperationException()
+    public async Task GenerateAsync_WhenSolutionServiceThrows_PropagatesException()
     {
         var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         try
         {
-            _processRunnerMock
-                .Setup(r => r.RunAsync("dotnet", It.IsRegex("new sln"), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(1);
+            var model = new SolutionModel("FailSolution", tempDir);
+            _solutionFactoryMock
+                .Setup(f => f.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(model);
+            _solutionServiceMock
+                .Setup(s => s.Create(It.IsAny<SolutionModel>()))
+                .ThrowsAsync(new InvalidOperationException("solution creation failed"));
 
             await Assert.ThrowsAsync<InvalidOperationException>(
                 () => _sut.GenerateAsync("FailSolution", tempDir));
@@ -97,21 +107,21 @@ public class SolutionGeneratorServiceTests
     }
 
     [Fact]
-    public async Task GenerateAsync_CreatesReadme()
+    public async Task GenerateAsync_UsesSolutionSrcDirectoryForAppGenerator()
     {
         var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         try
         {
-            _processRunnerMock
-                .Setup(r => r.RunAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(0);
+            var model = new SolutionModel("ReadmeTest", tempDir);
+            _solutionFactoryMock
+                .Setup(f => f.Create(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(model);
 
             await _sut.GenerateAsync("ReadmeTest", tempDir);
 
-            var readmePath = Path.Combine(tempDir, "ReadmeTest", "README.md");
-            Assert.True(File.Exists(readmePath));
-            var content = await File.ReadAllTextAsync(readmePath);
-            Assert.Contains("ReadmeTest", content);
+            _appGeneratorMock.Verify(
+                s => s.GenerateAsync("ReadmeTest", model.SrcDirectory, It.IsAny<CancellationToken>()),
+                Times.Once);
         }
         finally
         {
