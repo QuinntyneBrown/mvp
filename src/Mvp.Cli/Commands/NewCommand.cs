@@ -10,7 +10,12 @@ public static class NewCommand
 
         command.AddCommand(NewSolutionCommand.Create(services));
         command.AddCommand(NewApiCommand.Create(services));
+        command.AddCommand(NewCoreCommand.Create(services));
+        command.AddCommand(NewInfrastructureCommand.Create(services));
         command.AddCommand(NewAppCommand.Create(services));
+        command.AddCommand(NewApiLibraryCommand.Create(services));
+        command.AddCommand(NewComponentsLibraryCommand.Create(services));
+        command.AddCommand(NewDomainLibraryCommand.Create(services));
 
         return command;
     }

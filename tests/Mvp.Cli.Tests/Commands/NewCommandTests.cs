@@ -17,7 +17,10 @@ public class NewCommandTests
         services.AddLogging();
         services.AddSingleton(Mock.Of<ISolutionGeneratorService>());
         services.AddSingleton(Mock.Of<IApiGeneratorService>());
+        services.AddSingleton(Mock.Of<ICoreGeneratorService>());
+        services.AddSingleton(Mock.Of<IInfrastructureGeneratorService>());
         services.AddSingleton(Mock.Of<IAppGeneratorService>());
+        services.AddSingleton(Mock.Of<IAngularLibraryGeneratorService>());
         services.AddSingleton(Mock.Of<IProcessRunner>());
         _services = services.BuildServiceProvider();
     }
@@ -31,11 +34,11 @@ public class NewCommandTests
     }
 
     [Fact]
-    public void Create_HasThreeSubcommands()
+    public void Create_HasEightSubcommands()
     {
         var command = NewCommand.Create(_services);
 
-        Assert.Equal(3, command.Subcommands.Count);
+        Assert.Equal(8, command.Subcommands.Count);
     }
 
     [Fact]
@@ -60,5 +63,45 @@ public class NewCommandTests
         var command = NewCommand.Create(_services);
 
         Assert.Contains(command.Subcommands, c => c.Name == "app");
+    }
+
+    [Fact]
+    public void Create_HasCoreSubcommand()
+    {
+        var command = NewCommand.Create(_services);
+
+        Assert.Contains(command.Subcommands, c => c.Name == "core");
+    }
+
+    [Fact]
+    public void Create_HasInfrastructureSubcommand()
+    {
+        var command = NewCommand.Create(_services);
+
+        Assert.Contains(command.Subcommands, c => c.Name == "infrastructure");
+    }
+
+    [Fact]
+    public void Create_HasApiLibrarySubcommand()
+    {
+        var command = NewCommand.Create(_services);
+
+        Assert.Contains(command.Subcommands, c => c.Name == "api-library");
+    }
+
+    [Fact]
+    public void Create_HasComponentsLibrarySubcommand()
+    {
+        var command = NewCommand.Create(_services);
+
+        Assert.Contains(command.Subcommands, c => c.Name == "components-library");
+    }
+
+    [Fact]
+    public void Create_HasDomainLibrarySubcommand()
+    {
+        var command = NewCommand.Create(_services);
+
+        Assert.Contains(command.Subcommands, c => c.Name == "domain-library");
     }
 }
