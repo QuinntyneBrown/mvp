@@ -1,0 +1,44 @@
+# Worked example manifest for `mvp new dotnet-angular-jwt-mvp`.
+# Copy this and edit before running. Comments are illustrative — strip them in real use.
+
+# Solution name. PascalCase, no spaces. Becomes the .sln name, the namespace root,
+# the Angular workspace prefix (kebab-cased), and the directory created under --output.
+name: Acme
+
+# Optional default output directory. Overridden by --output on the command line.
+# output: ./generated
+
+entities:
+  - name: Project
+    # Each property must use a C# type the templates understand:
+    #   string, int, long, decimal, bool, DateTime, Guid
+    # Id (Guid) and CreatedAt (DateTime) are added automatically — don't list them here.
+    properties:
+      - { name: Title,        type: string }
+      - { name: Description,  type: string }
+      - { name: BudgetCents,  type: long }
+      - { name: StartsOn,     type: DateTime }
+      - { name: IsActive,     type: bool }
+
+  - name: TaskItem
+    # Avoid naming an entity `User` or `RefreshToken` — those collide with the
+    # built-in identity entities. `Task` works (templates handle the collision
+    # with System.Threading.Tasks.Task) but `TaskItem` reads better.
+    properties:
+      - { name: Title,       type: string }
+      - { name: IsComplete,  type: bool }
+      - { name: DueOn,       type: DateTime }
+
+pages:
+  # The CLI always emits sign-in / sign-up / dashboard pages. List additional
+  # pages here. Each gets a folder under projects/<name>-app/src/app/pages/,
+  # a route in app.routes.ts, and a matching Playwright POM under e2e/pages/.
+  - { name: Projects, route: projects, requiresAuth: true }
+  - { name: Backlog,  route: backlog,  requiresAuth: true }
+  - { name: About,    route: about,    requiresAuth: false }
+
+components:
+  # Optional. Empty stubs created in the chosen library. Use `domain` when the
+  # component will depend on the api library, `components` when it's pure UI.
+  - { name: ProjectCard,  library: domain }
+  - { name: EmptyState,   library: components }
