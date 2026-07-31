@@ -14,7 +14,3 @@ public sealed record ManifestLoadResult(MvpManifest Manifest, IReadOnlyList<stri
     public static ManifestLoadResult CreateEmpty() => new(new MvpManifest(), []);
 }
 
-public interface IManifestLoader
-{
-    ManifestLoadResult Load(string path);
-}
