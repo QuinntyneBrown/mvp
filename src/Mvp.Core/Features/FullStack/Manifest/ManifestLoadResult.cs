@@ -1,6 +1,6 @@
-using Mvp.Cli.Manifests;
+using Mvp.Core.Manifests;
 
-namespace Mvp.Cli.Features.FullStack.Manifest;
+namespace Mvp.Core.Features.FullStack.Manifest;
 
 public sealed record ManifestLoadResult(MvpManifest Manifest, IReadOnlyList<string> Warnings);
 

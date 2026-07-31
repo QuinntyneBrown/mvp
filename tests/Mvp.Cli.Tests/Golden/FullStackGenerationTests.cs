@@ -1,6 +1,6 @@
-using Mvp.Cli.Features.FullStack.Generation;
-using Mvp.Cli.Features.FullStack.Manifest;
-using Mvp.Cli.Infrastructure.Output;
+using Mvp.Core.Features.FullStack.Generation;
+using Mvp.Core.Features.FullStack.Manifest;
+using Mvp.Core.Infrastructure.Output;
 
 namespace Mvp.Cli.Tests.Golden;
 

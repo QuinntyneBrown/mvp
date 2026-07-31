@@ -1,8 +1,8 @@
 using System.CommandLine;
 using Mvp.Cli.Bootstrap;
-using Mvp.Cli.Features.FullStack.Generation;
-using Mvp.Cli.Features.FullStack.Manifest;
-using Mvp.Cli.Features.Generation;
+using Mvp.Core.Features.FullStack.Generation;
+using Mvp.Core.Features.FullStack.Manifest;
+using Mvp.Core.Features.Generation;
 
 namespace Mvp.Cli.Commands;
 
@@ -110,7 +110,7 @@ public sealed class RootCommandFactory(
                 await output.WriteLineAsync("Generating dotnet-angular-jwt-mvp...").ConfigureAwait(false);
                 var configPath = parseResult.GetValue(configOption);
                 var loaded = configPath is null
-                    ? new ManifestLoadResult(new Manifests.MvpManifest(), [])
+                    ? new ManifestLoadResult(new Mvp.Core.Manifests.MvpManifest(), [])
                     : manifestLoader.Load(configPath);
                 var manifest = manifestValidator.Validate(
                     loaded.Manifest,

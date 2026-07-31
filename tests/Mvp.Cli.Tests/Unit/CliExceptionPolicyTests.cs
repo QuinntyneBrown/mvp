@@ -1,4 +1,5 @@
 using Mvp.Cli.Bootstrap;
+using Mvp.Core.Errors;
 
 namespace Mvp.Cli.Tests.Unit;
 

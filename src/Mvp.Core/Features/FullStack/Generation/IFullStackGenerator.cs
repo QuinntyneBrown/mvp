@@ -1,7 +1,7 @@
-using Mvp.Cli.Features.FullStack.Manifest;
-using Mvp.Cli.Features.Generation;
+using Mvp.Core.Features.FullStack.Manifest;
+using Mvp.Core.Features.Generation;
 
-namespace Mvp.Cli.Features.FullStack.Generation;
+namespace Mvp.Core.Features.FullStack.Generation;
 
 public interface IFullStackGenerator
 {

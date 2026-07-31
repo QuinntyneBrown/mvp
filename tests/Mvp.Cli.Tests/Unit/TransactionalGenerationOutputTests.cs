@@ -1,5 +1,5 @@
-using Mvp.Cli.Bootstrap;
-using Mvp.Cli.Infrastructure.Output;
+using Mvp.Core.Errors;
+using Mvp.Core.Infrastructure.Output;
 
 namespace Mvp.Cli.Tests.Unit;
 

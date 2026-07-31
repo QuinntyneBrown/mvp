@@ -1,4 +1,4 @@
-namespace Mvp.Cli.Features.Generation;
+namespace Mvp.Core.Features.Generation;
 
 public enum GenerationKind
 {

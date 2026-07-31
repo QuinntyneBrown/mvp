@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Mvp.Cli.Features.Generation;
+namespace Mvp.Core.Features.Generation;
 
 public static partial class Naming
 {

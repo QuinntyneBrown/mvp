@@ -1,11 +1,11 @@
-using Mvp.Cli.Bootstrap;
-using Mvp.Cli.Manifests;
+using Mvp.Core.Errors;
+using Mvp.Core.Manifests;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace Mvp.Cli.Features.FullStack.Manifest;
+namespace Mvp.Core.Features.FullStack.Manifest;
 
 public sealed class YamlManifestLoader : IManifestLoader
 {

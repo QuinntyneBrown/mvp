@@ -1,3 +1,5 @@
+using Mvp.Core.Errors;
+
 namespace Mvp.Cli.Bootstrap;
 
 public sealed class CliExceptionPolicy

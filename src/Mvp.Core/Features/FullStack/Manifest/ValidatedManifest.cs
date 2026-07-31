@@ -1,4 +1,4 @@
-namespace Mvp.Cli.Features.FullStack.Manifest;
+namespace Mvp.Core.Features.FullStack.Manifest;
 
 public enum FrontendLibrary
 {

@@ -1,6 +1,6 @@
-using Mvp.Cli.Features.Generation;
+using Mvp.Core.Features.Generation;
 
-namespace Mvp.Cli.Infrastructure.Output;
+namespace Mvp.Core.Infrastructure.Output;
 
 public interface ITransactionalGenerationOutput
 {

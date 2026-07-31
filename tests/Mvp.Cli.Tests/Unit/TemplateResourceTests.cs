@@ -1,6 +1,6 @@
 using System.Reflection;
-using Mvp.Cli.Features.FullStack.Generation;
-using Mvp.Cli.Features.Incremental;
+using Mvp.Core.Features.FullStack.Generation;
+using Mvp.Core.Features.Incremental;
 
 namespace Mvp.Cli.Tests.Unit;
 

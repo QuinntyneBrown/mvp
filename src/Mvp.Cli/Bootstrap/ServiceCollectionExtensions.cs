@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Mvp.Cli.Commands;
-using Mvp.Cli.Features.FullStack.Generation;
-using Mvp.Cli.Features.FullStack.Manifest;
-using Mvp.Cli.Features.Generation;
-using Mvp.Cli.Features.Incremental;
-using Mvp.Cli.Infrastructure.Output;
-using Mvp.Cli.Infrastructure.Processes;
+using Mvp.Core.Features.FullStack.Generation;
+using Mvp.Core.Features.FullStack.Manifest;
+using Mvp.Core.Features.Generation;
+using Mvp.Core.Features.Incremental;
+using Mvp.Core.Infrastructure.Output;
+using Mvp.Core.Infrastructure.Processes;
 
 namespace Mvp.Cli.Bootstrap;
 

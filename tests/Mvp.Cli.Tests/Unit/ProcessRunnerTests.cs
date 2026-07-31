@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Mvp.Cli.Infrastructure.Processes;
+using Mvp.Core.Infrastructure.Processes;
 
 namespace Mvp.Cli.Tests.Unit;
 

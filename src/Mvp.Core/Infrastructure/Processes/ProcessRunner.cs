@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Mvp.Cli.Infrastructure.Processes;
+namespace Mvp.Core.Infrastructure.Processes;
 
 public sealed class ProcessRunner : IProcessRunner
 {

@@ -1,19 +1,19 @@
 using System.Globalization;
 using System.Reflection;
 using DotLiquid;
-using Mvp.Cli.Bootstrap;
-using Mvp.Cli.Features.FullStack.Manifest;
-using Mvp.Cli.Features.Generation;
-using Mvp.Cli.Infrastructure.Output;
-using Mvp.Cli.Infrastructure.Processes;
+using Mvp.Core.Errors;
+using Mvp.Core.Features.FullStack.Manifest;
+using Mvp.Core.Features.Generation;
+using Mvp.Core.Infrastructure.Output;
+using Mvp.Core.Infrastructure.Processes;
 
-namespace Mvp.Cli.Features.Incremental;
+namespace Mvp.Core.Features.Incremental;
 
 public sealed class IncrementalGenerator(
     ITransactionalGenerationOutput output,
     IProcessRunner processRunner) : IIncrementalGenerator
 {
-    private const string ResourcePrefix = "Mvp.Cli.Templates.Incremental.";
+    private static readonly string ResourcePrefix = TemplateResources.Incremental;
 
     public Task<GenerationResult> GenerateAsync(GenerationRequest request, CancellationToken cancellationToken)
     {

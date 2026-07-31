@@ -1,4 +1,4 @@
-namespace Mvp.Cli.Bootstrap;
+namespace Mvp.Core.Errors;
 
 public class ManifestValidationException : Exception
 {

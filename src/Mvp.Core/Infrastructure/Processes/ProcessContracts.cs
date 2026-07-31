@@ -1,4 +1,4 @@
-namespace Mvp.Cli.Infrastructure.Processes;
+namespace Mvp.Core.Infrastructure.Processes;
 
 public sealed record ProcessRequest(
     string FileName,

@@ -1,17 +1,17 @@
 using System.Globalization;
 using System.Reflection;
 using DotLiquid;
-using Mvp.Cli.Bootstrap;
-using Mvp.Cli.Features.FullStack.Manifest;
-using Mvp.Cli.Features.Generation;
-using Mvp.Cli.Infrastructure.Output;
+using Mvp.Core.Errors;
+using Mvp.Core.Features.FullStack.Manifest;
+using Mvp.Core.Features.Generation;
+using Mvp.Core.Infrastructure.Output;
 
-namespace Mvp.Cli.Features.FullStack.Generation;
+namespace Mvp.Core.Features.FullStack.Generation;
 
 public sealed class FullStackGenerator(ITransactionalGenerationOutput output) : IFullStackGenerator
 {
-    private const string ResourcePrefix = "Mvp.Cli.Templates.FullStack.";
-    private const string ManifestResource = ResourcePrefix + "manifest.txt";
+    private static readonly string ResourcePrefix = TemplateResources.FullStack;
+    private static readonly string ManifestResource = ResourcePrefix + "manifest.txt";
 
     public Task<GenerationResult> GenerateAsync(
         ValidatedManifest manifest,

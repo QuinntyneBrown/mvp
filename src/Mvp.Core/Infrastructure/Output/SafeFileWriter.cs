@@ -1,7 +1,7 @@
 using System.Text;
-using Mvp.Cli.Bootstrap;
+using Mvp.Core.Errors;
 
-namespace Mvp.Cli.Infrastructure.Output;
+namespace Mvp.Core.Infrastructure.Output;
 
 public static class SafeFileWriter
 {

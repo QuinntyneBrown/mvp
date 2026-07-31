@@ -1,7 +1,7 @@
-using Mvp.Cli.Features.Generation;
-using Mvp.Cli.Features.Incremental;
-using Mvp.Cli.Infrastructure.Output;
-using Mvp.Cli.Infrastructure.Processes;
+using Mvp.Core.Features.Generation;
+using Mvp.Core.Features.Incremental;
+using Mvp.Core.Infrastructure.Output;
+using Mvp.Core.Infrastructure.Processes;
 
 namespace Mvp.Cli.Tests.Golden;
 
@@ -33,7 +33,7 @@ public sealed class AngularCliOptInTests
         using var workspace = new TestWorkspace();
         var generator = new IncrementalGenerator(new TransactionalGenerationOutput(), new UnavailableProcessRunner());
 
-        await Assert.ThrowsAsync<Mvp.Cli.Bootstrap.ExternalToolException>(() => generator.GenerateAsync(
+        await Assert.ThrowsAsync<Mvp.Core.Errors.ExternalToolException>(() => generator.GenerateAsync(
             new GenerationRequest(GenerationKind.App, "OrderDesk", workspace.Root, UseAngularCli: true),
             CancellationToken.None));
     }

@@ -1,4 +1,4 @@
-namespace Mvp.Cli.Manifests;
+namespace Mvp.Core.Manifests;
 
 public class MvpManifest
 {

@@ -1,9 +1,9 @@
 using System.Text.RegularExpressions;
-using Mvp.Cli.Bootstrap;
-using Mvp.Cli.Features.Generation;
-using Mvp.Cli.Manifests;
+using Mvp.Core.Errors;
+using Mvp.Core.Features.Generation;
+using Mvp.Core.Manifests;
 
-namespace Mvp.Cli.Features.FullStack.Manifest;
+namespace Mvp.Core.Features.FullStack.Manifest;
 
 public sealed partial class ManifestValidator
 {

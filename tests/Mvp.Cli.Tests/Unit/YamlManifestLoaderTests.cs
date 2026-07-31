@@ -1,5 +1,5 @@
-using Mvp.Cli.Bootstrap;
-using Mvp.Cli.Features.FullStack.Manifest;
+using Mvp.Core.Errors;
+using Mvp.Core.Features.FullStack.Manifest;
 
 namespace Mvp.Cli.Tests.Unit;
 
