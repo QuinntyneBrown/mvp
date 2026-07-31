@@ -1,0 +1,64 @@
+name: Feature request
+description: Propose an improvement to the CLI, manifest, generated output, or contributor workflow.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the user problem before proposing an implementation. Large changes may require a design discussion before code is accepted.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues and requirements for related work.
+          required: true
+        - label: This request is within the scope of a .NET and Angular MVP scaffolding tool.
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user or contributor problem should the project solve?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Describe observable behavior and a representative example.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - CLI
+        - Manifest
+        - Generated backend
+        - Generated frontend
+        - Generated tests
+        - Documentation
+        - Contributor experience
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe current workarounds or other approaches you evaluated.
+  - type: textarea
+    id: impact
+    attributes:
+      label: Compatibility and security impact
+      description: Note any manifest, generated-output, migration, dependency, or security implications.
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I am willing to help implement or document this feature.

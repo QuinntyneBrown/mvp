@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/QuinntyneBrown/mvp/security/advisories/new
+    about: Report suspected vulnerabilities privately. Do not open a public issue.
+  - name: Support guidance
+    url: https://github.com/QuinntyneBrown/mvp/blob/main/SUPPORT.md
+    about: Review support scope and the information needed for troubleshooting.

@@ -1,0 +1,65 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      - run: dotnet restore Mvp.sln --locked-mode
+      - run: dotnet format Mvp.sln --verify-no-changes --no-restore
+      - run: dotnet build Mvp.sln -c Release --no-restore -p:TreatWarningsAsErrors=true
+      - run: dotnet test Mvp.sln -c Release --no-build --no-restore --collect:"XPlat Code Coverage"
+      - run: dotnet pack src/Mvp.Cli/Mvp.Cli.csproj -c Release --no-build --no-restore -o artifacts
+
+  security-package-consumers:
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: dotnet restore Mvp.sln --locked-mode
+      - run: dotnet build Mvp.sln -c Release --no-restore -p:TreatWarningsAsErrors=true
+      - run: dotnet list Mvp.sln package --vulnerable --include-transitive
+      - run: dotnet pack src/Mvp.Cli/Mvp.Cli.csproj -c Release --no-build --no-restore -o artifacts
+      - name: Install packed tool and smoke commands
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/mvp-tool" "$RUNNER_TEMP/mvp-output"
+          dotnet tool install --tool-path "$RUNNER_TEMP/mvp-tool" --add-source artifacts Mvp.Cli --version 2.0.0
+          "$RUNNER_TEMP/mvp-tool/mvp" --help
+          "$RUNNER_TEMP/mvp-tool/mvp" new dotnet-angular-jwt-mvp --config samples/sample-mvp.yaml --output "$RUNNER_TEMP/mvp-output"
+          "$RUNNER_TEMP/mvp-tool/mvp" new solution --name Smoke --output "$RUNNER_TEMP/mvp-output"
+          dotnet build "$RUNNER_TEMP/mvp-output/Acme/backend/Acme.sln" -c Release
+          dotnet build "$RUNNER_TEMP/mvp-output/Smoke/Smoke.sln" -c Release -p:TreatWarningsAsErrors=true
+          cd "$RUNNER_TEMP/mvp-output/Acme/frontend"
+          npm install --package-lock-only --ignore-scripts
+          npm ci --ignore-scripts
+          npm audit --audit-level=moderate
+          npm run build
+          cd "$RUNNER_TEMP/mvp-output/Smoke/src/Smoke.App"
+          npm install --package-lock-only --ignore-scripts
+          npm ci --ignore-scripts
+          npm audit --audit-level=moderate
+          npm run build
