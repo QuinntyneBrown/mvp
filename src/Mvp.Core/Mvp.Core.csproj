@@ -1,14 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- AssemblyName and RootNamespace are pinned equal to each other. Embedded template
-         resource names derive from RootNamespace, and the generators derive their lookup
-         prefix from the assembly; TemplateResourceTests enforces that they agree. -->
+    <!-- AssemblyName and RootNamespace are pinned equal to each other. Embedded template resource
+         names derive from RootNamespace, and TemplateResources derives the lookup prefix from the
+         assembly name; TemplateResourceTests asserts the two agree. -->
     <AssemblyName>Mvp.Core</AssemblyName>
     <RootNamespace>Mvp.Core</RootNamespace>
-    <IsPackable>false</IsPackable>
-    <!-- Packaging metadata (PackageId QuinntyneBrown.Mvp.Core) lands once the extraction
-         is proven; see RELEASE.md. -->
+    <IsPackable>true</IsPackable>
+    <PackageId>QuinntyneBrown.Mvp.Core</PackageId>
+    <Title>Mvp.Core</Title>
+    <Description>Manifest validation, Liquid template rendering, and transactional filesystem generation for .NET and Angular MVP scaffolding. This is the engine behind the mvp command-line tool.</Description>
+    <PackageTags>scaffolding;code-generation;templates;liquid;angular;aspnetcore;mvp</PackageTags>
+    <EnablePackageValidation>true</EnablePackageValidation>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The library ships its own readme; the repository README documents the CLI tool. -->
+    <None Include="README.md" Pack="true" PackagePath="\" />
     <EmbeddedResource Include="Templates\**\*" WithCulture="false" />
   </ItemGroup>
 

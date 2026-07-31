@@ -347,11 +347,11 @@
         "type": "Project",
         "dependencies": {
           "Microsoft.Extensions.Hosting": "[10.0.10, )",
-          "Mvp.Core": "[1.0.0, )",
+          "QuinntyneBrown.Mvp.Core": "[2.1.0, )",
           "System.CommandLine": "[2.0.10, )"
         }
       },
-      "mvp.core": {
+      "QuinntyneBrown.Mvp.Core": {
         "type": "Project",
         "dependencies": {
           "DotLiquid": "[2.3.197, )",

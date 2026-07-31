@@ -1,4 +1,6 @@
 <Project>
+
+  <!-- Compiler, analyzer, and restore policy. Applies to every project. -->
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -14,4 +16,31 @@
     <NuGetAuditMode>all</NuGetAuditMode>
     <WarningsAsErrors>$(WarningsAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
   </PropertyGroup>
+
+  <!-- The version of every package in this repository. Packages are released in lockstep from a
+       single Git tag (v$(Version)); the release workflow refuses to publish when the tag and this
+       value disagree. Projects must not override it. Bumping is a release step; see RELEASE.md. -->
+  <PropertyGroup>
+    <Version>2.1.0</Version>
+  </PropertyGroup>
+
+  <!-- Shared package metadata. Projects opt in with <IsPackable>true</IsPackable> and supply their
+       own PackageId, Title, Description, and PackageTags. -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <Authors>Quinntyne Brown</Authors>
+    <Copyright>Copyright (c) 2026 Quinntyne Brown and contributors</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageProjectUrl>https://github.com/QuinntyneBrown/mvp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/QuinntyneBrown/mvp.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <!-- Source Link ships in the SDK for GitHub-hosted repositories; no PackageReference needed. -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
 </Project>
