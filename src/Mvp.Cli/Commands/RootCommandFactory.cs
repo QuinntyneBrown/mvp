@@ -110,7 +110,7 @@ public sealed class RootCommandFactory(
                 await output.WriteLineAsync("Generating dotnet-angular-jwt-mvp...").ConfigureAwait(false);
                 var configPath = parseResult.GetValue(configOption);
                 var loaded = configPath is null
-                    ? new ManifestLoadResult(new Mvp.Core.Manifests.MvpManifest(), [])
+                    ? ManifestLoadResult.CreateEmpty()
                     : manifestLoader.Load(configPath);
                 var manifest = manifestValidator.Validate(
                     loaded.Manifest,
