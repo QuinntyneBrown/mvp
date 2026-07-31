@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Serve a protected request
+
+Container_Boundary(api, "Generated backend") {
+  Component(auth, "JWT bearer middleware", "ASP.NET Core", "Validates issuer, audience, lifetime, and signature")
+  Component(controller, "Generated entity controller", "ASP.NET Core controller", "Maps authorized HTTP requests")
+  Component(mediator, "MediatR pipeline", "Application dispatch", "Runs validation before the handler")
+  Component(validator, "ValidationBehavior", "FluentValidation behavior", "Rejects invalid commands")
+  Component(handler, "Generated command handler", "Application service", "Executes the domain operation")
+  Component(port, "IAppDbContext", "Application interface", "Defines persistence operations")
+  Component(adapter, "AppDbContext", "EF Core adapter", "Implements persistence")
+  Component(error, "Exception handler", "ASP.NET Core middleware", "Maps failures to bounded JSON")
+  ComponentDb(db, "Configured store", "InMemory or SQL Server", "Persists application state")
+}
+
+Rel(auth, controller, "Allows validated request")
+Rel(controller, mediator, "Sends command")
+Rel(mediator, validator, "Runs")
+Rel(validator, handler, "Continues valid request")
+Rel(handler, port, "Uses")
+Rel(port, adapter, "Implemented by")
+Rel(adapter, db, "Reads and writes", "Parameterized EF Core")
+Rel(controller, error, "Maps unhandled failure through")
+@enduml

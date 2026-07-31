@@ -1,0 +1,46 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Verify a generated solution
+
+abstract class BasePage {
+  #Page page
+  #byTestId(id: string): Locator
+  {abstract} +goto(): Promise<void>
+}
+class SignUpPomPage {
+  +goto(): Promise<void>
+  +register(displayName: string, email: string, password: string): Promise<void>
+}
+class SignInPomPage {
+  +goto(): Promise<void>
+  +signIn(email: string, password: string): Promise<void>
+}
+class DashboardPomPage {
+  +Locator greeting
+  +goto(): Promise<void>
+}
+class DeclaredPageObject {
+  +goto(): Promise<void>
+}
+class AuthenticationSpec {
+  +registerScenario(page: Page): Promise<void>
+  +signInScenario(page: Page, request: APIRequestContext): Promise<void>
+}
+
+BasePage <|-- SignUpPomPage
+BasePage <|-- SignInPomPage
+BasePage <|-- DashboardPomPage
+BasePage <|-- DeclaredPageObject
+AuthenticationSpec --> SignUpPomPage : composes
+AuthenticationSpec --> SignInPomPage : composes
+AuthenticationSpec --> DashboardPomPage : asserts through
+@enduml

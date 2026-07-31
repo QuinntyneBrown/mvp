@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Process a protected command
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Authenticated visitor" as actor
+box "Frontend — Generated Angular application" #E0F2FE
+  participant "Generated page" as page
+  participant "API client" as client
+end box
+box "Backend — Generated API application" #D1FADF
+  participant "JWT bearer middleware" as auth
+  participant "EntityController" as controller
+  participant "Exception handler" as errors
+end box
+box "Backend — Generated Application and Domain" #ECFDF3
+  participant "ValidationBehavior" as validation
+  participant "CommandHandler" as handler
+  participant "DomainEntity" as entity
+end box
+box "Backend — Generated Infrastructure" #FFF4E5
+  database "AppDbContext" as db
+end box
+actor -> page : Submit protected operation
+page -> client : Build typed request
+client -> auth : HTTPS with bearer token
+auth -> auth : Validate token under L2-030
+alt token is valid
+  auth -> controller : Authorized request
+  controller -> validation : Send command
+  validation -> validation : Enforce L2-036 rules
+  alt command is valid
+    validation -> handler : Continue
+    handler -> entity : Apply domain behavior
+    entity --> handler : Updated state
+    handler -> db : Save parameterized changes under L2-051
+    db --> handler : Commit result
+    handler --> controller : Typed result
+    controller --> client : Success response
+  else validation fails
+    validation -> errors : ValidationException
+    errors --> client : 400 bounded JSON under L2-037
+  end
+else token is invalid
+  auth --> client : 401 response
+end
+client --> page : Feature result
+page --> actor : Present outcome
+@enduml

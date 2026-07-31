@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Adopt a generated solution
+
+Person(consumer, "Consumer", "Moves from evaluation to a running scaffold")
+System_Boundary(mvp, "mvp product and output") {
+  Container(reference, "Product reference", "Markdown", "Defines manifest fields, prerequisites, and output inventory")
+  Container(sample, "Worked manifest", "YAML", "Demonstrates entities, pages, and components")
+  Container(cli, "mvp CLI", ".NET", "Generates the source tree")
+  Container(readme, "Generated README", "Markdown", "Orders configuration, build, run, and test steps")
+}
+System_Ext(tooling, "Development tooling", ".NET SDK, Node.js, npm, Playwright", "Builds and runs the generated solution")
+
+Rel(consumer, reference, "Reads before generation")
+Rel(consumer, sample, "Copies or adapts")
+Rel(sample, cli, "Supplies declaration to")
+Rel(cli, readme, "Creates with each solution")
+Rel(consumer, readme, "Follows after generation")
+Rel(readme, tooling, "Names commands for")
+@enduml

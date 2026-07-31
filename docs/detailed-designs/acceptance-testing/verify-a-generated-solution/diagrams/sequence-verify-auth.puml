@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Verify registration
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Consumer" as actor
+box "Frontend — Playwright test application" #E0F2FE
+  participant "auth.spec.ts" as spec
+  participant "SignUpPomPage" as signUp
+  participant "DashboardPomPage" as dashboard
+end box
+box "Frontend — Chromium browser" #E0F2FE
+  participant "Generated Angular application" as spa
+end box
+box "Backend — Generated API application" #ECFDF3
+  participant "AuthController" as api
+end box
+box "Backend — Generated persistence" #FFF4E5
+  database "Application store" as db
+end box
+actor -> spec : Run Playwright suite
+spec -> signUp : goto()
+signUp -> spa : Navigate to /sign-up
+spa --> signUp : Render form
+spec -> signUp : register(displayName, email, password)
+signUp -> spa : Fill fields and submit
+spa -> api : POST /api/auth/register
+api -> db : Create account
+db --> api : Persisted account
+api --> spa : AuthResult
+spa --> signUp : Navigate to dashboard
+spec -> dashboard : Read greeting under L2-046
+dashboard -> spa : Locate dashboard greeting
+spa --> dashboard : Visible personalized text
+dashboard --> spec : Assertion passes
+spec --> actor : Report passing authentication path
+@enduml

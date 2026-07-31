@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Present a generated screen
+
+Person(visitor, "Visitor", "Uses the generated browser application")
+System_Boundary(frontend, "Generated Angular workspace") {
+  Container(app, "Application", "Angular", "Bootstraps routing and presents screens")
+  Container(apiLibrary, "API library", "Angular library", "Owns HTTP contracts and clients")
+  Container(componentsLibrary, "Components library", "Angular library", "Owns reusable presentation units")
+  Container(domainLibrary, "Domain library", "Angular library", "Owns frontend domain contracts")
+}
+System_Ext(api, "Generated backend", "Executes domain and authentication operations")
+
+Rel(visitor, app, "Navigates", "Browser")
+Rel(app, apiLibrary, "Imports through stable alias")
+Rel(app, componentsLibrary, "Imports through stable alias")
+Rel(app, domainLibrary, "Imports through stable alias")
+Rel(apiLibrary, api, "Calls", "JSON/HTTPS")
+@enduml

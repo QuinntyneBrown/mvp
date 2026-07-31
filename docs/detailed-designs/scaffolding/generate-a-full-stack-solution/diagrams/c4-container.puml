@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Generate a full-stack solution
+
+Person(consumer, "Consumer", "Supplies the resolved solution declaration")
+System_Boundary(mvp, "mvp") {
+  Container(cli, "CLI process", ".NET", "Resolves input and reports progress")
+  Container(adapter, "Scaffolding adapter", ".NET", "Maps manifest data into factory options")
+  Container(factory, "JWT MVP scaffolding library", "CodeGenerator.DotNet", "Creates the complete source tree")
+}
+ContainerDb(files, "Generated solution tree", "Local file system", "Backend, frontend, and Playwright assets")
+
+Rel(consumer, cli, "Invokes", "Shell")
+Rel(cli, adapter, "Passes MvpManifest")
+Rel(adapter, factory, "Calls once with JwtAuthenticatedMvpOptions")
+Rel(factory, files, "Writes deterministic assets")
+@enduml

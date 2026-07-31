@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Run generation safely
+
+Container_Boundary(run, "mvp generation run") {
+  Component(command, "Command handler", "System.CommandLine handler", "Owns failure and exit boundary")
+  Component(generator, "Generator service", ".NET service", "Creates the selected artifact tree")
+  Component(app, "AppGeneratorService", ".NET service", "Selects Angular CLI or fallback")
+  Component(process, "ProcessRunner", ".NET process adapter", "Streams output and awaits cancellation")
+  Component(logger, "ILogger", "Logging abstraction", "Emits progress, success, and failure")
+  Component(path, "Path and Directory APIs", ".NET BCL", "Resolve and prepare local paths")
+}
+System_Ext(angular, "Angular CLI", "Optional local child process")
+ComponentDb(files, "Local work area", "File system", "Consumer input and generated output")
+
+Rel(command, generator, "Calls with resolved input")
+Rel(command, logger, "Reports failure through")
+Rel(generator, logger, "Reports stages through")
+Rel(generator, path, "Builds paths with")
+Rel(path, files, "Prepares")
+Rel(generator, files, "Writes")
+Rel(app, process, "Checks and invokes through")
+Rel(process, angular, "Runs")
+Rel(process, logger, "Streams output through")
+@enduml

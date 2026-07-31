@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Present a generated screen
+
+Container_Boundary(app, "Generated Angular application") {
+  Component(config, "appConfig", "ApplicationConfig", "Registers routes, HTTP, animations, and authentication")
+  Component(routes, "routes", "Angular Routes", "Maps paths to lazy page components")
+  Component(guard, "authGuard", "CanActivateFn", "Protects authenticated routes")
+  Component(page, "Generated page", "Standalone Angular component", "Presents one vertical feature")
+  Component(interceptor, "authInterceptor", "HttpInterceptorFn", "Attaches the access token")
+}
+Container_Boundary(libraries, "Generated Angular libraries") {
+  Component(apiClient, "API service contract and client", "Angular service", "Calls the generated backend")
+  Component(component, "Reusable component", "Angular component", "Renders shared presentation")
+  Component(domain, "Domain contract", "TypeScript", "Represents frontend domain data")
+}
+System_Ext(backend, "Generated backend", "Provides JSON APIs")
+
+Rel(config, routes, "Registers")
+Rel(config, interceptor, "Registers")
+Rel(routes, guard, "Applies to protected path")
+Rel(routes, page, "Loads")
+Rel(page, apiClient, "Calls through injection token")
+Rel(page, component, "Renders")
+Rel(page, domain, "Reads typed data")
+Rel(apiClient, interceptor, "Sends request through")
+Rel(apiClient, backend, "Calls", "JSON/HTTPS")
+@enduml

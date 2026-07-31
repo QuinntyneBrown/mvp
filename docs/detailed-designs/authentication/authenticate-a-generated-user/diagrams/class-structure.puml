@@ -1,0 +1,66 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Authenticate a generated user
+
+class AuthController {
+  +Register(request: RegisterRequest, cancellationToken: CancellationToken): Task<ActionResult<AuthResult>>
+  +SignIn(request: SignInRequest, cancellationToken: CancellationToken): Task<ActionResult<AuthResult>>
+}
+class RegisterCommand {
+  +string Email
+  +string Password
+  +string DisplayName
+}
+class SignInCommand {
+  +string Email
+  +string Password
+}
+class RegisterCommandHandler {
+  +Handle(request: RegisterCommand, cancellationToken: CancellationToken): Task<AuthResult>
+}
+class SignInCommandHandler {
+  +Handle(request: SignInCommand, cancellationToken: CancellationToken): Task<AuthResult>
+}
+class User {
+  +Guid Id
+  +string Email
+  +string PasswordHash
+  +string DisplayName
+  +string Role
+}
+class AuthResult {
+  +string AccessToken
+  +DateTime ExpiresAt
+  +Guid UserId
+}
+interface IPasswordHasher
+interface IJwtTokenIssuer
+class AuthStateService {
+  +set(value: AuthResult): void
+  +clear(): void
+  +snapshot(): AuthResult?
+}
+
+AuthController ..> RegisterCommand : sends
+AuthController ..> SignInCommand : sends
+RegisterCommandHandler ..> RegisterCommand : handles
+SignInCommandHandler ..> SignInCommand : handles
+RegisterCommandHandler --> User : creates
+SignInCommandHandler --> User : loads
+RegisterCommandHandler --> IPasswordHasher : uses
+SignInCommandHandler --> IPasswordHasher : uses
+RegisterCommandHandler --> IJwtTokenIssuer : uses
+SignInCommandHandler --> IJwtTokenIssuer : uses
+RegisterCommandHandler ..> AuthResult : returns
+SignInCommandHandler ..> AuthResult : returns
+AuthStateService --> AuthResult : stores
+@enduml

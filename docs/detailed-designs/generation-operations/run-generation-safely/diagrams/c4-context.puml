@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Run generation safely
+
+Person(consumer, "Consumer", "Starts, observes, or cancels generation")
+System(mvp, "mvp", "Coordinates a bounded local generation run")
+System_Ext(angular, "Angular CLI", "Optional local child tool")
+System_Ext(files, "Local file system", "Holds consumer input and generated output")
+
+Rel(consumer, mvp, "Runs and may interrupt", "Shell")
+Rel(mvp, angular, "Detects and invokes locally")
+Rel(mvp, files, "Reads declared input and writes output", "Local file I/O")
+@enduml

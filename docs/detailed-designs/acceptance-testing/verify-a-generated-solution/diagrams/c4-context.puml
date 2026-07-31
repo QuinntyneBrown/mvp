@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Verify a generated solution
+
+Person(consumer, "Consumer", "Runs generated acceptance tests")
+System(tests, "Generated Playwright suite", "Verifies browser-visible application behavior")
+System_Ext(app, "Generated application", "Frontend and backend under test")
+
+Rel(consumer, tests, "Runs", "npx playwright test")
+Rel(tests, app, "Exercises", "Browser and HTTP")
+@enduml

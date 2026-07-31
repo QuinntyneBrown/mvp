@@ -1,0 +1,43 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Run generation safely
+
+interface IProcessRunner {
+  +RunAsync(command: string, arguments: string, workingDirectory: string?, cancellationToken: CancellationToken): Task<int>
+}
+class ProcessRunner {
+  -ILogger<ProcessRunner> _logger
+  +RunAsync(command: string, arguments: string, workingDirectory: string?, cancellationToken: CancellationToken): Task<int>
+}
+interface IAppGeneratorService {
+  +GenerateAsync(name: string, outputPath: string, cancellationToken: CancellationToken): Task
+}
+class AppGeneratorService {
+  -IProcessRunner _processRunner
+  -ILogger<AppGeneratorService> _logger
+  +GenerateAsync(name: string, outputPath: string, cancellationToken: CancellationToken): Task
+}
+class SelectedCommand {
+  +Create(services: IServiceProvider): Command
+}
+class CancellationToken {
+  +bool IsCancellationRequested
+}
+
+IProcessRunner <|.. ProcessRunner : implements
+IAppGeneratorService <|.. AppGeneratorService : implements
+AppGeneratorService --> IProcessRunner : uses
+SelectedCommand --> IAppGeneratorService : resolves
+SelectedCommand ..> CancellationToken : planned interrupt binding
+AppGeneratorService ..> CancellationToken : propagates
+ProcessRunner ..> CancellationToken : observes
+@enduml

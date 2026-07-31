@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Invoke the CLI
+
+Person(consumer, "Consumer", "Chooses a generation command")
+Container_Boundary(cli, "mvp CLI process") {
+  Component(program, "Program", ".NET composition root", "Builds the host and invokes the root command")
+  Component(root, "RootCommand", "System.CommandLine", "Owns product help and top-level parsing")
+  Component(newCommand, "NewCommand", "Command factory", "Groups generation subcommands")
+  Component(selected, "Selected command factory", "Command factory", "Defines typed options and the handler")
+  Component(generator, "Generator service", ".NET service", "Executes the selected capability")
+}
+
+Rel(consumer, root, "Invokes")
+Rel(program, root, "Constructs and runs")
+Rel(root, newCommand, "Delegates new")
+Rel(newCommand, selected, "Registers")
+Rel(selected, generator, "Resolves and calls")
+@enduml

@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour — Follow adoption guidance
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Consumer" as actor
+box "Frontend — Repository guidance" #E0F2FE
+  participant "Product reference" as reference
+  participant "sample-mvp.yaml" as sample
+end box
+box "Backend — mvp CLI application" #D1FADF
+  participant "Full-stack command" as command
+end box
+box "Backend — Scaffolding application" #ECFDF3
+  participant "Generator factory" as factory
+end box
+box "Backend — Local development environment" #FFF4E5
+  participant "Generated README" as readme
+  database "Generated solution" as solution
+end box
+actor -> reference : Read fields, prerequisites, and output inventory under L2-069
+reference --> actor : Expected inputs and outputs
+actor -> sample : Select worked declaration
+sample --> actor : YAML manifest
+actor -> command : Generate from sample
+command -> factory : Generate resolved solution
+factory -> solution : Write source tree
+factory -> readme : Write ordered adoption guidance
+readme --> factory : Created
+factory --> command : Completed
+command --> actor : Confirm solution location
+actor -> readme : Follow L2-070 steps in order
+readme -> solution : Configure signing key and persistence
+readme -> solution : Build, run, and test
+solution --> actor : Running verified scaffold
+@enduml

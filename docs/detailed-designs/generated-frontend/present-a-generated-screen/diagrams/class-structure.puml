@@ -1,0 +1,48 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Present a generated screen
+
+class appConfig <<ApplicationConfig>> {
+  +Provider[] providers
+}
+class routes <<Routes>> {
+  +Route[] entries
+}
+class GeneratedPage {
+  +submit(): Promise<void>
+}
+interface IFeatureService {
+  +execute(request: FeatureRequest): Promise<FeatureResult>
+}
+class FeatureService {
+  -HttpClient http
+  +execute(request: FeatureRequest): Promise<FeatureResult>
+}
+class AuthStateService {
+  +snapshot(): AuthResult?
+}
+class authGuard <<CanActivateFn>>
+class authInterceptor <<HttpInterceptorFn>>
+class ReusableComponent
+class DomainModel
+
+appConfig *-- routes : registers
+routes ..> GeneratedPage : lazy-loads
+routes ..> authGuard : protects with
+GeneratedPage --> IFeatureService : injects by token
+IFeatureService <|.. FeatureService : implements
+FeatureService ..> authInterceptor : passes request through
+authGuard --> AuthStateService : reads
+authInterceptor --> AuthStateService : reads
+GeneratedPage --> ReusableComponent : renders
+GeneratedPage --> DomainModel : presents
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Invoke the CLI
+
+class Program {
+  +Main(args: string[]): Task<int>
+}
+class RootCommand {
+  +InvokeAsync(args: string[]): Task<int>
+  +AddCommand(command: Command): void
+}
+class NewCommand {
+  +Create(services: IServiceProvider): Command
+}
+class NewDotNetAngularJwtAuthenticatedMvpCommand {
+  +Create(services: IServiceProvider): Command
+}
+class "Option<T>" as OptionT {
+  +Aliases: string[]
+  +IsRequired: bool
+}
+interface IDotNetAngularJwtAuthenticatedMvpGeneratorService {
+  +GenerateAsync(manifest: MvpManifest, outputDirectory: string, cancellationToken: CancellationToken): Task
+}
+
+Program ..> RootCommand : creates / invokes
+Program ..> NewCommand : calls
+RootCommand *-- NewCommand : contains command
+NewCommand ..> NewDotNetAngularJwtAuthenticatedMvpCommand : registers
+NewDotNetAngularJwtAuthenticatedMvpCommand *-- OptionT : defines
+NewDotNetAngularJwtAuthenticatedMvpCommand ..> IDotNetAngularJwtAuthenticatedMvpGeneratorService : resolves / calls
+@enduml

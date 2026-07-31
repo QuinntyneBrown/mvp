@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Generate a solution part
+
+Container_Boundary(cli, "mvp incremental generation") {
+  Component(command, "Selected New*Command", "Command factory", "Owns name and output options")
+  Component(solution, "SolutionGeneratorService", ".NET service", "Creates a solution shell")
+  Component(project, "Backend generator service", ".NET service", "Creates API, Core, or Infrastructure")
+  Component(app, "AppGeneratorService", ".NET service", "Creates an Angular application")
+  Component(library, "AngularLibraryGeneratorService", ".NET service", "Creates API, components, or domain library")
+  Component(process, "IProcessRunner", ".NET interface", "Runs Angular CLI without a shell")
+}
+ComponentDb(output, "Generated part", "File system", "Selected solution artifacts")
+
+Rel(command, solution, "Calls for solution")
+Rel(command, project, "Calls for backend project")
+Rel(command, app, "Calls for application")
+Rel(command, library, "Calls for library")
+Rel(app, process, "Checks and invokes Angular CLI through")
+Rel(solution, output, "Writes")
+Rel(project, output, "Writes")
+Rel(app, output, "Writes")
+Rel(library, output, "Writes")
+@enduml

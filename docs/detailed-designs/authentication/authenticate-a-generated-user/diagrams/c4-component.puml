@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Authenticate a generated user
+
+Container_Boundary(frontend, "Generated Angular application") {
+  Component(page, "SignUpPage / SignInPage", "Angular pages", "Collect credentials and display the result")
+  Component(client, "AuthService", "Angular HTTP service", "Calls authentication endpoints")
+  Component(state, "AuthStateService", "Angular service", "Persists and hydrates AuthResult")
+  Component(guard, "authGuard / authInterceptor", "Angular functions", "Protect routes and attach access tokens")
+}
+Container_Boundary(backend, "Generated backend") {
+  Component(controller, "AuthController", "ASP.NET Core controller", "Exposes registration and sign-in")
+  Component(handler, "Authentication command handlers", "MediatR handlers", "Create accounts and verify credentials")
+  Component(hasher, "BCryptPasswordHasher", "Infrastructure adapter", "Hashes and verifies passwords")
+  Component(issuer, "JwtTokenIssuer", "Infrastructure adapter", "Issues signed access tokens")
+  ComponentDb(db, "AppDbContext", "EF Core", "Persists users")
+}
+
+Rel(page, client, "Calls through AUTH_SERVICE")
+Rel(client, controller, "Posts credentials", "JSON/HTTPS")
+Rel(controller, handler, "Sends command")
+Rel(handler, hasher, "Hashes or verifies with")
+Rel(handler, issuer, "Requests token from")
+Rel(handler, db, "Reads and writes")
+Rel(client, state, "Stores AuthResult in")
+Rel(state, guard, "Provides session to")
+@enduml

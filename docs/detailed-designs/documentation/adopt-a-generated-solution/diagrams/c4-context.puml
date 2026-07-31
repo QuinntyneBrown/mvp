@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Adopt a generated solution
+
+Person(consumer, "Consumer", "Evaluates mvp and adopts generated source")
+System(mvp, "mvp", "Provides generation and adoption guidance")
+System_Ext(tooling, "Downstream development tooling", ".NET, Node.js, npm, and Playwright")
+
+Rel(consumer, mvp, "Reads references and generates a solution")
+Rel(consumer, tooling, "Builds, runs, and tests using documented commands")
+Rel(mvp, tooling, "Documents prerequisites for")
+@enduml

@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Complete or cancel generation
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Consumer" as actor
+box "Frontend — Operating-system shell" #E0F2FE
+  participant "Shell" as shell
+end box
+box "Backend — mvp CLI application" #D1FADF
+  participant "Command handler" as command
+  participant "ILogger" as logger
+end box
+box "Backend — Generation services" #ECFDF3
+  participant "Generator service" as generator
+  participant "ProcessRunner" as process
+end box
+box "Backend — Local infrastructure" #FFF4E5
+  database "Output work area" as output
+end box
+actor -> shell : Start generation
+shell -> command : Dispatch resolved input
+command -> logger : Report operation start under L2-060
+command -> generator : GenerateAsync(input, cancellationToken)
+generator -> output : Prepare and write under L2-066
+output --> generator : Write result
+opt optional tooling
+  generator -> process : RunAsync(tool, cancellationToken)
+  process --> generator : Exit code and streamed output
+end
+alt generation completes
+  generator --> command : Success location
+  command -> logger : Report completion path
+  command --> shell : Exit 0
+else cancellation or failure
+  generator --> command : Cancelled or bounded exception
+  command -> logger : Report action and partial location under L2-061
+  command --> shell : Exit non-zero
+end
+shell --> actor : Present final outcome
+@enduml

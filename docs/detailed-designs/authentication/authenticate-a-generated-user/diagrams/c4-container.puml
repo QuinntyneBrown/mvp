@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Authenticate a generated user
+
+Person(visitor, "Visitor", "Supplies account credentials")
+System_Boundary(app, "Generated application") {
+  Container(spa, "Angular application", "Angular", "Collects credentials and holds the client session")
+  Container(api, "Generated API", "ASP.NET Core", "Validates requests and coordinates authentication")
+  Container(application, "Application and Domain", ".NET", "Owns account authentication behavior")
+  ContainerDb(db, "Application database", "EF Core provider", "Stores accounts and credential hashes")
+}
+
+Rel(visitor, spa, "Uses", "Browser")
+Rel(spa, api, "Registers, signs in, and calls protected endpoints", "JSON/HTTPS")
+Rel(api, application, "Dispatches commands")
+Rel(application, db, "Reads and writes accounts", "EF Core")
+@enduml

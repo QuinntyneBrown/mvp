@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Verify a generated solution
+
+Person(consumer, "Consumer", "Starts the acceptance suite")
+System_Boundary(solution, "Generated solution") {
+  Container(runner, "Playwright test runner", "TypeScript / Playwright", "Runs scenarios and browser fixtures")
+  Container(browser, "Chromium browser", "Playwright browser", "Renders screens and performs user actions")
+  Container(spa, "Angular application", "Angular", "Presents generated screens")
+  Container(api, "Generated API", "ASP.NET Core", "Executes authentication and domain behavior")
+}
+
+Rel(consumer, runner, "Runs")
+Rel(runner, browser, "Controls", "Playwright protocol")
+Rel(browser, spa, "Navigates and interacts", "HTTP")
+Rel(spa, api, "Calls", "JSON/HTTP")
+@enduml

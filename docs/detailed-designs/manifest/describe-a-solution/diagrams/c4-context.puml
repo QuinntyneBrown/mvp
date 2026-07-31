@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Describe a solution
+
+Person(consumer, "Consumer", "Authors a YAML solution declaration")
+System(mvp, "mvp", "Validates and resolves the declaration")
+System_Ext(files, "Local file system", "Stores the manifest and generated output")
+
+Rel(consumer, files, "Writes manifest", "YAML")
+Rel(consumer, mvp, "Supplies manifest path and overrides", "CLI")
+Rel(mvp, files, "Reads declared input", "File I/O")
+@enduml

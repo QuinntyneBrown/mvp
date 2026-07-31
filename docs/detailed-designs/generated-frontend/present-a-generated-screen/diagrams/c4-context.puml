@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Present a generated screen
+
+Person(visitor, "Visitor", "Navigates baseline and declared screens")
+System(frontend, "Generated frontend", "Angular workspace for application features")
+System_Ext(api, "Generated backend", "Provides authentication and domain APIs")
+
+Rel(visitor, frontend, "Uses", "Browser")
+Rel(frontend, api, "Calls", "JSON/HTTPS")
+@enduml

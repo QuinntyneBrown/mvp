@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Register and establish a session
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Generated Angular application" #E0F2FE
+  participant "SignUpPage" as page
+  participant "AuthService" as client
+  participant "AuthStateService" as state
+end box
+box "Backend — Generated API application" #D1FADF
+  participant "AuthController" as controller
+end box
+box "Backend — Generated Application and Domain" #ECFDF3
+  participant "ValidationBehavior" as validation
+  participant "RegisterCommandHandler" as handler
+  participant "User" as user
+end box
+box "Backend — Generated Infrastructure" #FFF4E5
+  participant "BCryptPasswordHasher" as hasher
+  participant "JwtTokenIssuer" as issuer
+  database "AppDbContext" as db
+end box
+actor -> page : Submit registration form
+page -> client : register(request)
+client -> controller : POST /api/auth/register
+controller -> validation : Send RegisterCommand
+validation -> validation : Enforce credential rules
+validation -> handler : Continue valid command
+handler -> db : Check normalized email under L2-027
+db --> handler : No existing user
+handler -> hasher : Hash password under L2-048
+hasher --> handler : Password hash
+handler -> user : Create account state
+handler -> db : Save user
+db --> handler : Commit result
+handler -> issuer : Issue signed, limited token under L2-029
+issuer --> handler : AuthResult
+handler --> controller : AuthResult
+controller --> client : 200 AuthResult
+client --> page : Authentication result
+page -> state : Persist session under L2-031
+state --> page : Session available
+page --> actor : Navigate to dashboard
+@enduml

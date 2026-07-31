@@ -1,0 +1,51 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Describe a solution
+
+class MvpManifest {
+  +string Name
+  +string? Output
+  +List<MvpManifestEntity> Entities
+  +List<MvpManifestPage> Pages
+  +List<MvpManifestComponent> Components
+}
+class MvpManifestEntity {
+  +string Name
+  +List<MvpManifestProperty> Properties
+}
+class MvpManifestProperty {
+  +string Name
+  +string Type = "string"
+}
+class MvpManifestPage {
+  +string Name
+  +string? Route
+  +bool RequiresAuth = true
+}
+class MvpManifestComponent {
+  +string Name
+  +string Library = "components"
+}
+interface IMvpManifestLoader {
+  +Load(path: string): MvpManifest
+}
+class YamlMvpManifestLoader {
+  +Load(path: string): MvpManifest
+}
+
+MvpManifest "1" *-- "0..*" MvpManifestEntity : entities
+MvpManifestEntity "1" *-- "0..*" MvpManifestProperty : properties
+MvpManifest "1" *-- "0..*" MvpManifestPage : pages
+MvpManifest "1" *-- "0..*" MvpManifestComponent : components
+IMvpManifestLoader <|.. YamlMvpManifestLoader : implements
+YamlMvpManifestLoader ..> MvpManifest : creates
+@enduml

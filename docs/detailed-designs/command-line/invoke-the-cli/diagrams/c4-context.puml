@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Invoke the CLI
+
+Person(consumer, "Consumer", "Installs and invokes generation commands")
+System(mvp, "mvp", "Full-stack scaffolding command-line tool")
+System_Ext(dotnet, ".NET runtime", "Hosts the installed global tool")
+
+Rel(consumer, mvp, "Discovers and invokes", "Shell command")
+Rel(mvp, dotnet, "Runs on", ".NET 9")
+@enduml

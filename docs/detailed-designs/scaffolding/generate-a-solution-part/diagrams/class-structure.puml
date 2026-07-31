@@ -1,0 +1,53 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Generate a solution part
+
+class NewSolutionCommand {
+  +Create(services: IServiceProvider): Command
+}
+class NewApiCommand {
+  +Create(services: IServiceProvider): Command
+}
+class NewAppCommand {
+  +Create(services: IServiceProvider): Command
+}
+class NewApiLibraryCommand {
+  +Create(services: IServiceProvider): Command
+}
+interface ISolutionGeneratorService {
+  +GenerateAsync(name: string, outputPath: string, cancellationToken: CancellationToken): Task
+}
+interface IApiGeneratorService {
+  +GenerateAsync(name: string, outputPath: string, cancellationToken: CancellationToken): Task
+}
+interface IAppGeneratorService {
+  +GenerateAsync(name: string, outputPath: string, cancellationToken: CancellationToken): Task
+}
+interface IAngularLibraryGeneratorService {
+  +GenerateAsync(name: string, outputPath: string, libraryName: string, cancellationToken: CancellationToken): Task
+}
+class SolutionGeneratorService
+class ApiGeneratorService
+class AppGeneratorService
+class AngularLibraryGeneratorService
+interface IProcessRunner
+
+NewSolutionCommand ..> ISolutionGeneratorService : resolves
+NewApiCommand ..> IApiGeneratorService : resolves
+NewAppCommand ..> IAppGeneratorService : resolves
+NewApiLibraryCommand ..> IAngularLibraryGeneratorService : resolves
+ISolutionGeneratorService <|.. SolutionGeneratorService : implements
+IApiGeneratorService <|.. ApiGeneratorService : implements
+IAppGeneratorService <|.. AppGeneratorService : implements
+IAngularLibraryGeneratorService <|.. AngularLibraryGeneratorService : implements
+AppGeneratorService --> IProcessRunner : uses
+@enduml

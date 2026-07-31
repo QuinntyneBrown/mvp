@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Serve a protected request
+
+Person(visitor, "Authenticated visitor", "Initiates a protected operation")
+System_Boundary(app, "Generated application") {
+  Container(spa, "Angular application", "Angular", "Sends the bearer-authenticated request")
+  Container(api, "Generated API", "ASP.NET Core", "Validates the token and maps HTTP requests")
+  Container(application, "Application and Domain", ".NET / MediatR", "Validates and executes domain behavior")
+  Container(infrastructure, "Infrastructure", ".NET / EF Core", "Implements persistence, hashing, clock, and token ports")
+  ContainerDb(db, "Application store", "EF Core InMemory or SQL Server", "Stores accounts and domain entities")
+}
+
+Rel(visitor, spa, "Uses", "Browser")
+Rel(spa, api, "Calls", "JSON/HTTPS")
+Rel(api, application, "Dispatches commands and queries")
+Rel(application, infrastructure, "Calls application-owned ports")
+Rel(infrastructure, db, "Reads and writes", "EF Core")
+@enduml

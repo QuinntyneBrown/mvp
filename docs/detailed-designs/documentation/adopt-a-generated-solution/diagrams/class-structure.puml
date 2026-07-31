@@ -1,0 +1,54 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Adopt a generated solution
+
+class ManifestReference <<document>> {
+  +FieldDefinition[] fields
+  +WorkedExample example
+}
+class FieldDefinition <<value object>> {
+  +string Name
+  +string Type
+  +bool Required
+  +string Default
+  +string OutputEffect
+}
+class OutputInventory <<document>> {
+  +GeneratedArtifact[] artifacts
+}
+class GeneratedArtifact <<value object>> {
+  +string Path
+  +string Purpose
+}
+class GeneratedReadme <<document>> {
+  +SetupStep[] orderedSteps
+  +SecurityStep signingKeyReplacement
+  +PersistenceStep persistenceConfiguration
+}
+class SetupStep <<value object>> {
+  +int Order
+  +string Command
+  +string Prerequisite
+}
+class SampleManifest <<yaml>> {
+  +Entity[] entities
+  +Page[] pages
+  +Component[] components
+}
+
+ManifestReference "1" *-- "1..*" FieldDefinition : defines
+ManifestReference --> SampleManifest : explains
+OutputInventory "1" *-- "1..*" GeneratedArtifact : lists
+GeneratedReadme "1" *-- "1..*" SetupStep : orders
+GeneratedReadme --> OutputInventory : summarizes
+GeneratedReadme ..> SampleManifest : accompanies generated output from
+@enduml

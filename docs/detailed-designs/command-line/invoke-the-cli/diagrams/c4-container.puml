@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Invoke the CLI
+
+Person(consumer, "Consumer", "Invokes mvp from a shell")
+System_Boundary(mvp, "mvp") {
+  Container(cli, "CLI process", ".NET / System.CommandLine", "Parses commands and options")
+  Container(services, "Generation services", ".NET", "Execute the selected generation capability")
+}
+System_Ext(shell, "Operating-system shell", "Starts the process and receives its exit code")
+
+Rel(consumer, shell, "Enters command")
+Rel(shell, cli, "Starts", "Process invocation")
+Rel(cli, services, "Dispatches validated input")
+Rel(cli, shell, "Returns outcome", "Exit code")
+@enduml

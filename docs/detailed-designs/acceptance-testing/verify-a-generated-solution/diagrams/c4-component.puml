@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Verify a generated solution
+
+Container_Boundary(tests, "Generated Playwright suite") {
+  Component(config, "playwright.config.ts", "Playwright configuration", "Defines browser, server, retry, and trace settings")
+  Component(spec, "auth.spec.ts", "Acceptance scenarios", "Verifies registration and sign-in")
+  Component(base, "BasePage", "Page-object base", "Owns Page and test-id lookup")
+  Component(signUp, "SignUpPomPage", "Page object", "Operates the sign-up screen")
+  Component(signIn, "SignInPomPage", "Page object", "Operates the sign-in screen")
+  Component(dashboard, "DashboardPomPage", "Page object", "Reads the authenticated dashboard")
+}
+System_Ext(app, "Generated application", "Provides the screens under test")
+
+Rel(config, spec, "Configures execution of")
+Rel(spec, signUp, "Uses")
+Rel(spec, signIn, "Uses")
+Rel(spec, dashboard, "Uses")
+Rel(signUp, base, "Extends")
+Rel(signIn, base, "Extends")
+Rel(dashboard, base, "Extends")
+Rel(base, app, "Drives", "Browser actions")
+@enduml

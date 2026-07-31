@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Generate a full-stack solution
+
+Person(consumer, "Consumer", "Requests a complete application scaffold")
+System(mvp, "mvp", "Generates backend, frontend, and test source")
+System_Ext(files, "Local file system", "Stores manifests and generated source trees")
+
+Rel(consumer, mvp, "Runs full-stack generation", "CLI")
+Rel(mvp, files, "Reads manifest and writes source", "Local file I/O")
+@enduml

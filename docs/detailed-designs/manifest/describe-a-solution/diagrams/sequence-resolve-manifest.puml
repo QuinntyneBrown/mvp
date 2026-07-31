@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — Load and resolve a manifest
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Consumer" as actor
+box "Frontend — Operating-system shell" #E0F2FE
+  participant "mvp invocation" as shell
+end box
+box "Backend — mvp CLI application" #D1FADF
+  participant "Manifest command" as command
+  participant "YamlMvpManifestLoader" as loader
+end box
+box "Backend — Scaffolding application" #ECFDF3
+  participant "Generator service" as generator
+end box
+box "Backend — Local infrastructure" #FFF4E5
+  database "Manifest file" as file
+end box
+actor -> shell : Supply --config and optional overrides
+shell -> command : Dispatch parsed values
+command -> loader : Load(configPath)
+loader -> file : Read declared YAML only under L2-015
+file --> loader : YAML content
+loader -> loader : Deserialize camelCase under L2-007
+loader -> loader : Validate non-empty name under L2-008
+alt manifest is valid
+  loader --> command : MvpManifest
+  command -> command : Apply name and output precedence under L2-013
+  command -> generator : GenerateAsync(resolved manifest)
+  generator --> command : Accepted
+  command --> shell : Continue generation
+else file is missing or invalid
+  loader --> command : Bounded exception under L2-014
+  command --> shell : Actionable failure
+end
+shell --> actor : Present outcome
+@enduml

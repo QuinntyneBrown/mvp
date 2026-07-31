@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Generate a solution part
+
+Person(consumer, "Consumer", "Chooses a solution, backend, app, or library command")
+System_Boundary(mvp, "mvp") {
+  Container(cli, "CLI process", ".NET / System.CommandLine", "Parses the selected part command")
+  Container(dotnetGenerators, ".NET generators", ".NET / CodeGenerator.DotNet", "Create solution and backend artifacts")
+  Container(frontendGenerators, "Frontend generators", ".NET", "Create Angular applications and libraries")
+}
+System_Ext(angular, "Angular CLI", "Creates a full Angular application when present")
+ContainerDb(files, "Output work area", "Local file system", "Receives the selected artifact tree")
+
+Rel(consumer, cli, "Invokes")
+Rel(cli, dotnetGenerators, "Dispatches backend selections")
+Rel(cli, frontendGenerators, "Dispatches frontend selections")
+Rel(frontendGenerators, angular, "Detects and invokes")
+Rel(dotnetGenerators, files, "Writes")
+Rel(frontendGenerators, files, "Writes")
+@enduml

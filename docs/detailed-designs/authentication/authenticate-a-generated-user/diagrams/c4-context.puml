@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Authenticate a generated user
+
+Person(visitor, "Visitor", "Registers, signs in, and uses protected screens")
+System(app, "Generated application", "Owns accounts, sessions, and protected features")
+
+Rel(visitor, app, "Registers and signs in using", "HTTPS")
+@enduml

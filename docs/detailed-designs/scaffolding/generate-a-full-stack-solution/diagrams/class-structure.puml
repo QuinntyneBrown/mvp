@@ -1,0 +1,52 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Generate a full-stack solution
+
+interface IDotNetAngularJwtAuthenticatedMvpGeneratorService {
+  +GenerateAsync(manifest: MvpManifest, outputDirectory: string, cancellationToken: CancellationToken): Task
+}
+class DotNetAngularJwtAuthenticatedMvpGeneratorService {
+  -IJwtAuthenticatedMvpFactory _factory
+  -ILogger _logger
+  +GenerateAsync(manifest: MvpManifest, outputDirectory: string, cancellationToken: CancellationToken): Task
+}
+interface IJwtAuthenticatedMvpFactory {
+  +GenerateAsync(options: JwtAuthenticatedMvpOptions, cancellationToken: CancellationToken): Task
+}
+class JwtAuthenticatedMvpOptions {
+  +string Name
+  +string Directory
+  +List<JwtAuthMvpEntity> Entities
+  +List<JwtAuthMvpFrontendPage> Pages
+  +List<JwtAuthMvpFrontendComponent> Components
+}
+class JwtAuthMvpEntity {
+  +string Name
+  +List<JwtAuthMvpProperty> Properties
+}
+class JwtAuthMvpFrontendPage {
+  +string Name
+  +string Route
+  +bool RequiresAuth
+}
+class JwtAuthMvpFrontendComponent {
+  +string Name
+  +string Library
+}
+
+IDotNetAngularJwtAuthenticatedMvpGeneratorService <|.. DotNetAngularJwtAuthenticatedMvpGeneratorService : implements
+DotNetAngularJwtAuthenticatedMvpGeneratorService --> IJwtAuthenticatedMvpFactory : invokes
+DotNetAngularJwtAuthenticatedMvpGeneratorService ..> JwtAuthenticatedMvpOptions : creates
+JwtAuthenticatedMvpOptions "1" *-- "0..*" JwtAuthMvpEntity : entities
+JwtAuthenticatedMvpOptions "1" *-- "0..*" JwtAuthMvpFrontendPage : pages
+JwtAuthenticatedMvpOptions "1" *-- "0..*" JwtAuthMvpFrontendComponent : components
+@enduml

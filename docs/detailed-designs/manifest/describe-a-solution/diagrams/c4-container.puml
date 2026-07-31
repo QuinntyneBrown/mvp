@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Describe a solution
+
+Person(consumer, "Consumer", "Supplies YAML and CLI options")
+System_Boundary(mvp, "mvp") {
+  Container(cli, "CLI process", ".NET / System.CommandLine", "Applies option precedence")
+  Container(loader, "Manifest loader", "YamlDotNet", "Deserializes and validates YAML data")
+  Container(mapper, "Scaffolding adapter", ".NET", "Maps the manifest to generation options")
+}
+ContainerDb(files, "Local files", "File system", "Manifest and output directories")
+
+Rel(consumer, cli, "Invokes with --config")
+Rel(cli, loader, "Loads selected manifest")
+Rel(loader, files, "Reads", "UTF-8 YAML")
+Rel(cli, mapper, "Sends resolved MvpManifest")
+@enduml

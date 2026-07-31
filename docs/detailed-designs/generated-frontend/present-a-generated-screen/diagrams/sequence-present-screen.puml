@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Navigate to a generated screen
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Visitor" as actor
+box "Frontend — Generated Angular application" #E0F2FE
+  participant "Angular Router" as router
+  participant "authGuard" as guard
+  participant "GeneratedPage" as page
+end box
+box "Frontend — Generated API library" #E0F2FE
+  participant "IFeatureService" as contract
+  participant "FeatureService" as client
+end box
+box "Backend — Generated API application" #ECFDF3
+  participant "Generated endpoint" as endpoint
+end box
+box "Frontend — Browser storage" #E0F2FE
+  database "Session storage" as storage
+end box
+actor -> router : Navigate to generated route
+router -> guard : Evaluate protected route
+guard -> storage : Read session
+storage --> guard : Current AuthResult or none
+alt session is valid
+  guard --> router : Allow navigation under L2-039
+  router -> page : Lazy-load component
+  page -> contract : execute(request) through L2-038 alias
+  contract -> client : Bound implementation
+  client -> endpoint : JSON/HTTPS request
+  endpoint --> client : Typed result
+  client --> contract : FeatureResult
+  contract --> page : FeatureResult
+  page --> actor : Present responsive screen
+else session is absent or expired
+  guard --> router : Redirect to sign-in
+  router --> actor : Present sign-in screen
+end
+@enduml

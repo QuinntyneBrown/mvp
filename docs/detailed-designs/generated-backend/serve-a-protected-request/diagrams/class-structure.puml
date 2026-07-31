@@ -1,0 +1,54 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Serve a protected request
+
+class GeneratedEntityController {
+  -IMediator _mediator
+  +Create(request: CreateRequest, cancellationToken: CancellationToken): Task<ActionResult<Guid>>
+  +GetById(id: Guid, cancellationToken: CancellationToken): Task<ActionResult<EntityDto>>
+}
+class CreateEntityCommand {
+  +Guid UserId
+  +string Value
+}
+class CreateEntityCommandValidator {
+  +Validate(command: CreateEntityCommand): ValidationResult
+}
+class ValidationBehavior {
+  +Handle(request: TRequest, next: RequestHandlerDelegate, cancellationToken: CancellationToken): Task<TResponse>
+}
+class CreateEntityCommandHandler {
+  -IAppDbContext _db
+  -IClock _clock
+  +Handle(command: CreateEntityCommand, cancellationToken: CancellationToken): Task<Guid>
+}
+interface IAppDbContext {
+  +SaveChangesAsync(cancellationToken: CancellationToken): Task<int>
+}
+class AppDbContext {
+  +DbSet<User> Users
+  +SaveChangesAsync(cancellationToken: CancellationToken): Task<int>
+}
+class DomainEntity {
+  +Guid Id
+  +DateTime CreatedAt
+}
+
+GeneratedEntityController ..> CreateEntityCommand : sends
+ValidationBehavior ..> CreateEntityCommandValidator : runs
+ValidationBehavior ..> CreateEntityCommandHandler : continues to
+CreateEntityCommandHandler ..> CreateEntityCommand : handles
+CreateEntityCommandHandler --> IAppDbContext : uses
+IAppDbContext <|.. AppDbContext : implements
+AppDbContext "1" *-- "0..*" DomainEntity : persists
+CreateEntityCommandHandler --> DomainEntity : creates
+@enduml

@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Serve a protected request
+
+Person(visitor, "Authenticated visitor", "Uses a protected application feature")
+System(app, "Generated application", "Validates identity and processes domain requests")
+System_Ext(database, "Configured database", "In-memory evaluation store or SQL Server")
+
+Rel(visitor, app, "Calls protected feature using", "HTTPS with bearer token")
+Rel(app, database, "Persists application state through", "EF Core")
+@enduml

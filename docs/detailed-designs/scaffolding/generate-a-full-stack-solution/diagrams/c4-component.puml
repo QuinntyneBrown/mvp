@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Generate a full-stack solution
+
+Container_Boundary(cli, "mvp generation path") {
+  Component(command, "NewDotNetAngularJwtAuthenticatedMvpCommand", "Command handler", "Resolves manifest and output")
+  Component(service, "DotNetAngularJwtAuthenticatedMvpGeneratorService", ".NET service", "Maps input and calculates the solution root")
+  Component(options, "JwtAuthenticatedMvpOptions", "Generation model", "Carries entities, pages, and components")
+  Component(factory, "IJwtAuthenticatedMvpFactory", "Package factory", "Writes all generated areas")
+  Component(logger, "ILogger", ".NET logging", "Reports start and completion")
+}
+ComponentDb(tree, "Generated tree", "File system", "backend, frontend, and e2e assets")
+
+Rel(command, service, "Calls GenerateAsync")
+Rel(service, options, "Builds")
+Rel(service, factory, "Invokes")
+Rel(service, logger, "Reports progress through")
+Rel(factory, tree, "Creates")
+@enduml

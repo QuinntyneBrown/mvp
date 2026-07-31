@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Adopt a generated solution
+
+Container_Boundary(guidance, "mvp guidance set") {
+  Component(manifest, "Manifest reference", "Markdown artifact", "Defines each field, type, default, and effect")
+  Component(inventory, "Output inventory", "Markdown artifact", "Lists generated files and architectural areas")
+  Component(prerequisites, "Prerequisite reference", "Markdown artifact", "Separates generation and runtime tooling")
+  Component(sample, "sample-mvp.yaml", "Worked example", "Demonstrates a complete declaration")
+  Component(readme, "Generated README", "Generated Markdown", "Orders local setup and verification steps")
+  Component(security, "Security and persistence guidance", "README sections", "Names signing-key and database changes")
+}
+
+Rel(manifest, sample, "Explains fields used by")
+Rel(inventory, readme, "Provides structure described by")
+Rel(prerequisites, readme, "Provides commands used by")
+Rel(readme, security, "Includes")
+@enduml
