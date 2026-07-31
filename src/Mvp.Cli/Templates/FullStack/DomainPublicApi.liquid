@@ -1,3 +1,4 @@
-// Domain components depend on the api library.
-// Add exports here as components are introduced.
+// Domain-focused components.
 export {};
+{% for component in Components %}{% if component.Library == "domain" %}
+export * from './lib/{{component.NameKebab}}/{{component.NameKebab}}.component';{% endif %}{% endfor %}

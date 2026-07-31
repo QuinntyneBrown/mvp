@@ -4,8 +4,8 @@ A JWT-authenticated full-stack MVP scaffolded by `mvp new dotnet-angular-jwt-mvp
 
 ## Layout
 
-- `backend/` — .NET 9 clean-architecture solution with JWT auth, MediatR/CQS, FluentValidation, EF Core.
-- `frontend/` — Angular workspace with `api`, `components`, and `domain` libraries plus the main app.
+- `backend/` — .NET 10 clean-architecture solution with JWT auth, MediatR/CQS, FluentValidation, EF Core.
+- `frontend/` — Angular 22 workspace with `api`, `components`, and `domain` libraries plus the main app.
 - `frontend/e2e/` — Playwright tests using the page-object model.
 
 ## Getting started
@@ -23,6 +23,8 @@ The API listens on http://localhost:5000 by default and uses an in-memory databa
 **Important:** replace `Jwt:SigningKey` in `appsettings.json` before running outside development.
 
 ### Frontend
+
+Requires Node.js 24.15 or newer.
 
 ```
 cd frontend

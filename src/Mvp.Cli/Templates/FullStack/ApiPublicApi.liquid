@@ -3,3 +3,5 @@ export * from './lib/auth.service.contract';
 export * from './lib/auth-result.model';
 export * from './lib/sign-in-request.model';
 export * from './lib/register-request.model';
+{% for component in Components %}{% if component.Library == "api" %}
+export * from './lib/{{component.NameKebab}}/{{component.NameKebab}}.component';{% endif %}{% endfor %}

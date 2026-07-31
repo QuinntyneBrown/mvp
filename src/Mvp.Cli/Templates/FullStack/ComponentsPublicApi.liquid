@@ -1,3 +1,4 @@
-// Re-usable presentational components live in this library.
-// Add exports here as components are introduced.
+// Reusable presentational components.
 export {};
+{% for component in Components %}{% if component.Library == "components" %}
+export * from './lib/{{component.NameKebab}}/{{component.NameKebab}}.component';{% endif %}{% endfor %}

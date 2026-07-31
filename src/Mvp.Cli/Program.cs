@@ -1,16 +1,17 @@
-using Mvp.Cli.Commands;
-using Mvp.Cli.Extensions;
+using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.CommandLine;
+using Mvp.Cli.Bootstrap;
+using Mvp.Cli.Commands;
 
-var host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services => services.AddMvpServices())
-    .Build();
+var builder = Host.CreateApplicationBuilder();
+builder.Services.AddMvpServices();
 
-var rootCommand = new RootCommand("mvp - CLI tool for creating full-stack MVP .NET and Angular solutions");
+using var host = builder.Build();
+var rootCommand = host.Services.GetRequiredService<RootCommandFactory>().Create();
+var configuration = new InvocationConfiguration
+{
+    EnableDefaultExceptionHandler = false,
+};
 
-var newCommand = NewCommand.Create(host.Services);
-rootCommand.AddCommand(newCommand);
-
-return await rootCommand.InvokeAsync(args);
+return await rootCommand.Parse(args).InvokeAsync(configuration);

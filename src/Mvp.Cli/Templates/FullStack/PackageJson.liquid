@@ -1,6 +1,7 @@
 {
   "name": "{{NameKebab}}",
   "version": "0.0.0",
+  "engines": { "node": "^24.15.0 || >=26.0.0" },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -18,20 +19,21 @@
     "@angular/forms": "^22.1.0",
     "@angular/material": "^22.1.0",
     "@angular/platform-browser": "^22.1.0",
-    "@angular/platform-browser-dynamic": "^22.1.0",
     "@angular/router": "^22.1.0",
     "rxjs": "~7.8.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.16.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^22.1.2",
+    "@angular/build": "^22.1.2",
     "@angular/cli": "^22.1.2",
     "@angular/compiler-cli": "^22.1.0",
     "@playwright/test": "^1.62.1",
-    "@types/jasmine": "~5.1.0",
     "@types/node": "^24.13.3",
-    "ng-packagr": "^22.1.0",
     "typescript": "~6.0.3"
+  },
+  "overrides": {
+    "@hono/node-server": "^2.0.12",
+    "@modelcontextprotocol/sdk": "^1.30.0"
   }
 }

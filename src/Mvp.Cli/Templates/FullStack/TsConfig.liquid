@@ -1,7 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -14,16 +13,16 @@
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "ES2022",
+    "module": "preserve",
     "useDefineForClassFields": false,
     "lib": ["ES2022", "dom"],
     "paths": {
-      "@{{NameKebab}}/api": ["projects/api/src/public-api"],
-      "@{{NameKebab}}/components": ["projects/components/src/public-api"],
-      "@{{NameKebab}}/domain": ["projects/domain/src/public-api"]
+      "@{{NameKebab}}/api": ["./projects/api/src/public-api"],
+      "@{{NameKebab}}/components": ["./projects/components/src/public-api"],
+      "@{{NameKebab}}/domain": ["./projects/domain/src/public-api"]
     }
   },
   "angularCompilerOptions": {

@@ -6,6 +6,7 @@
 backend/{{Name}}.sln=Solution.sln.liquid
 backend/global.json=GlobalJson.liquid
 backend/Directory.Build.props=DirectoryBuildProps.liquid
+backend/Directory.Packages.props=DirectoryPackagesProps.liquid
 backend/.gitignore=BackendGitignore.liquid
 
 # Domain
@@ -107,6 +108,11 @@ frontend/e2e/tests/auth.spec.ts=AuthSpec.liquid
 _page/frontend/projects/{{NameKebab}}-app/src/app/pages/{{PageKebab}}/{{PageKebab}}.page.ts=ScaffoldPage_ts.liquid
 _page/frontend/projects/{{NameKebab}}-app/src/app/pages/{{PageKebab}}/{{PageKebab}}.page.html=ScaffoldPage.html.liquid
 _page/frontend/e2e/pages/{{PageKebab}}.page.ts=ScaffoldPomPage.liquid
+
+# Per-component (one per options.Components entry)
+_component/frontend/projects/{{ComponentLibrary}}/src/lib/{{ComponentKebab}}/{{ComponentKebab}}.component.ts=ScaffoldComponent_ts.liquid
+_component/frontend/projects/{{ComponentLibrary}}/src/lib/{{ComponentKebab}}/{{ComponentKebab}}.component.html=ScaffoldComponent.html.liquid
+_component/frontend/projects/{{ComponentLibrary}}/src/lib/{{ComponentKebab}}/{{ComponentKebab}}.component.scss=ScaffoldComponent.scss.liquid
 
 # Root
 README.md=ReadmeMd.liquid
