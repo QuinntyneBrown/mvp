@@ -14,9 +14,9 @@ This register names the automated evidence for every L2 requirement marked `Impl
 | L2-044, L2-045, L2-046, L2-047 | `FullStackGenerationTests`, generated Playwright `auth.spec.ts`, and `RequirementsTraceabilityTests` |
 | L2-048, L2-050, L2-051, L2-052, L2-053 | `FullStackGenerationTests`, `ManifestValidatorTests`, `YamlManifestLoaderTests`, and `CommandIntegrationTests` |
 | L2-054, L2-055, L2-056 | `FullStackGenerationTests` plus the generated backend build in `security-package-consumers` |
-| L2-057, L2-058 | `FullStackGenerationTests` and `IncrementalGenerationTests` |
+| L2-057, L2-058 | `FullStackGenerationTests`, `IncrementalGenerationTests`, and `TemplateResourceTests` |
 | L2-060, L2-061, L2-062 | `CommandIntegrationTests`, `ProcessRunnerTests`, and `TransactionalGenerationOutputTests` |
-| L2-063, L2-064, L2-065 | `IncrementalGenerationTests`, `AngularCliOptInTests`, the three-OS `build-test` matrix, and `DocumentationTests` |
+| L2-063, L2-064, L2-065 | `IncrementalGenerationTests`, `AngularCliOptInTests`, `TemplateResourceTests`, the three-OS `build-test` matrix, and `DocumentationTests` |
 | L2-066, L2-067, L2-068 | `TransactionalGenerationOutputTests`, `CommandIntegrationTests`, and `FullStackGenerationTests.GenerateAsync_IsDeterministicForTheSameManifest` |
 | L2-069, L2-070 | `DocumentationTests` and the generated README assertion in `FullStackGenerationTests` |
 
