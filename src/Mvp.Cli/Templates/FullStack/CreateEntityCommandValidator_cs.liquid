@@ -1,0 +1,11 @@
+using FluentValidation;
+
+namespace {{Name}}.Application.{{Entity}};
+
+public class Create{{Entity}}CommandValidator : AbstractValidator<Create{{Entity}}Command>
+{
+    public Create{{Entity}}CommandValidator()
+    {
+{% for p in EntityProperties %}{% if p.Type == "string" %}        RuleFor(x => x.{{ p.Name }}).NotEmpty().MaximumLength(256);
+{% endif %}{% endfor %}    }
+}

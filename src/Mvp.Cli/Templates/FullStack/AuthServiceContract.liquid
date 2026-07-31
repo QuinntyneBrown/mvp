@@ -1,0 +1,11 @@
+import { InjectionToken } from '@angular/core';
+import { AuthResult } from './auth-result.model';
+import { SignInRequest } from './sign-in-request.model';
+import { RegisterRequest } from './register-request.model';
+
+export interface IAuthService {
+  register(request: RegisterRequest): Promise<AuthResult>;
+  signIn(request: SignInRequest): Promise<AuthResult>;
+}
+
+export const AUTH_SERVICE = new InjectionToken<IAuthService>('AUTH_SERVICE');

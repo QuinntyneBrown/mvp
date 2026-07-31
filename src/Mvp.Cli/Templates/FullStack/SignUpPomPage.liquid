@@ -1,0 +1,30 @@
+import { Locator, Page } from '@playwright/test';
+import { BasePage } from './base.page';
+
+export class SignUpPomPage extends BasePage {
+  readonly displayNameInput: Locator;
+  readonly emailInput: Locator;
+  readonly passwordInput: Locator;
+  readonly submitButton: Locator;
+  readonly errorMessage: Locator;
+
+  constructor(page: Page) {
+    super(page);
+    this.displayNameInput = this.byTestId('sign-up-display-name');
+    this.emailInput = this.byTestId('sign-up-email');
+    this.passwordInput = this.byTestId('sign-up-password');
+    this.submitButton = this.byTestId('sign-up-submit');
+    this.errorMessage = this.byTestId('sign-up-error');
+  }
+
+  async goto(): Promise<void> {
+    await this.page.goto('/sign-up');
+  }
+
+  async register(displayName: string, email: string, password: string): Promise<void> {
+    await this.displayNameInput.fill(displayName);
+    await this.emailInput.fill(email);
+    await this.passwordInput.fill(password);
+    await this.submitButton.click();
+  }
+}

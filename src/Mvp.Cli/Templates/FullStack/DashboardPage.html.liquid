@@ -1,0 +1,8 @@
+{% raw %}<mat-toolbar color="primary">
+  <span data-testid="dashboard-greeting">Welcome, {{ snapshot?.displayName }}</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="signOut()" data-testid="dashboard-sign-out">Sign out</button>
+</mat-toolbar>
+<main>
+  <p>This is your dashboard.</p>
+</main>{% endraw %}

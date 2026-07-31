@@ -1,0 +1,37 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { AUTH_SERVICE } from '@{{NameKebab}}/api';
+import { AuthStateService } from '../../auth-state.service';
+
+@Component({
+  selector: 'app-sign-in-page',
+  standalone: true,
+  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  templateUrl: './sign-in.page.html',
+})
+export class SignInPage {
+  private readonly auth = inject(AUTH_SERVICE);
+  private readonly state = inject(AuthStateService);
+  private readonly router = inject(Router);
+
+  email = '';
+  password = '';
+  error: string | null = null;
+
+  async submit(): Promise<void> {
+    this.error = null;
+    try {
+      const result = await this.auth.signIn({ email: this.email, password: this.password });
+      this.state.set(result);
+      await this.router.navigate(['/dashboard']);
+    } catch (err) {
+      this.error = (err as Error)?.message ?? 'Sign-in failed';
+    }
+  }
+}

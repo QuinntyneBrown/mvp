@@ -1,0 +1,24 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { AuthStateService } from '../../auth-state.service';
+
+@Component({
+  selector: 'app-dashboard-page',
+  standalone: true,
+  imports: [CommonModule, MatToolbarModule, MatButtonModule],
+  templateUrl: './dashboard.page.html',
+})
+export class DashboardPage {
+  private readonly state = inject(AuthStateService);
+  private readonly router = inject(Router);
+
+  readonly snapshot = this.state.snapshot();
+
+  async signOut(): Promise<void> {
+    this.state.clear();
+    await this.router.navigate(['/sign-in']);
+  }
+}

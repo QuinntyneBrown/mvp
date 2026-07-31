@@ -1,0 +1,5 @@
+using MediatR;
+
+namespace {{Name}}.Application.{{Entity}};
+
+public record Get{{Entity}}ByIdQuery(Guid Id) : IRequest<{{Entity}}Dto?>;

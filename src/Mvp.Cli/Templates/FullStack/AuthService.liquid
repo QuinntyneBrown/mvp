@@ -1,0 +1,22 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { IAuthService } from './auth.service.contract';
+import { AuthResult } from './auth-result.model';
+import { SignInRequest } from './sign-in-request.model';
+import { RegisterRequest } from './register-request.model';
+
+const API_BASE = '/api/auth';
+
+@Injectable({ providedIn: 'root' })
+export class AuthService implements IAuthService {
+  private readonly http = inject(HttpClient);
+
+  register(request: RegisterRequest): Promise<AuthResult> {
+    return firstValueFrom(this.http.post<AuthResult>(`${API_BASE}/register`, request));
+  }
+
+  signIn(request: SignInRequest): Promise<AuthResult> {
+    return firstValueFrom(this.http.post<AuthResult>(`${API_BASE}/sign-in`, request));
+  }
+}

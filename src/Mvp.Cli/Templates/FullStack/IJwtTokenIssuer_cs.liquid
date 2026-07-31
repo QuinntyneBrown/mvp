@@ -1,0 +1,8 @@
+using {{Name}}.Domain;
+
+namespace {{Name}}.Application.Abstractions;
+
+public interface IJwtTokenIssuer
+{
+    (string AccessToken, DateTime ExpiresAt) Issue(User user);
+}

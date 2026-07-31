@@ -1,0 +1,21 @@
+using MediatR;
+using {{Name}}.Application.Abstractions;
+using SystemTasks = System.Threading.Tasks;
+
+namespace {{Name}}.Application.{{Entity}};
+
+public class Get{{Entity}}ByIdQueryHandler : IRequestHandler<Get{{Entity}}ByIdQuery, {{Entity}}Dto?>
+{
+    private readonly IAppDbContext _db;
+
+    public Get{{Entity}}ByIdQueryHandler(IAppDbContext db)
+    {
+        _db = db;
+    }
+
+    public SystemTasks.Task<{{Entity}}Dto?> Handle(Get{{Entity}}ByIdQuery request, CancellationToken cancellationToken)
+    {
+        // TODO: register a DbSet<{{Entity}}> on AppDbContext and query by Id.
+        return SystemTasks.Task.FromResult<{{Entity}}Dto?>(null);
+    }
+}

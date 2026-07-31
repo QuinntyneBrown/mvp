@@ -1,0 +1,33 @@
+import { Injectable, signal } from '@angular/core';
+import { AuthResult } from '@{{NameKebab}}/api';
+
+const STORAGE_KEY = '{{NameKebab}}.auth';
+
+@Injectable({ providedIn: 'root' })
+export class AuthStateService {
+  private readonly _state = signal<AuthResult | null>(this.tryHydrate());
+  readonly state = this._state.asReadonly();
+
+  set(value: AuthResult): void {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+    this._state.set(value);
+  }
+
+  clear(): void {
+    localStorage.removeItem(STORAGE_KEY);
+    this._state.set(null);
+  }
+
+  snapshot(): AuthResult | null {
+    return this._state();
+  }
+
+  private tryHydrate(): AuthResult | null {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) as AuthResult : null;
+    } catch {
+      return null;
+    }
+  }
+}

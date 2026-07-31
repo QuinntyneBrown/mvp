@@ -1,0 +1,113 @@
+# Maps generated output paths (relative to the output root) to template resource names.
+# `{{Name}}` and other Liquid tokens in the output path are rendered before writing.
+# `_entity/` prefix iterates over options.Entities; `_page/` over options.Pages.
+
+# Solution-level
+backend/{{Name}}.sln=Solution.sln.liquid
+backend/global.json=GlobalJson.liquid
+backend/Directory.Build.props=DirectoryBuildProps.liquid
+backend/.gitignore=BackendGitignore.liquid
+
+# Domain
+backend/src/{{Name}}.Domain/{{Name}}.Domain.csproj=Domain.csproj.liquid
+backend/src/{{Name}}.Domain/User.cs=User_cs.liquid
+backend/src/{{Name}}.Domain/RefreshToken.cs=RefreshToken_cs.liquid
+
+# Application
+backend/src/{{Name}}.Application/{{Name}}.Application.csproj=Application.csproj.liquid
+backend/src/{{Name}}.Application/Abstractions/IAppDbContext.cs=IAppDbContext_cs.liquid
+backend/src/{{Name}}.Application/Abstractions/IPasswordHasher.cs=IPasswordHasher_cs.liquid
+backend/src/{{Name}}.Application/Abstractions/IJwtTokenIssuer.cs=IJwtTokenIssuer_cs.liquid
+backend/src/{{Name}}.Application/Abstractions/IClock.cs=IClock_cs.liquid
+backend/src/{{Name}}.Application/Abstractions/ICurrentUser.cs=ICurrentUser_cs.liquid
+backend/src/{{Name}}.Application/Auth/AuthResult.cs=AuthResult_cs.liquid
+backend/src/{{Name}}.Application/Auth/RegisterCommand.cs=RegisterCommand_cs.liquid
+backend/src/{{Name}}.Application/Auth/RegisterCommandHandler.cs=RegisterCommandHandler_cs.liquid
+backend/src/{{Name}}.Application/Auth/RegisterCommandValidator.cs=RegisterCommandValidator_cs.liquid
+backend/src/{{Name}}.Application/Auth/SignInCommand.cs=SignInCommand_cs.liquid
+backend/src/{{Name}}.Application/Auth/SignInCommandHandler.cs=SignInCommandHandler_cs.liquid
+backend/src/{{Name}}.Application/Auth/SignInCommandValidator.cs=SignInCommandValidator_cs.liquid
+backend/src/{{Name}}.Application/Auth/InvalidCredentialsException.cs=InvalidCredentialsException_cs.liquid
+backend/src/{{Name}}.Application/Auth/EmailAlreadyRegisteredException.cs=EmailAlreadyRegisteredException_cs.liquid
+backend/src/{{Name}}.Application/Behaviors/ValidationBehavior.cs=ValidationBehavior_cs.liquid
+backend/src/{{Name}}.Application/DependencyInjection.cs=ApplicationDependencyInjection_cs.liquid
+
+# Infrastructure
+backend/src/{{Name}}.Infrastructure/{{Name}}.Infrastructure.csproj=Infrastructure.csproj.liquid
+backend/src/{{Name}}.Infrastructure/AppDbContext.cs=AppDbContext_cs.liquid
+backend/src/{{Name}}.Infrastructure/JwtOptions.cs=JwtOptions_cs.liquid
+backend/src/{{Name}}.Infrastructure/JwtTokenIssuer.cs=JwtTokenIssuer_cs.liquid
+backend/src/{{Name}}.Infrastructure/BCryptPasswordHasher.cs=BCryptPasswordHasher_cs.liquid
+backend/src/{{Name}}.Infrastructure/SystemClock.cs=SystemClock_cs.liquid
+backend/src/{{Name}}.Infrastructure/HttpContextCurrentUser.cs=HttpContextCurrentUser_cs.liquid
+backend/src/{{Name}}.Infrastructure/DependencyInjection.cs=InfrastructureDependencyInjection_cs.liquid
+
+# Api
+backend/src/{{Name}}.Api/{{Name}}.Api.csproj=Api.csproj.liquid
+backend/src/{{Name}}.Api/Program.cs=Program_cs.liquid
+backend/src/{{Name}}.Api/appsettings.json=appsettings.json.liquid
+backend/src/{{Name}}.Api/Controllers/AuthController.cs=AuthController_cs.liquid
+backend/src/{{Name}}.Api/Controllers/RegisterRequest.cs=RegisterRequest_cs.liquid
+backend/src/{{Name}}.Api/Controllers/SignInRequest.cs=SignInRequest_cs.liquid
+
+# Per-entity (rendered once per entity in options.Entities)
+_entity/backend/src/{{Name}}.Domain/{{Entity}}.cs=Entity_cs.liquid
+_entity/backend/src/{{Name}}.Application/{{Entity}}/Create{{Entity}}Command.cs=CreateEntityCommand_cs.liquid
+_entity/backend/src/{{Name}}.Application/{{Entity}}/Create{{Entity}}CommandHandler.cs=CreateEntityCommandHandler_cs.liquid
+_entity/backend/src/{{Name}}.Application/{{Entity}}/Create{{Entity}}CommandValidator.cs=CreateEntityCommandValidator_cs.liquid
+_entity/backend/src/{{Name}}.Application/{{Entity}}/Get{{Entity}}ByIdQuery.cs=GetEntityByIdQuery_cs.liquid
+_entity/backend/src/{{Name}}.Application/{{Entity}}/Get{{Entity}}ByIdQueryHandler.cs=GetEntityByIdQueryHandler_cs.liquid
+_entity/backend/src/{{Name}}.Application/{{Entity}}/{{Entity}}Dto.cs=EntityDto_cs.liquid
+_entity/backend/src/{{Name}}.Api/Controllers/{{Entity}}Controller.cs=EntityController_cs.liquid
+
+# Frontend
+frontend/package.json=PackageJson.liquid
+frontend/angular.json=AngularJson.liquid
+frontend/tsconfig.json=TsConfig.liquid
+frontend/.gitignore=FrontendGitignore.liquid
+frontend/playwright.config.ts=PlaywrightConfig.liquid
+
+frontend/projects/{{NameKebab}}-app/tsconfig.app.json=AppTsConfig.liquid
+frontend/projects/{{NameKebab}}-app/src/main.ts=AppMain.liquid
+frontend/projects/{{NameKebab}}-app/src/index.html=AppIndex.liquid
+frontend/projects/{{NameKebab}}-app/src/styles.scss=AppStyles.liquid
+frontend/projects/{{NameKebab}}-app/src/app/app.config.ts=AppConfig.liquid
+frontend/projects/{{NameKebab}}-app/src/app/app.routes.ts=AppRoutes.liquid
+frontend/projects/{{NameKebab}}-app/src/app/app.component.ts=AppComponent_ts.liquid
+frontend/projects/{{NameKebab}}-app/src/app/app.component.html=AppComponent.html.liquid
+frontend/projects/{{NameKebab}}-app/src/app/app.component.scss=AppComponent.scss.liquid
+frontend/projects/{{NameKebab}}-app/src/app/auth-state.service.ts=AuthStateService.liquid
+frontend/projects/{{NameKebab}}-app/src/app/auth.guard.ts=AuthGuard.liquid
+frontend/projects/{{NameKebab}}-app/src/app/auth.interceptor.ts=AuthInterceptor.liquid
+frontend/projects/{{NameKebab}}-app/src/app/pages/sign-in/sign-in.page.ts=SignInPage_ts.liquid
+frontend/projects/{{NameKebab}}-app/src/app/pages/sign-in/sign-in.page.html=SignInPage.html.liquid
+frontend/projects/{{NameKebab}}-app/src/app/pages/sign-up/sign-up.page.ts=SignUpPage_ts.liquid
+frontend/projects/{{NameKebab}}-app/src/app/pages/sign-up/sign-up.page.html=SignUpPage.html.liquid
+frontend/projects/{{NameKebab}}-app/src/app/pages/dashboard/dashboard.page.ts=DashboardPage_ts.liquid
+frontend/projects/{{NameKebab}}-app/src/app/pages/dashboard/dashboard.page.html=DashboardPage.html.liquid
+
+# Angular libraries
+frontend/projects/api/src/public-api.ts=ApiPublicApi.liquid
+frontend/projects/api/src/lib/auth.service.ts=AuthService.liquid
+frontend/projects/api/src/lib/auth.service.contract.ts=AuthServiceContract.liquid
+frontend/projects/api/src/lib/auth-result.model.ts=AuthResultModel.liquid
+frontend/projects/api/src/lib/sign-in-request.model.ts=SignInRequestModel.liquid
+frontend/projects/api/src/lib/register-request.model.ts=RegisterRequestModel.liquid
+frontend/projects/components/src/public-api.ts=ComponentsPublicApi.liquid
+frontend/projects/domain/src/public-api.ts=DomainPublicApi.liquid
+
+# Playwright POM
+frontend/e2e/pages/base.page.ts=BasePomPage.liquid
+frontend/e2e/pages/sign-in.page.ts=SignInPomPage.liquid
+frontend/e2e/pages/sign-up.page.ts=SignUpPomPage.liquid
+frontend/e2e/pages/dashboard.page.ts=DashboardPomPage.liquid
+frontend/e2e/tests/auth.spec.ts=AuthSpec.liquid
+
+# Per-page (one per options.Pages entry)
+_page/frontend/projects/{{NameKebab}}-app/src/app/pages/{{PageKebab}}/{{PageKebab}}.page.ts=ScaffoldPage_ts.liquid
+_page/frontend/projects/{{NameKebab}}-app/src/app/pages/{{PageKebab}}/{{PageKebab}}.page.html=ScaffoldPage.html.liquid
+_page/frontend/e2e/pages/{{PageKebab}}.page.ts=ScaffoldPomPage.liquid
+
+# Root
+README.md=ReadmeMd.liquid
+.gitignore=RootGitignore.liquid

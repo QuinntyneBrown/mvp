@@ -1,0 +1,5 @@
+using MediatR;
+
+namespace {{Name}}.Application.{{Entity}};
+
+public record Create{{Entity}}Command({% for p in EntityProperties %}{{ p.Type }} {{ p.Name }}{% unless forloop.last %}, {% endunless %}{% endfor %}) : IRequest<Guid>;

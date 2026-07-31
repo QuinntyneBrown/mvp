@@ -1,0 +1,33 @@
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using {{Name}}.Application.{{Entity}};
+
+namespace {{Name}}.Api.Controllers;
+
+[ApiController]
+[Authorize]
+[Route("api/{{EntityKebab}}s")]
+public class {{Entity}}Controller : ControllerBase
+{
+    private readonly IMediator _mediator;
+
+    public {{Entity}}Controller(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<Guid>> Create([FromBody] Create{{Entity}}Command command, CancellationToken cancellationToken)
+    {
+        var id = await _mediator.Send(command, cancellationToken);
+        return CreatedAtAction(nameof(GetById), new { id }, id);
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<{{Entity}}Dto>> GetById(Guid id, CancellationToken cancellationToken)
+    {
+        var dto = await _mediator.Send(new Get{{Entity}}ByIdQuery(id), cancellationToken);
+        return dto is null ? NotFound() : Ok(dto);
+    }
+}

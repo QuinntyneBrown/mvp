@@ -1,0 +1,31 @@
+using MediatR;
+using {{Name}}.Application.Abstractions;
+using {{Name}}.Domain;
+using SystemTasks = System.Threading.Tasks;
+
+namespace {{Name}}.Application.{{Entity}};
+
+public class Create{{Entity}}CommandHandler : IRequestHandler<Create{{Entity}}Command, Guid>
+{
+    private readonly IAppDbContext _db;
+    private readonly IClock _clock;
+
+    public Create{{Entity}}CommandHandler(IAppDbContext db, IClock clock)
+    {
+        _db = db;
+        _clock = clock;
+    }
+
+    public async SystemTasks.Task<Guid> Handle(Create{{Entity}}Command request, CancellationToken cancellationToken)
+    {
+        var entity = new {{Name}}.Domain.{{Entity}}
+        {
+{% for p in EntityProperties %}            {{ p.Name }} = request.{{ p.Name }},
+{% endfor %}            CreatedAt = _clock.UtcNow,
+        };
+
+        // TODO: register a DbSet<{{Entity}}> on AppDbContext to persist this entity.
+        await _db.SaveChangesAsync(cancellationToken);
+        return entity.Id;
+    }
+}

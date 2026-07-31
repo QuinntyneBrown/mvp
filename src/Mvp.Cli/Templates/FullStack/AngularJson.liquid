@@ -1,0 +1,50 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "{{NameKebab}}-app": {
+      "projectType": "application",
+      "root": "projects/{{NameKebab}}-app",
+      "sourceRoot": "projects/{{NameKebab}}-app/src",
+      "prefix": "app",
+      "schematics": { "@schematics/angular:component": { "style": "scss" } },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/{{NameKebab}}-app",
+            "index": "projects/{{NameKebab}}-app/src/index.html",
+            "browser": "projects/{{NameKebab}}-app/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "projects/{{NameKebab}}-app/tsconfig.app.json",
+            "styles": ["projects/{{NameKebab}}-app/src/styles.scss"],
+            "scripts": []
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": { "buildTarget": "{{NameKebab}}-app:build" }
+        }
+      }
+    },
+    "api": {
+      "projectType": "library",
+      "root": "projects/api",
+      "sourceRoot": "projects/api/src",
+      "prefix": "lib"
+    },
+    "components": {
+      "projectType": "library",
+      "root": "projects/components",
+      "sourceRoot": "projects/components/src",
+      "prefix": "lib"
+    },
+    "domain": {
+      "projectType": "library",
+      "root": "projects/domain",
+      "sourceRoot": "projects/domain/src",
+      "prefix": "lib"
+    }
+  }
+}

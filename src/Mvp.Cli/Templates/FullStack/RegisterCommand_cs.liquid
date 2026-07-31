@@ -1,0 +1,5 @@
+using MediatR;
+
+namespace {{Name}}.Application.Auth;
+
+public record RegisterCommand(string Email, string Password, string DisplayName) : IRequest<AuthResult>;

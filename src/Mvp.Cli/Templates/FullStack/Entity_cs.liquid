@@ -1,0 +1,9 @@
+namespace {{Name}}.Domain;
+
+public class {{Entity}}
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+{% for p in EntityProperties %}    public {{ p.Type }} {{ p.Name }} { get; set; }{% if p.Type == "string" %} = string.Empty;{% endif %}
+
+{% endfor %}    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}

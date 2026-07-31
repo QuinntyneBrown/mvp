@@ -1,0 +1,41 @@
+# {{Name}}
+
+A JWT-authenticated full-stack MVP scaffolded by `mvp new dotnet-angular-jwt-mvp`.
+
+## Layout
+
+- `backend/` — .NET 9 clean-architecture solution with JWT auth, MediatR/CQS, FluentValidation, EF Core.
+- `frontend/` — Angular workspace with `api`, `components`, and `domain` libraries plus the main app.
+- `frontend/e2e/` — Playwright tests using the page-object model.
+
+## Getting started
+
+### Backend
+
+```
+cd backend
+dotnet build
+dotnet run --project src/{{Name}}.Api
+```
+
+The API listens on http://localhost:5000 by default and uses an in-memory database. To target SQL Server, set `ConnectionStrings:Default` in `src/{{Name}}.Api/appsettings.json`.
+
+**Important:** replace `Jwt:SigningKey` in `appsettings.json` before running outside development.
+
+### Frontend
+
+```
+cd frontend
+npm install
+npm start
+```
+
+Then browse to http://localhost:4200.
+
+### End-to-end tests
+
+```
+cd frontend
+npx playwright install
+npx playwright test
+```

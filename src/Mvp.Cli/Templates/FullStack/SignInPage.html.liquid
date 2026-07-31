@@ -1,0 +1,19 @@
+{% raw %}<section class="sign-in-page">
+  <mat-card>
+    <mat-card-title>Sign in</mat-card-title>
+    <form (ngSubmit)="submit()" #form="ngForm">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" name="email" [(ngModel)]="email" data-testid="sign-in-email" required />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" name="password" [(ngModel)]="password" data-testid="sign-in-password" required />
+      </mat-form-field>
+      <button mat-flat-button color="primary" type="submit" data-testid="sign-in-submit">Sign in</button>
+      @if (error) {
+        <p class="error" data-testid="sign-in-error">{{ error }}</p>
+      }
+    </form>
+  </mat-card>
+</section>{% endraw %}
