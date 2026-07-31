@@ -28,7 +28,7 @@ public sealed partial class RequirementsTraceabilityTests
     public void AcceptanceTestFilesDeclareRequirementTraceability()
     {
         var repositoryRoot = FindRepositoryRoot();
-        var testRoot = Path.Combine(repositoryRoot, "tests", "Mvp.Cli.Tests");
+        var testRoot = Path.Combine(repositoryRoot, "tests");
         var acceptanceTests = Directory.EnumerateFiles(testRoot, "*.cs", SearchOption.AllDirectories)
             .Where(path => File.ReadAllText(path).Contains("[Fact]", StringComparison.Ordinal)
                 || File.ReadAllText(path).Contains("[Theory]", StringComparison.Ordinal));
