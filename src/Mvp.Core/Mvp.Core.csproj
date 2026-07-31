@@ -13,4 +13,13 @@
          is proven; see RELEASE.md. -->
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="DotLiquid" />
+    <PackageReference Include="YamlDotNet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\**\*" WithCulture="false" />
+  </ItemGroup>
+
 </Project>
