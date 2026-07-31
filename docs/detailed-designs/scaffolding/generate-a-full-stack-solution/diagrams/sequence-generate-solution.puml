@@ -5,39 +5,25 @@ skinparam shadowing false
 skinparam roundcorner 12
 skinparam defaultFontName Arial
 skinparam ArrowColor #344054
-skinparam rectangle {
-  BorderColor #344054
-  FontColor #101828
-}
-skinparam package {
-  BorderColor #667085
-  FontColor #101828
-  BackgroundColor #F9FAFB
-}
 actor "Consumer" as actor
-box "Frontend — Operating-system shell" #E0F2FE
-  participant "mvp invocation" as shell
-end box
-box "Backend — mvp CLI application" #D1FADF
-  participant "Full-stack command" as command
-end box
-box "Backend — Scaffolding application" #ECFDF3
-  participant "Generator service" as service
-  participant "IJwtAuthenticatedMvpFactory" as factory
-end box
-box "Backend — Local infrastructure" #FFF4E5
-  database "Generated solution tree" as tree
-end box
-actor -> shell : Request full-stack generation
-shell -> command : Dispatch resolved input
-command -> service : GenerateAsync(manifest, output)
-service -> service : Map declarations under L2-018 and L2-019
-service -> factory : GenerateAsync(options)
-factory -> tree : Write backend, frontend, and e2e
-factory -> tree : Write baseline screens under L2-020
-tree --> factory : Completed local writes
-factory --> service : Completed
-service --> command : Generated solution root
-command --> shell : Confirm path under L2-021
-shell --> actor : Present success location
+participant "Full-stack action" as command
+participant "FullStackGenerator" as generator
+participant "TransactionalGenerationOutput" as output
+database "Embedded templates" as templates
+database "Generated solution tree" as tree
+actor -> command : Request full-stack generation
+command -> generator : GenerateAsync(ValidatedManifest, force, token)
+generator -> output : CommitAsync(target, force, render, token)
+output -> tree : Create sibling staging directory
+output -> generator : Render(stage, token)
+generator -> templates : Read template manifest and resources
+loop root, entity, page, and component entries
+  generator -> generator : Build invariant Liquid tokens
+  generator -> tree : SafeFileWriter.WriteAsync(stage, relative path)
+end
+generator --> output : Render complete
+output -> tree : Atomically publish stage
+output --> generator : GenerationResult
+generator --> command : Artifact count and committed root
+command --> actor : Confirm path under L2-021
 @enduml

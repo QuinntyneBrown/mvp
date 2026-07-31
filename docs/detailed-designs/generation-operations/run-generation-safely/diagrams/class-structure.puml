@@ -4,40 +4,38 @@ skinparam shadowing false
 skinparam roundcorner 8
 skinparam defaultFontName Arial
 skinparam ArrowColor #344054
-skinparam class {
-  BorderColor #344054
-  FontColor #101828
-  BackgroundColor #F9FAFB
-}
 title Class structure — Run generation safely
 
+class CliExceptionPolicy {
+  +ExecuteAsync(operation, error, diagnostic, cancellationToken): Task<int>
+}
+interface ITransactionalGenerationOutput {
+  +CommitAsync(target, force, generate, cancellationToken): Task<GenerationResult>
+}
+class TransactionalGenerationOutput
+class SafeFileWriter {
+  {static} +WriteAsync(root, relativePath, content, cancellationToken): Task
+}
 interface IProcessRunner {
-  +RunAsync(command: string, arguments: string, workingDirectory: string?, cancellationToken: CancellationToken): Task<int>
+  +RunAsync(request: ProcessRequest, cancellationToken): Task<ProcessResult>
 }
-class ProcessRunner {
-  -ILogger<ProcessRunner> _logger
-  +RunAsync(command: string, arguments: string, workingDirectory: string?, cancellationToken: CancellationToken): Task<int>
+class ProcessRunner
+class ProcessRequest {
+  +FileName: string
+  +Arguments: IReadOnlyList<string>
+  +WorkingDirectory: string?
 }
-interface IAppGeneratorService {
-  +GenerateAsync(name: string, outputPath: string, cancellationToken: CancellationToken): Task
-}
-class AppGeneratorService {
-  -IProcessRunner _processRunner
-  -ILogger<AppGeneratorService> _logger
-  +GenerateAsync(name: string, outputPath: string, cancellationToken: CancellationToken): Task
-}
-class SelectedCommand {
-  +Create(services: IServiceProvider): Command
-}
-class CancellationToken {
-  +bool IsCancellationRequested
+class GenerationResult {
+  +TargetPath: string
+  +Artifacts: IReadOnlyList<string>
+  +ReplacedExistingOutput: bool
+  +Warnings: IReadOnlyList<string>
 }
 
-IProcessRunner <|.. ProcessRunner : implements
-IAppGeneratorService <|.. AppGeneratorService : implements
-AppGeneratorService --> IProcessRunner : uses
-SelectedCommand --> IAppGeneratorService : resolves
-SelectedCommand ..> CancellationToken : planned interrupt binding
-AppGeneratorService ..> CancellationToken : propagates
-ProcessRunner ..> CancellationToken : observes
+ITransactionalGenerationOutput <|.. TransactionalGenerationOutput
+IProcessRunner <|.. ProcessRunner
+TransactionalGenerationOutput ..> SafeFileWriter : supplies stage to renderer using
+TransactionalGenerationOutput ..> GenerationResult : creates
+ProcessRunner --> ProcessRequest
+CliExceptionPolicy ..> GenerationResult : reports success
 @enduml

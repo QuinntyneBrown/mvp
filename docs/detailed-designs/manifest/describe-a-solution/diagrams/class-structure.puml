@@ -4,48 +4,45 @@ skinparam shadowing false
 skinparam roundcorner 8
 skinparam defaultFontName Arial
 skinparam ArrowColor #344054
-skinparam class {
-  BorderColor #344054
-  FontColor #101828
-  BackgroundColor #F9FAFB
-}
 title Class structure — Describe a solution
 
-class MvpManifest {
-  +string Name
-  +string? Output
-  +List<MvpManifestEntity> Entities
-  +List<MvpManifestPage> Pages
-  +List<MvpManifestComponent> Components
+class MvpManifest
+class MvpManifestEntity
+class MvpManifestProperty
+class MvpManifestPage
+class MvpManifestComponent
+interface IManifestLoader {
+  +Load(path: string): ManifestLoadResult
 }
-class MvpManifestEntity {
-  +string Name
-  +List<MvpManifestProperty> Properties
+class YamlManifestLoader {
+  {static} +MaximumManifestBytes: long = 1048576
+  +Load(path: string): ManifestLoadResult
 }
-class MvpManifestProperty {
-  +string Name
-  +string Type = "string"
+class ManifestLoadResult {
+  +Manifest: MvpManifest
+  +Warnings: IReadOnlyList<string>
 }
-class MvpManifestPage {
-  +string Name
-  +string? Route
-  +bool RequiresAuth = true
+class ManifestValidator {
+  +Validate(dto, nameOverride, outputOverride, warnings): ValidatedManifest
 }
-class MvpManifestComponent {
-  +string Name
-  +string Library = "components"
-}
-interface IMvpManifestLoader {
-  +Load(path: string): MvpManifest
-}
-class YamlMvpManifestLoader {
-  +Load(path: string): MvpManifest
-}
+class ValidatedManifest
+class ValidatedEntity
+class ValidatedProperty
+class ValidatedPage
+class ValidatedComponent
+enum FrontendLibrary
 
-MvpManifest "1" *-- "0..*" MvpManifestEntity : entities
-MvpManifestEntity "1" *-- "0..*" MvpManifestProperty : properties
-MvpManifest "1" *-- "0..*" MvpManifestPage : pages
-MvpManifest "1" *-- "0..*" MvpManifestComponent : components
-IMvpManifestLoader <|.. YamlMvpManifestLoader : implements
-YamlMvpManifestLoader ..> MvpManifest : creates
+MvpManifest *-- MvpManifestEntity
+MvpManifestEntity *-- MvpManifestProperty
+MvpManifest *-- MvpManifestPage
+MvpManifest *-- MvpManifestComponent
+IManifestLoader <|.. YamlManifestLoader
+YamlManifestLoader ..> ManifestLoadResult : creates
+ManifestLoadResult --> MvpManifest
+ManifestValidator ..> ValidatedManifest : creates
+ValidatedManifest *-- ValidatedEntity
+ValidatedEntity *-- ValidatedProperty
+ValidatedManifest *-- ValidatedPage
+ValidatedManifest *-- ValidatedComponent
+ValidatedComponent --> FrontendLibrary
 @enduml

@@ -6,13 +6,13 @@ title Containers — Describe a solution
 Person(consumer, "Consumer", "Supplies YAML and CLI options")
 System_Boundary(mvp, "mvp") {
   Container(cli, "CLI process", ".NET / System.CommandLine", "Applies option precedence")
-  Container(loader, "Manifest loader", "YamlDotNet", "Deserializes and validates YAML data")
-  Container(mapper, "Scaffolding adapter", ".NET", "Maps the manifest to generation options")
+  Container(loader, "Manifest loader", "YamlDotNet", "Reads bounded YAML and reports unknown fields")
+  Container(validator, "Manifest validator", ".NET", "Aggregates errors and creates immutable input")
 }
 ContainerDb(files, "Local files", "File system", "Manifest and output directories")
 
 Rel(consumer, cli, "Invokes with --config")
 Rel(cli, loader, "Loads selected manifest")
 Rel(loader, files, "Reads", "UTF-8 YAML")
-Rel(cli, mapper, "Sends resolved MvpManifest")
+Rel(cli, validator, "Applies overrides before validation")
 @enduml

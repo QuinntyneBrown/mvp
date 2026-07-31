@@ -6,33 +6,27 @@ Incremental generation creates one structural part without rebuilding an entire
 application. A *solution part* is a solution shell, backend project, Angular
 application, or Angular library selected below the `mvp new` command group.
 
-This feature supports extension of an existing work area. Each command owns a
-small typed input surface and delegates file creation to a service dedicated to
-that artifact family.
+Each command shares one typed input surface and delegates file creation to the
+incremental generator, which selects a packaged template plan by artifact kind.
 
 ## Description
 
-- **`NewSolutionCommand`** — creates a solution shell through
-  `ISolutionGeneratorService`. The current service also adds an API project and
-  Angular application.
-- **`NewApiCommand`, `NewCoreCommand`, and `NewInfrastructureCommand`** — create
-  individual backend projects through their matching generator interfaces.
-- **`ApiGeneratorService`, `CoreGeneratorService`, and
-  `InfrastructureGeneratorService`** — use `IProjectFactory` and
-  `IArtifactGenerator` from the code-generation package.
-- **`NewAppCommand` and `AppGeneratorService`** — create an Angular application.
-  The service uses Angular CLI when available and writes a minimal local
-  structure when it is absent.
-- **`NewApiLibraryCommand`, `NewComponentsLibraryCommand`, and
-  `NewDomainLibraryCommand`** — select one of the three frontend library kinds.
-- **`AngularLibraryGeneratorService`** — writes the library directory and
-  public exports. API and domain libraries expose a service interface, concrete
-  service, and injection token. A components library emits a card component.
-- **`IProcessRunner`** — process boundary used for Angular CLI detection and
-  invocation.
+- **`RootCommandFactory`** — registers all eight incremental command names and
+  shared `--name`, `--output`, and `--force` options.
+- **`GenerationKind`, `GenerationRequest`, and `GenerationResult`** — strong
+  types that describe the selected artifact, normalized input, and committed
+  output without command-specific service duplication.
+- **`IIncrementalGenerator` and `IncrementalGenerator`** — choose the embedded
+  template plan and render .NET 10 or Angular 22 files through `SafeFileWriter`.
+- **Packaged templates** — solution, API, Core, Infrastructure, app, and three
+  library variants live as independently syntax-checkable resources.
+- **`IProcessRunner`** — used only when app generation explicitly receives
+  `--use-angular-cli`; tokenized arguments and cancellation apply.
+- **`TransactionalGenerationOutput`** — gives every incremental command the
+  same conflict, `--force`, stage, commit, and rollback semantics.
 
-The current component-library output is a placeholder card unit, matching the
-partial status recorded for `L2-011` in the source specification.
+Packaged generation is the offline default and never probes the machine for an
+Angular CLI. This keeps identical input deterministic across environments.
 
 ## Requirements
 
@@ -57,8 +51,8 @@ participates only in frontend application generation.
 
 ### Containers
 
-The CLI dispatches backend generation to the .NET artifact library and frontend
-generation to either local writers or Angular CLI.
+The CLI dispatches every part to the local incremental renderer, with Angular
+CLI as an explicit application-only branch.
 
 ![C4 container view for generating a solution part](diagrams/c4-container.png)
 

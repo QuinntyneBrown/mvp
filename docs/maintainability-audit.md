@@ -21,6 +21,30 @@ The recommended order is:
 5. Extract templates and add golden-output/build tests.
 6. Reorganize by feature and add repository-wide engineering defaults.
 
+## Remediation completion
+
+**Completed:** 2026-07-31 for the `2.0.0` implementation.
+
+All five roadmap phases are implemented in the current working tree:
+
+| Phase | Delivered outcome |
+| --- | --- |
+| 1 — Green baseline | .NET 10 SDK pin, central package versions and lock files, analyzer/editor defaults, warnings-as-errors build, 50 passing tests, three-OS CI, pack and installed-tool smoke gates. |
+| 2 — Safe command boundary | Stable System.CommandLine 2.0 API, one in-process command factory, aggregate manifest/name validation, path normalization, argument-list process invocation, concise default errors, diagnostic opt-in, stable exit codes, and invocation cancellation. |
+| 3 — Safe output pipeline | Structured generation results, complete preflight validation, sibling staging, explicit conflicts, transactional `--force`, backup rollback, contained UTF-8/LF writes, and cancellation cleanup. |
+| 4 — Template and test architecture | Tool-owned embedded .NET 10 and Angular 22 templates, offline defaults, explicit Angular CLI opt-in, unit/command/golden/cancellation/governance tests, generated backend build, generated frontend build, and package-install smoke coverage. |
+| 5 — Documentation and governance | Expanded README and documentation index, reconciled L1/L2 baseline, automated requirement-to-test register, repaired skill/reference material, updated detailed designs, and 50 rendered PlantUML diagrams. |
+
+The original roadmap expected the legacy CodeGenerator package to remain for
+incremental .NET work. Restore verification exposed high and critical
+vulnerabilities in that package's transitive graph, so v2 also moved incremental
+templates into `mvp`. `dotnet list Mvp.sln package --vulnerable
+--include-transitive` now reports no vulnerable NuGet packages.
+
+The findings and line references below are retained as the historical baseline
+that motivated the remediation. Current evidence is recorded in
+[`requirements-traceability.md`](requirements-traceability.md) and CI.
+
 ## Audit evidence
 
 The following checks were run from the repository root:

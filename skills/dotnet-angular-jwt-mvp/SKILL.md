@@ -11,7 +11,7 @@ Scaffold a Forge-shaped MVP — a `dotnet build`-clean backend plus an Angular w
 
 Use this skill whenever:
 
-- The user wants to start a new full-stack web app and the stack matches (.NET 9 + Angular + JWT auth).
+- The user wants to start a new full-stack web app and the stack matches (.NET 10 + Angular 22 + JWT auth).
 - The user describes a domain ("I need an app for tracking projects and tasks") and wants the wiring set up so they can focus on features.
 - The user says "make me something like Forge" or refers to the Forge reference project's shape.
 - The user is exploring an idea and wants a runnable baseline within a minute.
@@ -22,8 +22,8 @@ Skip this skill when the stack doesn't match — e.g., the user wants Next.js, a
 
 The CLI emits a `<output>/<Name>/` tree with three top-level folders:
 
-- **`backend/`** — `dotnet build`-clean solution. Four projects (`<Name>.Domain`, `<Name>.Application`, `<Name>.Infrastructure`, `<Name>.Api`) following the conventions in `docs/technology-guidance-and-practices.md`: MediatR + CQS, FluentValidation with a pipeline behavior, EF Core (in-memory by default, SqlServer via connection string), BCrypt password hashing, JWT bearer in `Program.cs`, `Register`/`SignIn` commands wired through an `AuthController`. Each user-supplied entity gets a Domain class, a `CreateXCommand`+handler+validator, a `GetXByIdQuery`+handler, a DTO, and a controller.
-- **`frontend/`** — Angular 19 workspace. Main app under `projects/<name>-app/` (standalone components, `auth-state.service`, `auth.guard`, `auth.interceptor`, sign-in/sign-up/dashboard pages), plus library projects `projects/api` (interface-driven service consumption with `AUTH_SERVICE` token + `IAuthService` contract), `projects/components`, and `projects/domain`. User-supplied pages each get their own folder, route, and a matching Playwright POM.
+- **`backend/`** — `dotnet build`-clean .NET 10 solution. Four projects (`<Name>.Domain`, `<Name>.Application`, `<Name>.Infrastructure`, `<Name>.Api`) use MediatR + CQS, FluentValidation with a pipeline behavior, EF Core (in-memory by default, SQL Server via connection string), BCrypt password hashing, JWT bearer in `Program.cs`, and `Register`/`SignIn` commands wired through an `AuthController`. Each user-supplied entity gets a Domain class, a `CreateXCommand`+handler+validator, a `GetXByIdQuery`+handler, a DTO, and a controller.
+- **`frontend/`** — Angular 22 workspace. Main app under `projects/<name>-app/` (standalone components, `auth-state.service`, `auth.guard`, `auth.interceptor`, sign-in/sign-up/dashboard pages), plus library projects `projects/api` (interface-driven service consumption with `AUTH_SERVICE` token + `IAuthService` contract), `projects/components`, and `projects/domain`. User-supplied pages each get their own folder, route, and a matching Playwright POM.
 - **`frontend/e2e/`** — Playwright config + `pages/base.page.ts` + per-page POMs + a passing `auth.spec.ts` that registers a user and asserts the dashboard renders.
 
 See `references/forge-shape.md` for the full file-level inventory when the user wants more detail.
@@ -32,7 +32,7 @@ See `references/forge-shape.md` for the full file-level inventory when the user 
 
 Before running the CLI:
 
-1. **.NET 9 SDK** — verify with `dotnet --list-sdks` and look for a `9.x` entry. (`dotnet --version` only reports the highest SDK on PATH, which can be misleading when multiple SDKs are installed and a `global.json` pins to an older one.)
+1. **.NET 10 SDK** — verify with `dotnet --list-sdks` and look for a `10.x` entry. (`dotnet --version` only reports the SDK selected for the current directory; this repository's `global.json` pins the supported feature band.)
 2. **The `mvp` tool installed globally.** As of writing, `Mvp.Cli` is not yet on nuget.org, so install from a local clone of the mvp repo:
    ```
    cd C:\projects\mvp
@@ -46,7 +46,7 @@ Before running the CLI:
    To upgrade later: `dotnet tool update -g Mvp.Cli`.
 
    **Verify the install before continuing**: run `mvp --help`. You should see `new` listed as a subcommand. If the shell reports `mvp: command not found` or `'mvp' is not recognized`, the global tools directory isn't on PATH — that's typically `%USERPROFILE%\.dotnet\tools` on Windows or `~/.dotnet/tools` on macOS/Linux. Add it, restart the shell, and re-verify.
-3. **Node.js 20+** — only needed when the user wants to run the generated frontend. Not required for scaffolding itself.
+3. **Node.js 24.15+** — only needed when the user wants to install or run the generated Angular 22 frontend. It is not required for packaged scaffolding itself.
 4. **Playwright browsers** — only needed to run the generated E2E tests: `npx playwright install` inside `frontend/` after `npm install`.
 
 If any of these are missing, stop and tell the user what's needed before scaffolding — running the CLI without the tool installed is the most common point of failure.
@@ -81,7 +81,7 @@ mvp new dotnet-angular-jwt-mvp --config mvp-manifest.yaml --output <output-dir>
 
 `--name` on the command line overrides whatever's in the manifest's `name:` field; useful when iterating.
 
-Watch the output. It should end with `Generated JWT-authenticated MVP at '<path>'`. If it errors, the most common causes are: the output directory doesn't exist (the CLI will create it, but the *parent* must exist), the manifest has a type the templates don't recognize (stick to the C# types listed above), or the tool isn't actually installed (look for `mvp: command not found` or `'mvp' is not recognized`).
+Watch the output. It should end with `Generated <count> files at '<path>'`. Missing output ancestors are created only after validation. If the target already exists, inspect it and either select another output or explicitly pass `--force`; forced replacement is transactional but intentionally replaces the complete target tree.
 
 ### 4. Post-scaffold steps
 
@@ -109,7 +109,7 @@ Don't run all of these unprompted. Build the backend (fast, useful verification)
 
 ## Things to remember
 
-**Don't reinvent the templates.** If the user asks for "one small change" — say, an extra property on an entity — the right answer is to edit the manifest and re-scaffold into a fresh directory, then copy any handwritten code they've already added back. Editing the generated files directly works but loses the ability to regenerate cleanly. For larger changes (more entities later, new pages), regenerate and merge.
+**Don't silently replace user work.** If the user asks for a manifest change after editing generated files, scaffold into a fresh directory and merge deliberately. Use `--force` only after the user explicitly agrees that the complete existing target may be replaced.
 
 **`Task` as an entity name is fine.** The templates fully-qualify `System.Threading.Tasks.Task` everywhere it matters so a user-supplied entity named `Task` doesn't shadow it. But entity names that collide with `User` or `RefreshToken` will create duplicates of the built-in identity entities — pick different names.
 

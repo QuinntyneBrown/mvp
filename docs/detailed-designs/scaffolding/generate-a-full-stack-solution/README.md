@@ -4,7 +4,7 @@
 
 A *full-stack solution* is the generated source tree containing a layered .NET
 backend, an Angular workspace, and a Playwright end-to-end test suite. This
-feature creates that tree from one resolved `MvpManifest`, including baseline
+feature creates that tree from one `ValidatedManifest`, including baseline
 authentication screens when the manifest declares no domain content.
 
 The generated directory sits below the selected output location and uses the
@@ -13,27 +13,28 @@ restoration to the consumer.
 
 ## Description
 
-- **`NewDotNetAngularJwtAuthenticatedMvpCommand`** — full-stack command entry.
-  It resolves the manifest and prepares the selected output directory.
-- **`IDotNetAngularJwtAuthenticatedMvpGeneratorService`** — application
-  boundary for manifest-based generation.
-- **`DotNetAngularJwtAuthenticatedMvpGeneratorService`** — adapter that maps
-  `MvpManifest` into `JwtAuthenticatedMvpOptions`, calculates the solution root,
-  invokes the package factory, and logs completion.
-- **`IJwtAuthenticatedMvpFactory`** — generator supplied by
-  `QuinntyneBrown.CodeGenerator.DotNet`. It writes the backend, frontend, and
-  end-to-end assets represented by the options.
-- **`JwtAuthenticatedMvpOptions`** — package-owned generation model containing
-  the solution name, target directory, entities, pages, and components.
+- **`RootCommandFactory`** — full-stack command entry. It resolves overrides,
+  loads and validates the manifest, and invokes the generator inside the common
+  exception policy.
+- **`IFullStackGenerator` and `FullStackGenerator`** — local application
+  boundary and renderer for manifest-based generation.
+- **Embedded Liquid templates** — MIT-attributed, tool-owned backend, frontend,
+  component, page, entity, and end-to-end assets. Template paths are declared
+  in an embedded manifest and checked for containment before each write.
+- **`ValidatedManifest`** — immutable generation model containing the solution
+  name, normalized output, entities, pages, components, and warnings.
+- **`TransactionalGenerationOutput`** — renders the complete source tree in a
+  sibling stage and commits it atomically.
 - **Generated solution tree** — `backend/`, `frontend/`, and `frontend/e2e/`
   roots. The checked-in `out/Acme` sample demonstrates the current output.
 - **Baseline output** — sign-in, sign-up, and dashboard screens plus the
   authentication API and test harness, independent of manifest collections.
-- **Progress logger** — reports the solution name and final root. Detailed stage
-  reporting inside the package factory remains package-owned.
+- **Structured result** — returns the committed root, sorted artifact list,
+  replacement flag, and cleanup warnings for command reporting and tests.
 
-The generator does not start a restore command. Performance verification for
-the 10 s and 30 s budgets belongs to `<TO SUPPLY>` benchmark coverage.
+The generator does not start a restore command. `PerformanceGenerationTests`
+release-gates the name-only 10-second threshold, representative 30-second
+threshold, and 512 MiB process budget without restoring generated dependencies.
 
 ## Requirements
 
@@ -61,23 +62,22 @@ without contacting an external service.
 
 ### Containers
 
-The CLI maps the manifest into factory options, and the scaffolding library
-writes backend, frontend, and test assets to the local file system.
+The CLI passes validated data to a local renderer, which writes backend,
+frontend, and test assets through the transactional output boundary.
 
 ![C4 container view for generating a full-stack solution](diagrams/c4-container.png)
 
 ### Components
 
-The command delegates option mapping to
-`DotNetAngularJwtAuthenticatedMvpGeneratorService`, which invokes
-`IJwtAuthenticatedMvpFactory` once.
+The command delegates to `FullStackGenerator`, which reads embedded template
+metadata and renders root-, entity-, page-, and component-scoped entries.
 
 ![C4 component view for generating a full-stack solution](diagrams/c4-component.png)
 
 ### Class structure
 
-The generator service transforms manifest collections into the corresponding
-`JwtAuthenticatedMvpOptions` collections before invoking the factory.
+The generator transforms validated collections into invariant Liquid tokens
+before rendering scoped template entries through the safe writer.
 
 ![Class diagram for generating a full-stack solution](diagrams/class-structure.png)
 

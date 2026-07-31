@@ -1,52 +1,39 @@
 @startuml
-title UML sequence behaviour — Complete or cancel generation
+title UML sequence behaviour — Complete, replace, or cancel generation
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
 skinparam defaultFontName Arial
 skinparam ArrowColor #344054
-skinparam rectangle {
-  BorderColor #344054
-  FontColor #101828
-}
-skinparam package {
-  BorderColor #667085
-  FontColor #101828
-  BackgroundColor #F9FAFB
-}
 actor "Consumer" as actor
-box "Frontend — Operating-system shell" #E0F2FE
-  participant "Shell" as shell
-end box
-box "Backend — mvp CLI application" #D1FADF
-  participant "Command handler" as command
-  participant "ILogger" as logger
-end box
-box "Backend — Generation services" #ECFDF3
-  participant "Generator service" as generator
-  participant "ProcessRunner" as process
-end box
-box "Backend — Local infrastructure" #FFF4E5
-  database "Output work area" as output
-end box
-actor -> shell : Start generation
-shell -> command : Dispatch resolved input
-command -> logger : Report operation start under L2-060
-command -> generator : GenerateAsync(input, cancellationToken)
-generator -> output : Prepare and write under L2-066
-output --> generator : Write result
-opt optional tooling
-  generator -> process : RunAsync(tool, cancellationToken)
-  process --> generator : Exit code and streamed output
+participant "Command action" as command
+participant "CliExceptionPolicy" as policy
+participant "Generator" as generator
+participant "TransactionalGenerationOutput" as output
+participant "ProcessRunner" as process
+database "Target / stage / backup" as files
+actor -> command : Start generation
+command -> policy : ExecuteAsync(operation, cancellationToken)
+policy -> generator : GenerateAsync(validated input, token)
+generator -> output : CommitAsync(target, force, render, token)
+output -> files : Create sibling stage
+output -> generator : Render(stage, token)
+opt --use-angular-cli
+  generator -> process : RunAsync(argument list, token)
+  alt cancelled
+    process -> process : Kill(entireProcessTree: true)
+    process --> generator : OperationCanceledException
+  end
 end
-alt generation completes
-  generator --> command : Success location
-  command -> logger : Report completion path
-  command --> shell : Exit 0
-else cancellation or failure
-  generator --> command : Cancelled or bounded exception
-  command -> logger : Report action and partial location under L2-061
-  command --> shell : Exit non-zero
+alt completed
+  output -> files : Move target to backup when forced
+  output -> files : Move stage to target
+  output -> files : Delete backup
+  output --> generator : GenerationResult
+  policy --> command : Exit 0
+else failed or cancelled
+  output -> files : Restore backup and delete stage
+  policy --> command : Exit 1 / 2 / 3 / 70 / 130
 end
-shell --> actor : Present final outcome
+command --> actor : Progress and bounded outcome
 @enduml

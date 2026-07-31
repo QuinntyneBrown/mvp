@@ -12,7 +12,8 @@ Acme/
 ├── .gitignore
 ├── backend/
 │   ├── Acme.sln
-│   ├── Directory.Build.props          # net9.0, nullable enable, implicit usings
+│   ├── Directory.Build.props          # net10.0, nullable enable, implicit usings
+│   ├── Directory.Packages.props       # isolates generated package-version policy
 │   ├── global.json                    # SDK version pin
 │   ├── .gitignore
 │   └── src/
@@ -64,7 +65,7 @@ Acme/
 │               ├── ProjectController.cs    # [Authorize], POST + GET by id
 │               └── TaskItemController.cs
 └── frontend/
-    ├── package.json                        # Angular 19, Material, RxJS, Playwright 1.48
+    ├── package.json                        # Angular 22, Material, RxJS, Playwright 1.62
     ├── angular.json                        # Application project + 3 library projects
     ├── tsconfig.json                       # @<name>/api, @<name>/components, @<name>/domain path aliases
     ├── playwright.config.ts
@@ -98,10 +99,8 @@ Acme/
     │   │           ├── auth-result.model.ts
     │   │           ├── sign-in-request.model.ts
     │   │           └── register-request.model.ts
-    │   ├── components/                     # Library: pure presentational components
-    │   │   └── src/public-api.ts           # Placeholder export — populate as components are added
-    │   └── domain/                         # Library: components that depend on api
-    │       └── src/public-api.ts           # Placeholder export
+    │   ├── components/                     # Library: generated presentational components + public exports
+    │   └── domain/                         # Library: generated domain-aware components + public exports
     └── e2e/
         ├── pages/
         │   ├── base.page.ts                # Abstract BasePage with byTestId helper

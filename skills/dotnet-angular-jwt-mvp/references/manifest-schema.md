@@ -1,6 +1,6 @@
 # Manifest schema
 
-The YAML manifest is deserialized by `Mvp.Cli.Manifests.YamlMvpManifestLoader` using `YamlDotNet` with camelCase naming. Unmatched properties are ignored, so older manifests stay compatible with newer tool versions, but typos won't error — double-check field names against this document.
+The YAML manifest is deserialized as data by `YamlManifestLoader` using `YamlDotNet` with camelCase naming. Files are limited to 1 MiB. Unmatched properties are ignored for forward compatibility and reported as warnings, so verify warnings and field names against this document.
 
 ## Top-level
 
@@ -10,7 +10,7 @@ The YAML manifest is deserialized by `Mvp.Cli.Manifests.YamlMvpManifestLoader` u
 | `output` | string | no | Default output directory if `--output` is omitted on the command line. Resolved relative to the current working directory. |
 | `entities` | list | no | Domain entities. Each one generates a Domain class, Application command/query handlers, validators, a DTO, and an API controller. |
 | `pages` | list | no | Frontend pages beyond the always-generated sign-in/sign-up/dashboard. |
-| `components` | list | no | Empty component stubs under the chosen Angular library. |
+| `components` | list | no | Standalone Angular component units under the chosen library, including public exports. |
 
 If `name` is missing, the CLI exits with a non-zero status.
 
@@ -26,9 +26,9 @@ If `name` is missing, the CLI exits with a non-zero status.
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `name` | string | yes | PascalCase. Used as the C# property name and as the camelCase JSON/TypeScript name (when emitted to the frontend in future versions). |
-| `type` | string | yes | C# type. Templates currently understand `string`, `int`, `long`, `decimal`, `bool`, `DateTime`, `Guid`. Unrecognized types pass through verbatim, which works for any type the generated `using` directives bring into scope but doesn't add a FluentValidation rule. |
+| `type` | string | no | Exact C# type: `string`, `int`, `long`, `decimal`, `bool`, `DateTime`, or `Guid`. Defaults to `string`; any other spelling is rejected. |
 
-Avoid entity names that collide with built-in identity entities (`User`, `RefreshToken`); the CLI will overwrite or duplicate them. `Task` is supported — handler templates fully-qualify `System.Threading.Tasks.Task` to avoid namespace shadowing.
+Entity names `User` and `RefreshToken` are rejected because they belong to the built-in identity model. Property names `Id` and `CreatedAt` are rejected because the generator supplies them. Names and routes are checked for case-insensitive duplicates before writing output. `Task` is supported — handler templates fully qualify `System.Threading.Tasks.Task` to avoid namespace shadowing.
 
 ## `pages[]`
 
@@ -52,9 +52,9 @@ The sign-in, sign-up, and dashboard pages are always generated regardless of wha
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `name` | string | yes | PascalCase. |
-| `library` | string | no | Either `components` (pure presentational, no dependency on the api library) or `domain` (may depend on the api library). Defaults to `components`. |
+| `library` | string | no | One of `api`, `components`, or `domain`. Defaults to `components`. |
 
-Component scaffolding is currently lightweight — it creates a placeholder TS file under the chosen library. The intent is to give Claude a hint about where each reusable component belongs as the project grows, not to fully generate them.
+Each component produces a standalone TypeScript component, HTML template, SCSS file, and public API export in the selected library.
 
 ## Example
 

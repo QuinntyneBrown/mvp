@@ -4,18 +4,19 @@ LAYOUT_WITH_LEGEND()
 title Components — Describe a solution
 
 Container_Boundary(cli, "mvp CLI process") {
-  Component(command, "NewDotNetAngularJwtAuthenticatedMvpCommand", "Command factory", "Owns config, name, and output precedence")
-  Component(contract, "IMvpManifestLoader", ".NET interface", "Defines manifest loading")
-  Component(loader, "YamlMvpManifestLoader", "YamlDotNet adapter", "Reads camel-case YAML and validates the name")
-  Component(model, "MvpManifest", "Typed declaration", "Holds entities, pages, and components")
-  Component(mapper, "DotNetAngularJwtAuthenticatedMvpGeneratorService", ".NET service", "Maps declarations to factory options")
+  Component(command, "RootCommandFactory", "Command action", "Owns config, name, and output precedence")
+  Component(contract, "IManifestLoader", ".NET interface", "Defines bounded manifest loading")
+  Component(loader, "YamlManifestLoader", "YamlDotNet adapter", "Reads camel-case YAML and warnings")
+  Component(dto, "MvpManifest", "Input DTO", "Holds nullable consumer declarations")
+  Component(validator, "ManifestValidator", ".NET domain service", "Aggregates and normalizes all validation")
+  Component(model, "ValidatedManifest", "Immutable record", "Carries generator-safe values")
 }
 ComponentDb(files, "Local manifest", "YAML file", "Contains the requested solution declaration")
 
 Rel(command, contract, "Calls Load")
 Rel(contract, loader, "Implemented by")
-Rel(loader, files, "Reads")
-Rel(loader, model, "Creates")
-Rel(command, model, "Applies overrides")
-Rel(command, mapper, "Passes resolved declaration")
+Rel(loader, files, "Reads up to 1 MiB")
+Rel(loader, dto, "Creates with warnings")
+Rel(command, validator, "Passes DTO and overrides")
+Rel(validator, model, "Creates or reports all errors")
 @enduml

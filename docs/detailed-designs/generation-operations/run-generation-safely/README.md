@@ -13,28 +13,29 @@ reported cancellation state.
 
 ## Description
 
-- **Command handlers** — catch generator exceptions, name the failed operation,
-  log the message, and set a non-zero process outcome.
-- **Generator loggers** — announce generation start and successful completion.
-  `SolutionGeneratorService` also reports the final solution directory.
+- **`CliExceptionPolicy`** — maps typed failures to stable exit codes and emits
+  concise stderr by default. `--diagnostic` opts into internal detail.
+- **Command actions** — report generation start, pass the invocation cancellation
+  token, and print the final artifact count and committed target.
 - **`ProcessRunner`** — starts optional external tooling without a shell,
   redirects standard output and error into structured logs, forwards the
-  cancellation token to `WaitForExitAsync`, and returns the child exit code.
-- **`AppGeneratorService`** — detects Angular CLI and selects either Angular CLI
-  generation or the local fallback tree.
+  cancellation token to `WaitForExitAsync`, kills the complete child tree on
+  cancellation, and returns captured output plus the child exit code.
+- **`IncrementalGenerator`** — uses packaged Angular templates by default and
+  calls Angular CLI only under explicit `--use-angular-cli`.
 - **Path construction** — uses `Path.Combine` and
   `Directory.GetCurrentDirectory()` for platform-native paths and defaults.
-- **Output preparation** — the manifest command creates the selected output
-  directory before invoking its generator; generators create their required
-  descendants.
+- **`TransactionalGenerationOutput`** — creates missing parents only after
+  validation, renders into a unique sibling stage, and publishes with one move.
+  Existing targets conflict unless `--force`; forced runs use a sibling backup
+  and rollback if publication fails.
 - **Local generation boundary** — manifest reading and artifact writing stay on
   the local machine. The current generation services define no telemetry or
   content-upload client.
-- **Cancellation boundary** — cancellation tokens flow through service and
-  process APIs. Interactive interrupt binding and child-process termination
-  remain `<TO SUPPLY>` under partial `L2-062`.
-- **Collision policy** — planned `L2-068` requires an explicit overwrite path.
-  The command and service contract for that path remain `<TO SUPPLY>`.
+- **`SafeFileWriter`** — proves every rendered relative path remains contained
+  by the staging root and applies UTF-8 without BOM plus LF line endings.
+- **Cancellation boundary** — the invocation token flows through rendering,
+  async writes, output publication, and child-process termination.
 - **Reproducibility controls** — templates and resolved input determine output.
   The generated tree contains no generation timestamp, machine name, or user
   name.
@@ -49,7 +50,7 @@ The table reproduces the normative requirement text from `docs/specs/L2.md`.
 | `L2-060` | `L1-014` | The tool must report what it is doing while it runs, so that a consumer can distinguish work from a hang. |
 | `L2-061` | `L1-014` | Every failure must tell the consumer what went wrong and what to do next. |
 | `L2-062` | `L1-014` | A consumer must be able to stop a running generation without leaving the machine in an unclear state. |
-| `L2-063` | `L1-015` | The tool must take advantage of the Angular command-line tooling when it is present and must degrade predictably when it is not. |
+| `L2-063` | `L1-015` | The tool must generate Angular applications from packaged templates by default and invoke Angular command-line tooling only when the consumer explicitly requests it. |
 | `L2-064` | `L1-015` | The tool must behave identically on every supported operating system. |
 | `L2-065` | `L1-015` | The consumer must be told which additional tooling is needed to run — as opposed to generate — the solution. |
 | `L2-066` | `L1-016` | The tool must prepare the location it writes to without requiring the consumer to create directories in advance. |
@@ -74,8 +75,8 @@ file system around one generation run.
 
 ### Components
 
-The command handler owns the outcome boundary, while `ProcessRunner`, generator
-services, and loggers expose progress and cancellation points.
+The command handler owns the outcome boundary, while `ProcessRunner`, the
+transactional output, and renderers expose progress and cancellation points.
 
 ![C4 component view for running generation safely](diagrams/c4-component.png)
 

@@ -7,7 +7,7 @@ Person(consumer, "Consumer", "Observes progress and outcomes")
 System_Boundary(mvp, "mvp") {
   Container(cli, "CLI process", ".NET / System.CommandLine", "Owns invocation and exit outcome")
   Container(generators, "Generator services", ".NET", "Create selected artifacts with cancellation")
-  Container(logging, "Console logging", "Microsoft.Extensions.Logging", "Reports stages and bounded failures")
+  Container(output, "Transactional output", ".NET file APIs", "Stages, backs up, commits, and rolls back")
   Container(process, "Child-process adapter", ".NET Process", "Runs optional tooling without a shell")
 }
 System_Ext(angular, "Angular CLI", "Optional frontend generator")
@@ -15,9 +15,9 @@ ContainerDb(files, "Local work area", "File system", "Input manifests and output
 
 Rel(consumer, cli, "Starts or interrupts")
 Rel(cli, generators, "Dispatches input and cancellation")
-Rel(cli, logging, "Reports command outcome through")
-Rel(generators, logging, "Reports progress through")
+Rel(cli, output, "Receives structured result from")
 Rel(generators, process, "Runs optional tooling through")
 Rel(process, angular, "Starts and observes")
-Rel(generators, files, "Writes")
+Rel(generators, output, "Renders through")
+Rel(output, files, "Stages and publishes")
 @enduml

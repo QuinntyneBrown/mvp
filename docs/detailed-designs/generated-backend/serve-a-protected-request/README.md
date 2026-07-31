@@ -52,7 +52,7 @@ The table reproduces the normative requirement text from `docs/specs/L2.md`.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-034` | `L1-007` | The generated backend must separate domain, application, infrastructure, and interface concerns, with dependencies pointing inward only. |
-| `L2-035` | `L1-007` | A freshly generated backend must compile without manual intervention. |
+| `L2-035` | `L1-007` | A freshly generated backend must compile without manual intervention while treating compiler and dependency-audit warnings as errors. |
 | `L2-036` | `L1-007` | Every command that enters the application layer must be validated before its handler executes, without each handler restating validation logic. |
 | `L2-037` | `L1-007` | The generated backend must return a consistent, predictable error shape and must never surface internal detail to a caller. |
 | `L2-048` | `L1-011` | Account passwords must never be stored or transmitted in a recoverable form. |

@@ -5,42 +5,28 @@ skinparam shadowing false
 skinparam roundcorner 12
 skinparam defaultFontName Arial
 skinparam ArrowColor #344054
-skinparam rectangle {
-  BorderColor #344054
-  FontColor #101828
-}
-skinparam package {
-  BorderColor #667085
-  FontColor #101828
-  BackgroundColor #F9FAFB
-}
 actor "Consumer" as actor
-box "Frontend — Operating-system shell" #E0F2FE
-  participant "mvp invocation" as shell
-end box
-box "Backend — mvp CLI application" #D1FADF
-  participant "Selected New*Command" as command
-end box
-box "Backend — Generation services" #ECFDF3
-  participant "Part generator" as generator
-  participant "IProcessRunner" as process
-end box
-box "Backend — Local infrastructure" #FFF4E5
-  database "Output work area" as output
-end box
-actor -> shell : Select solution part
-shell -> command : Parse --name and --output
-command -> generator : GenerateAsync(name, output)
-alt Angular application and Angular CLI available
-  generator -> process : RunAsync(ng new ...)
-  process -> output : Create Angular project
-  output --> process : Child-process result
-  process --> generator : Exit code
-else local or .NET generation
-  generator -> output : Write L2-022 through L2-025 artifacts
-  output --> generator : Write result
+participant "Incremental command action" as command
+participant "IncrementalGenerator" as generator
+participant "TransactionalGenerationOutput" as output
+participant "IProcessRunner" as process
+database "Embedded templates" as templates
+database "Output work area" as files
+actor -> command : Select part with name, output, and policy
+command -> generator : GenerateAsync(GenerationRequest, token)
+generator -> generator : Validate PascalCase name
+generator -> output : CommitAsync(target, force, generate, token)
+output -> files : Create sibling stage
+alt app with --use-angular-cli
+  generator -> process : RunAsync(ng, tokenized arguments, stage)
+  process --> generator : ProcessResult
+else packaged generation
+  generator -> templates : Read selected plan content
+  generator -> files : Render contained files into stage
 end
-generator --> command : Completed
-command --> shell : Success or bounded failure
-shell --> actor : Present artifact outcome
+generator --> output : Stage complete
+output -> files : Move stage to target
+output --> generator : GenerationResult
+generator --> command : Committed artifacts
+command --> actor : Exit 0 and target path
 @enduml

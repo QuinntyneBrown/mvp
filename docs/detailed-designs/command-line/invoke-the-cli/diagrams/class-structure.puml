@@ -4,38 +4,30 @@ skinparam shadowing false
 skinparam roundcorner 8
 skinparam defaultFontName Arial
 skinparam ArrowColor #344054
-skinparam class {
-  BorderColor #344054
-  FontColor #101828
-  BackgroundColor #F9FAFB
-}
 title Class structure — Invoke the CLI
 
 class Program {
   +Main(args: string[]): Task<int>
 }
-class RootCommand {
-  +InvokeAsync(args: string[]): Task<int>
-  +AddCommand(command: Command): void
+class RootCommandFactory {
+  +Create(): RootCommand
+  -CreateIncremental(kind: GenerationKind): Command
+  -CreateFullStackCommand(): Command
 }
-class NewCommand {
-  +Create(services: IServiceProvider): Command
-}
-class NewDotNetAngularJwtAuthenticatedMvpCommand {
-  +Create(services: IServiceProvider): Command
+class CliExceptionPolicy {
+  +ExecuteAsync(operation, error, diagnostic, cancellationToken): Task<int>
 }
 class "Option<T>" as OptionT {
-  +Aliases: string[]
-  +IsRequired: bool
+  +Aliases: IReadOnlyList<string>
+  +Required: bool
+  +Recursive: bool
 }
-interface IDotNetAngularJwtAuthenticatedMvpGeneratorService {
-  +GenerateAsync(manifest: MvpManifest, outputDirectory: string, cancellationToken: CancellationToken): Task
-}
+interface IIncrementalGenerator
+interface IFullStackGenerator
 
-Program ..> RootCommand : creates / invokes
-Program ..> NewCommand : calls
-RootCommand *-- NewCommand : contains command
-NewCommand ..> NewDotNetAngularJwtAuthenticatedMvpCommand : registers
-NewDotNetAngularJwtAuthenticatedMvpCommand *-- OptionT : defines
-NewDotNetAngularJwtAuthenticatedMvpCommand ..> IDotNetAngularJwtAuthenticatedMvpGeneratorService : resolves / calls
+Program ..> RootCommandFactory : resolves / calls
+RootCommandFactory *-- OptionT : defines
+RootCommandFactory --> CliExceptionPolicy : centralizes outcomes
+RootCommandFactory --> IIncrementalGenerator : dispatches
+RootCommandFactory --> IFullStackGenerator : dispatches
 @enduml

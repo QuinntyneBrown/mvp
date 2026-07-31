@@ -22,16 +22,17 @@ and the README placed at the root of each generated solution.
   identifies `ConnectionStrings:Default` as the SQL Server configuration path.
 - **Signing-key guidance** — tells the consumer to replace `Jwt:SigningKey`
   before use outside development.
-- **Product manifest reference** — canonical field-by-field reference location:
-  `<TO SUPPLY>`.
-- **Product output inventory** — canonical file-level generated-output location:
-  `<TO SUPPLY>`.
-- **Prerequisite reference** — canonical distinction between generation and
-  runtime prerequisites: `<TO SUPPLY>`.
-
-The command description still names
-`docs/technology-guidance-and-practices.md`, which is absent from the current
-worktree. The canonical replacement remains `<TO SUPPLY>`.
+- **Product manifest reference** —
+  `skills/dotnet-angular-jwt-mvp/references/manifest-schema.md` is the canonical
+  field-by-field input reference.
+- **Product output inventory** —
+  `skills/dotnet-angular-jwt-mvp/references/forge-shape.md` is the canonical
+  file-level inventory.
+- **Prerequisite reference** — the root `README.md` distinguishes the .NET 10
+  generation requirement from Node.js and Playwright runtime requirements.
+- **Documentation index and traceability** — `docs/README.md` routes readers,
+  while `docs/requirements-traceability.md` binds implemented L2 requirements
+  to named tests and CI jobs.
 
 ## Requirements
 

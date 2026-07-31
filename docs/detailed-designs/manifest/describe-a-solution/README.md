@@ -7,34 +7,34 @@ A *manifest* is a YAML document that describes the solution a consumer wants
 domain entities, application pages, and reusable frontend components. The file
 is plain data suitable for version control.
 
-This feature turns manifest content and command-line overrides into one typed
-`MvpManifest`. The resulting object is the input to full-stack generation.
-Validation occurs before the generator writes the solution tree.
+This feature turns manifest content and command-line overrides into an immutable
+`ValidatedManifest`. Validation completes before the output parent or staging
+directory is created.
 
 ## Description
 
-- **`NewDotNetAngularJwtAuthenticatedMvpCommand`** — owns `--config`,
-  `--name`, and `--output`. A command-line name overrides the manifest name; a
+- **`RootCommandFactory`** — owns `--config`, `--name`, and `--output`. A
+  command-line name overrides the manifest before required-name validation; a
   command-line output overrides the manifest output.
-- **`IMvpManifestLoader`** — boundary for loading a manifest from a path.
-- **`YamlMvpManifestLoader`** — YamlDotNet adapter. It applies camel-case field
-  naming, ignores unmatched fields for forward compatibility, rejects missing
-  files, and rejects empty or unnamed manifests.
+- **`IManifestLoader` and `YamlManifestLoader`** — bounded YamlDotNet adapter.
+  It limits files to 1 MiB, applies camel-case field naming, rejects malformed
+  YAML/type tags, and reports ignored unknown fields as warnings.
 - **`MvpManifest`** — solution declaration with `Name`, `Output`, `Entities`,
   `Pages`, and `Components`.
 - **`MvpManifestEntity` and `MvpManifestProperty`** — entity declarations. A
   property defaults its type to `string`.
 - **`MvpManifestPage`** — page declaration. `RequiresAuth` defaults to `true`;
-  an omitted route reaches the downstream factory as an empty value.
+  an omitted route is normalized to kebab-case.
 - **`MvpManifestComponent`** — component declaration. `Library` defaults to
   `components`.
-- **`DotNetAngularJwtAuthenticatedMvpGeneratorService`** — mapping boundary. It
-  converts manifest declarations into `JwtAuthenticatedMvpOptions` and its
-  entity, page, property, and component option types.
+- **`ManifestValidator`** — aggregates identifier, duplicate, reserved-name,
+  property-type, route, and library violations, then normalizes the output root.
+- **`ValidatedManifest`** — immutable generator input with exact property types,
+  normalized routes, a `FrontendLibrary` enum, and loader warnings.
 
 The loader uses a data deserializer and performs no command execution or
-runtime-type lookup from manifest values. Validation rules beyond the current
-name and YAML checks remain owned by `<TO SUPPLY>`.
+runtime-type lookup from manifest values. Only the validated model reaches a
+generator or path-construction boundary.
 
 ## Requirements
 
@@ -63,15 +63,15 @@ passes a typed declaration to solution generation.
 
 ### Containers
 
-The CLI loads the manifest from the local file system and sends validated,
-resolved options to the scaffolding library.
+The CLI loads the manifest from the local file system and sends one validated,
+resolved model to the local full-stack renderer.
 
 ![C4 container view for describing a solution](diagrams/c4-container.png)
 
 ### Components
 
-The command applies precedence around `YamlMvpManifestLoader`, then the
-generator service maps the result into package-owned option types.
+The command applies precedence around `YamlManifestLoader`, then
+`ManifestValidator` constructs the immutable generation model.
 
 ![C4 component view for describing a solution](diagrams/c4-component.png)
 

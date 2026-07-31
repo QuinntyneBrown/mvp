@@ -9,6 +9,6 @@ System_Ext(angular, "Angular CLI", "Optionally creates an Angular application")
 System_Ext(files, "Local file system", "Stores the generated part")
 
 Rel(consumer, mvp, "Selects a new subcommand", "CLI")
-Rel(mvp, angular, "Invokes when available", "Child process")
+Rel(mvp, angular, "Invokes only with --use-angular-cli", "Child process")
 Rel(mvp, files, "Writes selected artifacts", "Local file I/O")
 @enduml

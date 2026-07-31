@@ -26,9 +26,9 @@ begins.
 - **`data-testid` attributes** — stable selector contract shared by generated
   page templates and their page objects.
 
-Requirement-header comments for generated acceptance tests remain
-`<TO SUPPLY>` because `L2-047` is planned and the current sample test omits
-traceability comments.
+Generated and repository acceptance tests carry a `Traces to:` header. The
+governance test compares every implemented L2 identifier with the checked-in
+traceability register so status cannot advance without named evidence.
 
 ## Requirements
 

@@ -4,50 +4,39 @@ skinparam shadowing false
 skinparam roundcorner 8
 skinparam defaultFontName Arial
 skinparam ArrowColor #344054
-skinparam class {
-  BorderColor #344054
-  FontColor #101828
-  BackgroundColor #F9FAFB
-}
 title Class structure — Generate a solution part
 
-class NewSolutionCommand {
-  +Create(services: IServiceProvider): Command
+enum GenerationKind {
+  Solution
+  Api
+  Core
+  Infrastructure
+  App
+  ApiLibrary
+  ComponentsLibrary
+  DomainLibrary
 }
-class NewApiCommand {
-  +Create(services: IServiceProvider): Command
+class GenerationRequest {
+  +Kind: GenerationKind
+  +Name: string
+  +OutputRoot: string
+  +Force: bool
+  +UseAngularCli: bool
 }
-class NewAppCommand {
-  +Create(services: IServiceProvider): Command
+class GenerationResult
+interface IIncrementalGenerator {
+  +GenerateAsync(request: GenerationRequest, cancellationToken): Task<GenerationResult>
 }
-class NewApiLibraryCommand {
-  +Create(services: IServiceProvider): Command
-}
-interface ISolutionGeneratorService {
-  +GenerateAsync(name: string, outputPath: string, cancellationToken: CancellationToken): Task
-}
-interface IApiGeneratorService {
-  +GenerateAsync(name: string, outputPath: string, cancellationToken: CancellationToken): Task
-}
-interface IAppGeneratorService {
-  +GenerateAsync(name: string, outputPath: string, cancellationToken: CancellationToken): Task
-}
-interface IAngularLibraryGeneratorService {
-  +GenerateAsync(name: string, outputPath: string, libraryName: string, cancellationToken: CancellationToken): Task
-}
-class SolutionGeneratorService
-class ApiGeneratorService
-class AppGeneratorService
-class AngularLibraryGeneratorService
+class IncrementalGenerator
+interface ITransactionalGenerationOutput
 interface IProcessRunner
+class SafeFileWriter
 
-NewSolutionCommand ..> ISolutionGeneratorService : resolves
-NewApiCommand ..> IApiGeneratorService : resolves
-NewAppCommand ..> IAppGeneratorService : resolves
-NewApiLibraryCommand ..> IAngularLibraryGeneratorService : resolves
-ISolutionGeneratorService <|.. SolutionGeneratorService : implements
-IApiGeneratorService <|.. ApiGeneratorService : implements
-IAppGeneratorService <|.. AppGeneratorService : implements
-IAngularLibraryGeneratorService <|.. AngularLibraryGeneratorService : implements
-AppGeneratorService --> IProcessRunner : uses
+GenerationRequest --> GenerationKind
+IIncrementalGenerator <|.. IncrementalGenerator
+IncrementalGenerator --> GenerationRequest : consumes
+IncrementalGenerator ..> GenerationResult : returns
+IncrementalGenerator --> ITransactionalGenerationOutput : commits through
+IncrementalGenerator --> IProcessRunner : explicit app opt-in
+IncrementalGenerator ..> SafeFileWriter : renders through
 @enduml

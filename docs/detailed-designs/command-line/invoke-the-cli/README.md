@@ -13,24 +13,21 @@ input to a generator or reports a failure to the invoking shell.
 
 ## Description
 
-- **`Mvp.Cli.csproj`** — .NET tool package definition. It targets `net9.0`,
-  sets `PackAsTool`, and publishes the stable command name `mvp`.
+- **`Mvp.Cli.csproj`** — .NET 10 tool package definition. It sets
+  `PackAsTool`, publishes the stable command name `mvp`, and embeds every
+  generation template in the package.
 - **`Program`** — process composition root. It creates the host, registers the
-  service graph, constructs the root command, and invokes the parser.
-- **`NewCommand`** — `new` command-group factory. It registers the nine
-  generation subcommands exposed by the current source.
-- **`NewSolutionCommand` and peer command factories** — command builders for
-  `solution`, `api`, `core`, `infrastructure`, `app`, the three Angular library
-  variants, and `dotnet-angular-jwt-mvp`.
+  service graph, constructs the root command, disables the framework exception
+  printer, and returns the parser's exit code.
+- **`RootCommandFactory`** — builds the root, `new` group, and nine generation
+  subcommands through one shared command path.
 - **`Option<T>` instances** — typed definitions for `--name`/`-n`,
   `--output`/`-o`, and, where applicable, `--config`/`-c`.
-- **Generator service interfaces** — boundaries such as
-  `ISolutionGeneratorService` and
-  `IDotNetAngularJwtAuthenticatedMvpGeneratorService`. Command handlers resolve
-  these interfaces from dependency injection after parsing succeeds.
-- **Command error handlers** — exception boundaries that log the operation and
-  set a non-zero process outcome. The current handlers call
-  `Environment.Exit(1)` on generation errors.
+- **`IIncrementalGenerator` and `IFullStackGenerator`** — the two application
+  boundaries selected after parsing and validation.
+- **`CliExceptionPolicy`** — one exception boundary for every command. It maps
+  validation, conflict, generation, internal, and cancellation outcomes to
+  `1`, `2`, `3`, `70`, and `130`; stack traces require `--diagnostic`.
 
 ## Requirements
 
@@ -63,15 +60,15 @@ registered service graph.
 
 ### Components
 
-The root command delegates to `NewCommand`, which selects a concrete command
-factory and its generator-service boundary.
+The root command delegates to `RootCommandFactory`, which selects the full-stack
+or incremental generator boundary.
 
 ![C4 component view for invoking the CLI](diagrams/c4-component.png)
 
 ### Class structure
 
-The command factories create the command and option objects that depend on
-generator interfaces resolved from the host service provider.
+The factory creates shared option objects and closures over generator
+interfaces resolved from the host service provider.
 
 ![Class diagram for invoking the CLI](diagrams/class-structure.png)
 

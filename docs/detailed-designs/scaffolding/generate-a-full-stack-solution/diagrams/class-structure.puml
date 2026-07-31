@@ -4,49 +4,36 @@ skinparam shadowing false
 skinparam roundcorner 8
 skinparam defaultFontName Arial
 skinparam ArrowColor #344054
-skinparam class {
-  BorderColor #344054
-  FontColor #101828
-  BackgroundColor #F9FAFB
-}
 title Class structure — Generate a full-stack solution
 
-interface IDotNetAngularJwtAuthenticatedMvpGeneratorService {
-  +GenerateAsync(manifest: MvpManifest, outputDirectory: string, cancellationToken: CancellationToken): Task
+interface IFullStackGenerator {
+  +GenerateAsync(manifest: ValidatedManifest, force: bool, cancellationToken): Task<GenerationResult>
 }
-class DotNetAngularJwtAuthenticatedMvpGeneratorService {
-  -IJwtAuthenticatedMvpFactory _factory
-  -ILogger _logger
-  +GenerateAsync(manifest: MvpManifest, outputDirectory: string, cancellationToken: CancellationToken): Task
+class FullStackGenerator {
+  -ITransactionalGenerationOutput output
+  +GenerateAsync(manifest: ValidatedManifest, force: bool, cancellationToken): Task<GenerationResult>
+  -RenderAsync(root, manifest, cancellationToken): Task
 }
-interface IJwtAuthenticatedMvpFactory {
-  +GenerateAsync(options: JwtAuthenticatedMvpOptions, cancellationToken: CancellationToken): Task
+class ValidatedManifest {
+  +Name: string
+  +OutputRoot: string
+  +Entities: IReadOnlyList<ValidatedEntity>
+  +Pages: IReadOnlyList<ValidatedPage>
+  +Components: IReadOnlyList<ValidatedComponent>
 }
-class JwtAuthenticatedMvpOptions {
-  +string Name
-  +string Directory
-  +List<JwtAuthMvpEntity> Entities
-  +List<JwtAuthMvpFrontendPage> Pages
-  +List<JwtAuthMvpFrontendComponent> Components
-}
-class JwtAuthMvpEntity {
-  +string Name
-  +List<JwtAuthMvpProperty> Properties
-}
-class JwtAuthMvpFrontendPage {
-  +string Name
-  +string Route
-  +bool RequiresAuth
-}
-class JwtAuthMvpFrontendComponent {
-  +string Name
-  +string Library
-}
+class ValidatedEntity
+class ValidatedPage
+class ValidatedComponent
+interface ITransactionalGenerationOutput
+class SafeFileWriter
+class GenerationResult
 
-IDotNetAngularJwtAuthenticatedMvpGeneratorService <|.. DotNetAngularJwtAuthenticatedMvpGeneratorService : implements
-DotNetAngularJwtAuthenticatedMvpGeneratorService --> IJwtAuthenticatedMvpFactory : invokes
-DotNetAngularJwtAuthenticatedMvpGeneratorService ..> JwtAuthenticatedMvpOptions : creates
-JwtAuthenticatedMvpOptions "1" *-- "0..*" JwtAuthMvpEntity : entities
-JwtAuthenticatedMvpOptions "1" *-- "0..*" JwtAuthMvpFrontendPage : pages
-JwtAuthenticatedMvpOptions "1" *-- "0..*" JwtAuthMvpFrontendComponent : components
+IFullStackGenerator <|.. FullStackGenerator
+FullStackGenerator --> ITransactionalGenerationOutput : commits through
+FullStackGenerator ..> SafeFileWriter : renders through
+FullStackGenerator ..> GenerationResult : returns
+FullStackGenerator --> ValidatedManifest : consumes
+ValidatedManifest *-- ValidatedEntity
+ValidatedManifest *-- ValidatedPage
+ValidatedManifest *-- ValidatedComponent
 @enduml

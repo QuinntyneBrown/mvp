@@ -7,14 +7,14 @@ Person(consumer, "Consumer", "Chooses a generation command")
 Container_Boundary(cli, "mvp CLI process") {
   Component(program, "Program", ".NET composition root", "Builds the host and invokes the root command")
   Component(root, "RootCommand", "System.CommandLine", "Owns product help and top-level parsing")
-  Component(newCommand, "NewCommand", "Command factory", "Groups generation subcommands")
-  Component(selected, "Selected command factory", "Command factory", "Defines typed options and the handler")
-  Component(generator, "Generator service", ".NET service", "Executes the selected capability")
+  Component(factory, "RootCommandFactory", "Command factory", "Builds the new group, options, and actions")
+  Component(policy, "CliExceptionPolicy", ".NET policy", "Maps failures to stable exit codes")
+  Component(generator, "Generator boundary", ".NET interface", "Executes full-stack or incremental generation")
 }
 
 Rel(consumer, root, "Invokes")
 Rel(program, root, "Constructs and runs")
-Rel(root, newCommand, "Delegates new")
-Rel(newCommand, selected, "Registers")
-Rel(selected, generator, "Resolves and calls")
+Rel(root, factory, "Contains commands built by")
+Rel(factory, policy, "Runs actions through")
+Rel(factory, generator, "Calls with validated input")
 @enduml

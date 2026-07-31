@@ -3,18 +3,22 @@
 LAYOUT_WITH_LEGEND()
 title Components — Generate a full-stack solution
 
-Container_Boundary(cli, "mvp generation path") {
-  Component(command, "NewDotNetAngularJwtAuthenticatedMvpCommand", "Command handler", "Resolves manifest and output")
-  Component(service, "DotNetAngularJwtAuthenticatedMvpGeneratorService", ".NET service", "Maps input and calculates the solution root")
-  Component(options, "JwtAuthenticatedMvpOptions", "Generation model", "Carries entities, pages, and components")
-  Component(factory, "IJwtAuthenticatedMvpFactory", "Package factory", "Writes all generated areas")
-  Component(logger, "ILogger", ".NET logging", "Reports start and completion")
+Container_Boundary(cli, "mvp full-stack generation") {
+  Component(command, "RootCommandFactory action", "Command handler", "Loads, validates, and reports")
+  Component(model, "ValidatedManifest", "Immutable record", "Carries safe entities, pages, and components")
+  Component(contract, "IFullStackGenerator", ".NET interface", "Defines full-stack generation")
+  Component(renderer, "FullStackGenerator", "Liquid renderer", "Expands embedded scoped templates")
+  Component(output, "TransactionalGenerationOutput", "File adapter", "Stages and atomically publishes")
+  Component(writer, "SafeFileWriter", "File adapter", "Contains and normalizes writes")
 }
+ComponentDb(templates, "Embedded templates", "Package resources", ".NET 10, Angular 22, and Playwright assets")
 ComponentDb(tree, "Generated tree", "File system", "backend, frontend, and e2e assets")
 
-Rel(command, service, "Calls GenerateAsync")
-Rel(service, options, "Builds")
-Rel(service, factory, "Invokes")
-Rel(service, logger, "Reports progress through")
-Rel(factory, tree, "Creates")
+Rel(command, model, "Creates after validation")
+Rel(command, contract, "Calls")
+Rel(contract, renderer, "Implemented by")
+Rel(renderer, templates, "Reads manifest and content")
+Rel(renderer, output, "Commits through")
+Rel(renderer, writer, "Renders files through")
+Rel(output, tree, "Publishes")
 @enduml

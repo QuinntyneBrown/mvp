@@ -5,17 +5,18 @@ title Containers — Generate a solution part
 
 Person(consumer, "Consumer", "Chooses a solution, backend, app, or library command")
 System_Boundary(mvp, "mvp") {
-  Container(cli, "CLI process", ".NET / System.CommandLine", "Parses the selected part command")
-  Container(dotnetGenerators, ".NET generators", ".NET / CodeGenerator.DotNet", "Create solution and backend artifacts")
-  Container(frontendGenerators, "Frontend generators", ".NET", "Create Angular applications and libraries")
+  Container(cli, "CLI process", ".NET / System.CommandLine", "Validates a selected part command")
+  Container(renderer, "Incremental renderer", "DotLiquid", "Selects packaged .NET 10 and Angular 22 templates")
+  Container(output, "Transactional output", ".NET file APIs", "Stages and publishes the selected tree")
+  Container(process, "Process runner", ".NET Process", "Runs explicit Angular CLI requests")
 }
-System_Ext(angular, "Angular CLI", "Creates a full Angular application when present")
-ContainerDb(files, "Output work area", "Local file system", "Receives the selected artifact tree")
+System_Ext(angular, "Angular CLI", "Optional application generator")
+ContainerDb(files, "Output work area", "Local file system", "Receives one committed artifact tree")
 
 Rel(consumer, cli, "Invokes")
-Rel(cli, dotnetGenerators, "Dispatches backend selections")
-Rel(cli, frontendGenerators, "Dispatches frontend selections")
-Rel(frontendGenerators, angular, "Detects and invokes")
-Rel(dotnetGenerators, files, "Writes")
-Rel(frontendGenerators, files, "Writes")
+Rel(cli, renderer, "Passes GenerationRequest")
+Rel(renderer, output, "Renders packaged plan through")
+Rel(renderer, process, "Uses only with --use-angular-cli")
+Rel(process, angular, "Invokes with ArgumentList")
+Rel(output, files, "Publishes")
 @enduml

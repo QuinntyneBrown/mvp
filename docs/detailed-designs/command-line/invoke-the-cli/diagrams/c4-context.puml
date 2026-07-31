@@ -8,5 +8,5 @@ System(mvp, "mvp", "Full-stack scaffolding command-line tool")
 System_Ext(dotnet, ".NET runtime", "Hosts the installed global tool")
 
 Rel(consumer, mvp, "Discovers and invokes", "Shell command")
-Rel(mvp, dotnet, "Runs on", ".NET 9")
+Rel(mvp, dotnet, "Runs on", ".NET 10")
 @enduml
