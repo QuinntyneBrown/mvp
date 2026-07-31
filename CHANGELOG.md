@@ -8,6 +8,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 No changes yet.
 
+## [2.1.0] - 2026-07-31
+
+### Added
+
+- `QuinntyneBrown.Mvp.Core`, a NuGet library carrying the manifest validation, template rendering, and transactional generation engine that previously existed only inside the `mvp` tool.
+- `AddMvpCore`, a single dependency-injection entry point for consumers of the library.
+- `ManifestLoadResult.CreateEmpty` for callers that generate without a manifest file.
+- A tag-triggered release workflow that reconciles the tag against the repository version, publishes the library to NuGet.org behind an approval gate, and creates a GitHub release from the changelog.
+- Source Link and embedded untracked sources, so published symbols resolve to repository source.
+- A documented release process in `RELEASE.md`.
+- `TemplateResourceTests`, which binds the generators' resource prefix to the shipped template names so a mismatch fails a unit test instead of a generation run.
+
+### Changed
+
+- The `mvp` tool consumes `Mvp.Core`; the packaged tool remains self-contained and offline.
+- One `<Version>` in `Directory.Build.props` now governs every package, replacing a version literal that was duplicated across the project file, workflow, and documentation.
+- `IsPackable` defaults to `false`; packable projects opt in.
+- Continuous integration packs the whole solution, uploads the packages as build artifacts, and no longer pins a hard-coded tool version.
+- `AddMvpServices` is now `AddMvpCli`, composed from `AddMvpCore`.
+- Every type in `Mvp.Core` lives in its own file, and the four generation exceptions moved from `Mvp.Cli.Bootstrap` to `Mvp.Core.Errors`.
+- Requirement traceability now scans every project under `tests/` rather than a single named project.
+
 ## [2.0.0] - 2026-07-31
 
 ### Added
@@ -44,5 +66,6 @@ No changes yet.
 - Added restrictive path, name, route, type, duplicate, and reserved-name validation before filesystem mutation.
 - Verified the CLI dependency graph has no known NuGet vulnerabilities.
 
-[Unreleased]: https://github.com/QuinntyneBrown/mvp/commits/main
-[2.0.0]: https://github.com/QuinntyneBrown/mvp/releases/tag/v2.0.0
+[Unreleased]: https://github.com/QuinntyneBrown/mvp/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/QuinntyneBrown/mvp/releases/tag/v2.1.0
+[2.0.0]: https://github.com/QuinntyneBrown/mvp/commit/080ca85

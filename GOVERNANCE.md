@@ -65,6 +65,8 @@ Maintainers decide when the project is ready for a release. A release should hav
 - Reviewed dependency and security posture.
 - A versioned package and matching Git tag.
 
+All packages in this repository share one version and are released in lockstep. `QuinntyneBrown.Mvp.Core` is published to NuGet.org; `Mvp.Cli` is packed and validated on every change but is not currently published. The procedure is documented in [RELEASE.md](RELEASE.md).
+
 Security releases may use an expedited private process followed by public release notes and an advisory.
 
 ## Becoming a maintainer

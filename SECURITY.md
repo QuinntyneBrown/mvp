@@ -4,11 +4,12 @@ Security issues in `mvp` can affect both the CLI and the applications it generat
 
 ## Supported versions
 
-Security fixes are made against the current `2.0.x` line and the `main` branch.
+Security fixes are made against the current `2.1.x` line and the `main` branch. This policy covers both the `mvp` tool and the `QuinntyneBrown.Mvp.Core` package, which share a version.
 
 | Version | Supported |
 | --- | --- |
-| 2.0.x | Yes |
+| 2.1.x | Yes |
+| 2.0.x | No |
 | Current `main` branch | Yes |
 | 1.x and earlier commits | No |
 | Locally modified builds | No |

@@ -3,11 +3,21 @@
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Version: 2.0.0](https://img.shields.io/badge/version-2.0.0-blue.svg)](CHANGELOG.md)
+[![NuGet](https://img.shields.io/nuget/v/QuinntyneBrown.Mvp.Core?label=QuinntyneBrown.Mvp.Core)](https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core)
 
 `mvp` is an open-source .NET command-line tool for scaffolding full-stack minimum viable products. It generates an opinionated, buildable starting point with a layered .NET backend, an Angular workspace, JWT authentication, and Playwright end-to-end test assets.
 
 [Get started](#get-started) | [CLI reference](#cli-reference) | [Documentation](docs/README.md) | [Contributing](CONTRIBUTING.md) | [Support](SUPPORT.md)
+
+## Packages
+
+| Package | Description | Status |
+| --- | --- | --- |
+| [`QuinntyneBrown.Mvp.Core`](https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core) | Manifest validation, template rendering, and transactional generation engine | Published on NuGet.org |
+| `Mvp.Cli` (`mvp`) | Command-line tool built on `Mvp.Core` | Not published; install from source |
+
+Use the library directly when you want to drive generation from your own code; see its
+[readme](src/Mvp.Core/README.md).
 
 ## Why mvp?
 
@@ -63,7 +73,7 @@ The generated solution is written to `./out/Acme` because the sample manifest na
 
 ### Install as a global tool from source
 
-`Mvp.Cli` is not currently published to NuGet.org. You can package and install the current source locally:
+The `QuinntyneBrown.Mvp.Core` library is published to NuGet.org; the `Mvp.Cli` tool package is not yet. You can package and install the tool from source:
 
 ```shell
 dotnet pack src/Mvp.Cli --configuration Release --output ./nupkgs
@@ -149,7 +159,8 @@ Generation validates the complete input before creating directories. New trees a
 ## Repository layout
 
 ```text
-src/Mvp.Cli/        Bootstrap, commands, feature slices, infrastructure, and packaged templates
+src/Mvp.Core/       Generation engine: manifests, feature slices, infrastructure, packaged templates
+src/Mvp.Cli/        Command-line front end: bootstrap, commands, exit codes
 tests/Mvp.Cli.Tests Unit, command integration, golden-tree, and cancellation tests
 samples/            Example manifests
 skills/             Reusable guidance and generation references
@@ -172,7 +183,7 @@ Start with the [documentation index](docs/README.md). Key resources include:
 
 ## Project status
 
-The current source and package baseline is `2.0.0`. Capabilities are tracked as implemented, partial, or planned in the [L2 requirements](docs/specs/L2.md); partial and planned requirements remain outside the v2 delivery baseline.
+Capabilities are tracked as implemented, partial, or planned in the [L2 requirements](docs/specs/L2.md); partial and planned requirements remain outside the v2 delivery baseline. The released baseline is recorded in [CHANGELOG.md](CHANGELOG.md), and the release procedure in [RELEASE.md](RELEASE.md).
 
 ## Contributing
 

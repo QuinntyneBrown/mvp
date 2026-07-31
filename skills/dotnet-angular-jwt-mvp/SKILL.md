@@ -33,7 +33,7 @@ See `references/forge-shape.md` for the full file-level inventory when the user 
 Before running the CLI:
 
 1. **.NET 10 SDK** — verify with `dotnet --list-sdks` and look for a `10.x` entry. (`dotnet --version` only reports the SDK selected for the current directory; this repository's `global.json` pins the supported feature band.)
-2. **The `mvp` tool installed globally.** As of writing, `Mvp.Cli` is not yet on nuget.org, so install from a local clone of the mvp repo:
+2. **The `mvp` tool installed globally.** As of writing, the `Mvp.Cli` *tool* package is not yet on nuget.org (the `QuinntyneBrown.Mvp.Core` library it is built on is), so install from a local clone of the mvp repo:
    ```
    cd C:\projects\mvp
    dotnet pack src/Mvp.Cli -c Release -o ./nupkgs

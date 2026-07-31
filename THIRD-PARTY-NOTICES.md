@@ -1,6 +1,6 @@
 # Third-party notices
 
-The full-stack scaffolding templates under `src/Mvp.Cli/Templates/FullStack`
+The full-stack scaffolding templates under `src/Mvp.Core/Templates/FullStack`
 are derived from the `JwtAuthMvp` templates in
 [`QuinntyneBrown.CodeGenerator.DotNet`](https://github.com/QuinntyneBrown/CodeGenerator).
 The original work is copyright Quinntyne Brown and is used under the MIT

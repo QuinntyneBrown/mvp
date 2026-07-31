@@ -14,8 +14,10 @@ input to a generator or reports a failure to the invoking shell.
 ## Description
 
 - **`Mvp.Cli.csproj`** — .NET 10 tool package definition. It sets
-  `PackAsTool`, publishes the stable command name `mvp`, and embeds every
-  generation template in the package.
+  `PackAsTool` and publishes the stable command name `mvp`. The generation
+  engine and its embedded templates live in the referenced `Mvp.Core`
+  library, whose assembly `PackAsTool` bundles into the tool package, so the
+  tool remains self-contained and offline.
 - **`Program`** — process composition root. It creates the host, registers the
   service graph, constructs the root command, disables the framework exception
   printer, and returns the parser's exit code.

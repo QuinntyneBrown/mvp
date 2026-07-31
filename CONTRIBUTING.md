@@ -108,6 +108,10 @@ A pull request should:
 
 At least one maintainer approval is required. Maintainers may ask for additional review when a change affects security, public contracts, or architecture.
 
+## Releases
+
+Releases are cut by maintainers from a Git tag. Contributors do not change versions: do not edit `<Version>` in `Directory.Build.props` in a feature pull request — add your entry to the `Unreleased` section of [CHANGELOG.md](CHANGELOG.md) instead. See [RELEASE.md](RELEASE.md) for the procedure.
+
 ## Licensing
 
 By submitting a contribution, you agree that it may be distributed under the terms of the project's [MIT License](LICENSE). You retain copyright in your contribution.
