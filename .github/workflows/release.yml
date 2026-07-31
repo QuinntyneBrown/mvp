@@ -1,0 +1,129 @@
+name: release
+
+# Tags are the only publish authority. There is deliberately no workflow_dispatch
+# publish path: a manual run has no tag to reconcile the version against.
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: nuget
+      url: https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core
+    permissions:
+      contents: write # create the GitHub release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      # The single-version scheme only works if drift fails loudly, before anything is published.
+      - name: Reconcile tag with repository version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME#v}"
+          declared=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' Directory.Build.props | head -n 1)
+
+          if [ "$tag" != "$declared" ]; then
+            echo "::error::Tag '$GITHUB_REF_NAME' does not match <Version>$declared</Version> in Directory.Build.props. Bump the version on main, merge, then re-tag."
+            exit 1
+          fi
+
+          if ! grep -q "^## \[$tag\] - " CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no released '## [$tag] - <date>' section."
+            exit 1
+          fi
+
+          echo "version=$tag" >> "$GITHUB_OUTPUT"
+          if [[ "$tag" == *-* ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - run: dotnet restore Mvp.sln --locked-mode
+      - run: dotnet build Mvp.sln -c Release --no-restore -p:TreatWarningsAsErrors=true
+      - run: dotnet pack Mvp.sln -c Release --no-build --no-restore -o artifacts
+
+      - name: Verify expected packages were produced
+        shell: bash
+        run: |
+          set -euo pipefail
+          v='${{ steps.version.outputs.version }}'
+          test -f "artifacts/QuinntyneBrown.Mvp.Core.$v.nupkg"
+          test -f "artifacts/QuinntyneBrown.Mvp.Core.$v.snupkg"
+          test -f "artifacts/Mvp.Cli.$v.nupkg"
+          ls -l artifacts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ steps.version.outputs.version }}
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Push QuinntyneBrown.Mvp.Core to NuGet.org
+        shell: bash
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+          v='${{ steps.version.outputs.version }}'
+          # Named explicitly, never a glob: artifacts/*.nupkg would also push Mvp.Cli, which is
+          # intentionally not published. dotnet nuget push uploads the matching .snupkg alongside.
+          # --skip-duplicate keeps a re-run after a later-step failure idempotent.
+          dotnet nuget push "artifacts/QuinntyneBrown.Mvp.Core.$v.nupkg" \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key "$NUGET_API_KEY" \
+            --skip-duplicate
+
+      - name: Extract release notes from CHANGELOG
+        shell: bash
+        run: |
+          set -euo pipefail
+          v='${{ steps.version.outputs.version }}'
+          awk -v ver="$v" '
+            index($0, "## [" ver "]") == 1 { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > release-notes.md
+          test -s release-notes.md
+
+      - name: Create GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRERELEASE: ${{ steps.version.outputs.prerelease }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          args=()
+          if [ "$PRERELEASE" = "true" ]; then
+            args+=(--prerelease)
+          fi
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file release-notes.md \
+            "${args[@]}" \
+            "artifacts/QuinntyneBrown.Mvp.Core.$VERSION.nupkg" \
+            "artifacts/Mvp.Cli.$VERSION.nupkg"

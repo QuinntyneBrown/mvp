@@ -4,6 +4,9 @@ on:
   pull_request:
   push:
     branches: [main]
+  # Lets release.yml run these exact checks before publishing. A tag push does not
+  # match `push: branches`, so this adds no duplicate runs.
+  workflow_call:
 
 permissions:
   contents: read
@@ -26,7 +29,16 @@ jobs:
       - run: dotnet format Mvp.sln --verify-no-changes --no-restore
       - run: dotnet build Mvp.sln -c Release --no-restore -p:TreatWarningsAsErrors=true
       - run: dotnet test Mvp.sln -c Release --no-build --no-restore --collect:"XPlat Code Coverage"
-      - run: dotnet pack src/Mvp.Cli/Mvp.Cli.csproj -c Release --no-build --no-restore -o artifacts
+      # Packs every packable project, so a release never discovers a pack failure for the
+      # first time on a tag. IsPackable defaults to false, so the test project cannot leak in.
+      - run: dotnet pack Mvp.sln -c Release --no-build --no-restore -o artifacts
+      - uses: actions/upload-artifact@v4
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          name: packages
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 7
 
   security-package-consumers:
     runs-on: ubuntu-latest
@@ -42,12 +54,17 @@ jobs:
       - run: dotnet restore Mvp.sln --locked-mode
       - run: dotnet build Mvp.sln -c Release --no-restore -p:TreatWarningsAsErrors=true
       - run: dotnet list Mvp.sln package --vulnerable --include-transitive
-      - run: dotnet pack src/Mvp.Cli/Mvp.Cli.csproj -c Release --no-build --no-restore -o artifacts
+      - run: dotnet pack Mvp.sln -c Release --no-build --no-restore -o artifacts
       - name: Install packed tool and smoke commands
         shell: bash
         run: |
+          set -euo pipefail
+          # Read the version rather than pinning it, so a release bump does not break CI. The
+          # flag stays explicit: without it NuGet could resolve Mvp.Cli from any configured
+          # source, weakening this into "some version installed" rather than "this build's".
+          version=$(dotnet msbuild src/Mvp.Cli/Mvp.Cli.csproj -getProperty:Version -nologo | tr -d '[:space:]')
           mkdir -p "$RUNNER_TEMP/mvp-tool" "$RUNNER_TEMP/mvp-output"
-          dotnet tool install --tool-path "$RUNNER_TEMP/mvp-tool" --add-source artifacts Mvp.Cli --version 2.0.0
+          dotnet tool install --tool-path "$RUNNER_TEMP/mvp-tool" --add-source artifacts Mvp.Cli --version "$version"
           "$RUNNER_TEMP/mvp-tool/mvp" --help
           "$RUNNER_TEMP/mvp-tool/mvp" new dotnet-angular-jwt-mvp --config samples/sample-mvp.yaml --output "$RUNNER_TEMP/mvp-output"
           "$RUNNER_TEMP/mvp-tool/mvp" new solution --name Smoke --output "$RUNNER_TEMP/mvp-output"
