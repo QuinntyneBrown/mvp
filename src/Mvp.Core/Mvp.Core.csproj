@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotLiquid" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="YamlDotNet" />
   </ItemGroup>
 

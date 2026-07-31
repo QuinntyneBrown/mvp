@@ -86,7 +86,7 @@ public sealed class CommandIntegrationTests
     private static RootCommand CreateRoot()
     {
         var services = new ServiceCollection();
-        services.AddMvpServices();
+        services.AddMvpCli();
         using var provider = services.BuildServiceProvider();
         return provider.GetRequiredService<RootCommandFactory>().Create();
     }

@@ -5,7 +5,7 @@ using Mvp.Cli.Bootstrap;
 using Mvp.Cli.Commands;
 
 var builder = Host.CreateApplicationBuilder();
-builder.Services.AddMvpServices();
+builder.Services.AddMvpCli();
 
 using var host = builder.Build();
 var rootCommand = host.Services.GetRequiredService<RootCommandFactory>().Create();
