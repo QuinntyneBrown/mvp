@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- AssemblyName and RootNamespace are pinned equal to each other. Embedded template
+         resource names derive from RootNamespace, and the generators derive their lookup
+         prefix from the assembly; TemplateResourceTests enforces that they agree. -->
+    <AssemblyName>Mvp.Core</AssemblyName>
+    <RootNamespace>Mvp.Cli</RootNamespace>
+    <!-- Temporarily Mvp.Cli so the file move keeps resource names byte-identical.
+         Flipped to Mvp.Core in the namespace-rename commit. -->
+    <IsPackable>false</IsPackable>
+    <!-- Packaging metadata (PackageId QuinntyneBrown.Mvp.Core) lands once the extraction
+         is proven; see RELEASE.md. -->
+  </PropertyGroup>
+
+</Project>

@@ -353,9 +353,13 @@
         "dependencies": {
           "DotLiquid": "[2.3.197, )",
           "Microsoft.Extensions.Hosting": "[10.0.10, )",
+          "Mvp.Core": "[1.0.0, )",
           "System.CommandLine": "[2.0.10, )",
           "YamlDotNet": "[18.1.0, )"
         }
+      },
+      "mvp.core": {
+        "type": "Project"
       },
       "DotLiquid": {
         "type": "CentralTransitive",
