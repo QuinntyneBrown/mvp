@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# No Sitemap directive yet: the canonical hostname is assigned by the hosting
+# environment. Add `Sitemap: https://<host>/sitemap.xml` and a sitemap.xml once
+# the site has a stable public address.

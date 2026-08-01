@@ -7,7 +7,7 @@
 
 `mvp` is an open-source .NET command-line tool for scaffolding full-stack minimum viable products. It generates an opinionated, buildable starting point with a layered .NET backend, an Angular workspace, JWT authentication, and Playwright end-to-end test assets.
 
-[Get started](#get-started) | [CLI reference](#cli-reference) | [Documentation](docs/README.md) | [Contributing](CONTRIBUTING.md) | [Support](SUPPORT.md)
+[Get started](#get-started) | [CLI reference](#cli-reference) | [Documentation site](website/) | [Documentation](docs/README.md) | [Contributing](CONTRIBUTING.md) | [Support](SUPPORT.md)
 
 ## Packages
 
@@ -171,7 +171,9 @@ docs/detailed-designs/
 
 ## Documentation
 
-Start with the [documentation index](docs/README.md). Key resources include:
+The [documentation site](website/) explains every command, the manifest contract, the
+generated file inventory, and the tool's limitations for a general audience. Start with the
+[documentation index](docs/README.md) for the engineering material. Key resources include:
 
 - [High-level requirements](docs/specs/L1.md)
 - [Detailed requirements and delivery status](docs/specs/L2.md)

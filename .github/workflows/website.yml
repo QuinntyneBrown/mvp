@@ -1,0 +1,80 @@
+name: website
+
+# Only the documentation site. Scoped by `paths` so a source-only change never
+# redeploys the site, and a site-only change never waits on the .NET matrix in ci.yml.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - '.github/workflows/website.yml'
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    paths:
+      - 'website/**'
+      - '.github/workflows/website.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Link checking runs for every trigger, including forks, because it needs no secrets.
+  # Deployment is a separate job so a fork pull request still gets the useful half.
+  check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.action != 'closed'
+    steps:
+      - uses: actions/checkout@v4
+      # The site is hand-written static HTML with relative links, so a rename or typo
+      # produces a 404 that nothing else would catch. Failing here is cheaper than
+      # discovering it in production.
+      - name: Check internal links and asset references
+        # Invoked through bash rather than as ./website/check-links.sh so the job does
+        # not depend on the executable bit surviving a checkout from a Windows clone.
+        run: bash website/check-links.sh
+
+  build-deploy:
+    needs: check
+    # A pull request from a fork cannot read AZURE_STATIC_WEB_APPS_API_TOKEN, so the deploy
+    # would fail with an empty token rather than a useful message. Skip it there instead.
+    if: >-
+      github.event_name == 'push' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # the Azure action comments the preview URL on the PR
+    steps:
+      - uses: actions/checkout@v4
+
+      # The site is pre-built by hand: no bundler, no npm install, nothing to compile.
+      # skip_app_build tells the action to upload website/ verbatim.
+      - name: Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: upload
+          app_location: 'website'
+          output_location: ''
+          skip_app_build: true
+          skip_api_build: true
+
+  close-preview:
+    # A merged or abandoned PR leaves a staging environment behind unless it is torn down.
+    # Same fork restriction: no token, and nothing was ever deployed to tear down.
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close the pull request preview environment
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: close

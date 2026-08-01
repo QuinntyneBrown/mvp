@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manifest schema — mvp</title>
+<meta name="description" content="The complete YAML manifest contract for mvp: every field, its default, the naming rules the validator enforces, reserved names, and supported property types.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/styles.css">
+<script src="assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<header class="site-header">
+  <button type="button" class="icon-button" id="nav-toggle" aria-expanded="false" aria-controls="sidebar" aria-label="Toggle navigation">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+  </button>
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#512bd4"/><path d="M7 22V10h3.4l3.1 6.2L16.6 10H20v12h-3v-6.6l-2.3 4.6h-2.4L10 15.4V22H7z" fill="#fff"/><path d="M21.8 10h3.1l1.6 5.3 1.6-5.3h1.3l-2.4 8h-2.6l-2.6-8z" fill="#fff" opacity=".62"/></svg>
+    <span class="brand-name">mvp</span>
+    <span class="version-pill">2.1.0</span>
+  </a>
+  <span class="header-spacer"></span>
+  <nav class="header-links" aria-label="External">
+    <a class="desktop-only" href="commands.html">Commands</a>
+    <a class="desktop-only" href="manifest.html">Manifest</a>
+    <a href="https://github.com/QuinntyneBrown/mvp">GitHub</a>
+    <button type="button" class="icon-button" id="theme-toggle" aria-label="Switch theme">
+      <svg class="theme-icon-dark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6.2 1.6a6.4 6.4 0 108.2 8.2A5.4 5.4 0 016.2 1.6z"/></svg>
+      <svg class="theme-icon-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><path d="M8 1v1.6M8 13.4V15M15 8h-1.6M2.6 8H1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1M12.9 12.9l-1.1-1.1M4.2 4.2L3.1 3.1"/></svg>
+    </button>
+  </nav>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Documentation">
+  <h2>Getting started</h2>
+  <ul>
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="install.html">Installation</a></li>
+    <li><a href="quickstart.html">Quickstart</a></li>
+  </ul>
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="commands.html">Command reference</a></li>
+    <li><a href="manifest.html">Manifest schema</a></li>
+    <li><a href="generated.html">Generated output</a></li>
+    <li><a href="output-safety.html">Output safety</a></li>
+    <li><a href="errors.html">Errors &amp; exit codes</a></li>
+  </ul>
+  <h2>Before you commit</h2>
+  <ul>
+    <li><a href="limitations.html">Limitations</a></li>
+    <li><a href="library.html">Library API</a></li>
+  </ul>
+</nav>
+
+<main id="content">
+
+<p class="eyebrow">Reference</p>
+<h1>Manifest schema</h1>
+<p class="lede">
+  A manifest is data, never code — no type resolution, no expressions, no includes. Only
+  <code>mvp new dotnet-angular-jwt-mvp</code> reads one, through <code>--config</code>.
+</p>
+
+<h2>Shape at a glance</h2>
+
+<div class="code">
+  <div class="code-label">mvp.yaml</div>
+<pre><code>name: Acme                # required — everything else is optional
+output: ./generated       # optional default output directory
+
+entities:
+  - name: Project
+    properties:
+      - name: Title
+        type: string
+
+pages:
+  - name: Projects
+    route: projects
+    requiresAuth: true
+
+components:
+  - name: ProjectCard
+    library: domain</code></pre>
+</div>
+
+<h2>Top level</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Default</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="nowrap"><code>name</code></td>
+      <td class="nowrap">string</td>
+      <td class="nowrap"><span class="badge accent">yes</span></td>
+      <td class="nowrap">—</td>
+      <td>PascalCase, no spaces. Becomes the solution name, the namespace root, the
+      kebab-cased Angular workspace prefix, and the directory created under the output path.
+      <code>--name</code> overrides it.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>output</code></td>
+      <td class="nowrap">string</td>
+      <td class="nowrap"><span class="badge neutral">no</span></td>
+      <td class="nowrap">current directory</td>
+      <td>Default output directory, resolved relative to where you run the command.
+      <code>--output</code> overrides it.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>entities</code></td>
+      <td class="nowrap">list</td>
+      <td class="nowrap"><span class="badge neutral">no</span></td>
+      <td class="nowrap">empty</td>
+      <td>Each entity produces a domain class, create and get-by-id handlers, a validator,
+      a DTO, and an API controller.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>pages</code></td>
+      <td class="nowrap">list</td>
+      <td class="nowrap"><span class="badge neutral">no</span></td>
+      <td class="nowrap">empty</td>
+      <td>Pages <em>in addition to</em> the always-generated sign-in, sign-up, and dashboard.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>components</code></td>
+      <td class="nowrap">list</td>
+      <td class="nowrap"><span class="badge neutral">no</span></td>
+      <td class="nowrap">empty</td>
+      <td>Standalone Angular components created in the library you choose, with a public
+      export.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2><code>entities[]</code></h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Default</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="nowrap"><code>name</code></td><td class="nowrap">string</td>
+      <td class="nowrap"><span class="badge accent">yes</span></td><td class="nowrap">—</td>
+      <td>PascalCase and singular. Becomes the class name and a namespace segment.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>properties</code></td><td class="nowrap">list</td>
+      <td class="nowrap"><span class="badge neutral">no</span></td><td class="nowrap">empty</td>
+      <td>Properties beyond the implicit <code>Id</code> and <code>CreatedAt</code>.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3><code>entities[].properties[]</code></h3>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Default</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="nowrap"><code>name</code></td><td class="nowrap">string</td>
+      <td class="nowrap"><span class="badge accent">yes</span></td><td class="nowrap">—</td>
+      <td>PascalCase. Becomes the C# property name and its camelCase JSON and TypeScript name.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>type</code></td><td class="nowrap">string</td>
+      <td class="nowrap"><span class="badge neutral">no</span></td><td class="nowrap"><code>string</code></td>
+      <td>One of the supported types below. Any other spelling — including
+      <code>String</code> or <code>datetime</code> — is rejected.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h4>Supported property types</h4>
+
+<p>
+  <code>string</code> · <code>int</code> · <code>long</code> · <code>decimal</code> ·
+  <code>bool</code> · <code>DateTime</code> · <code>Guid</code>
+</p>
+
+<div class="callout note">
+  <span class="callout-title">Two properties are always added for you</span>
+  <p>Every entity gets <code>Id</code> (<code>Guid</code>) and <code>CreatedAt</code>
+  (<code>DateTime</code>). Declaring either one yourself is an error, not a duplicate.</p>
+</div>
+
+<h2><code>pages[]</code></h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Default</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="nowrap"><code>name</code></td><td class="nowrap">string</td>
+      <td class="nowrap"><span class="badge accent">yes</span></td><td class="nowrap">—</td>
+      <td>PascalCase. Becomes the standalone component class name and the page folder name
+      once kebab-cased.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>route</code></td><td class="nowrap">string</td>
+      <td class="nowrap"><span class="badge neutral">no</span></td>
+      <td class="nowrap">kebab-cased <code>name</code></td>
+      <td>Lower-case kebab segments, optionally separated by <code>/</code>.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>requiresAuth</code></td><td class="nowrap">boolean</td>
+      <td class="nowrap"><span class="badge neutral">no</span></td>
+      <td class="nowrap"><code>true</code></td>
+      <td>When true, the route is wrapped by the generated auth guard. <strong>Pages are
+      protected unless you say otherwise.</strong></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Each page produces three files:</p>
+
+<div class="code" data-no-copy>
+  <div class="code-label">per page</div>
+<pre><code>frontend/projects/&lt;name-kebab&gt;-app/src/app/pages/&lt;page-kebab&gt;/&lt;page-kebab&gt;.page.ts
+frontend/projects/&lt;name-kebab&gt;-app/src/app/pages/&lt;page-kebab&gt;/&lt;page-kebab&gt;.page.html
+frontend/e2e/pages/&lt;page-kebab&gt;.page.ts</code></pre>
+</div>
+
+<p>…plus a lazily loaded entry in <code>app.routes.ts</code>.</p>
+
+<h2><code>components[]</code></h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Default</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="nowrap"><code>name</code></td><td class="nowrap">string</td>
+      <td class="nowrap"><span class="badge accent">yes</span></td><td class="nowrap">—</td>
+      <td>PascalCase.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>library</code></td><td class="nowrap">string</td>
+      <td class="nowrap"><span class="badge neutral">no</span></td>
+      <td class="nowrap"><code>components</code></td>
+      <td><code>api</code>, <code>components</code>, or <code>domain</code>. Matched
+      case-insensitively.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Library</th><th>Use it for</th></tr></thead>
+  <tbody>
+    <tr><td class="nowrap"><code>components</code></td><td>Pure presentational UI with no domain knowledge.</td></tr>
+    <tr><td class="nowrap"><code>domain</code></td><td>Components that depend on the <code>api</code> library and your models.</td></tr>
+    <tr><td class="nowrap"><code>api</code></td><td>Rarely — this library exists for typed HTTP clients and models.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Each component produces a <code>.ts</code>, <code>.html</code>, and <code>.scss</code>
+file under <code>frontend/projects/&lt;library&gt;/src/lib/&lt;component-kebab&gt;/</code>.</p>
+
+<h2>Validation rules</h2>
+
+<p>
+  Everything below is checked before a single directory is created, and every problem is
+  reported at once rather than one per run.
+</p>
+
+<h3>Identifier format</h3>
+
+<p>
+  Solution, entity, property, page, and component names must all match:
+</p>
+
+<div class="code" data-no-copy>
+  <div class="code-label">PascalCase</div>
+<pre><code>^[A-Z][A-Za-z0-9]*$</code></pre>
+</div>
+
+<p>
+  ASCII letters and digits only, starting with an uppercase letter. No underscores, no
+  hyphens, no spaces, no accented characters. Values are trimmed before checking.
+</p>
+
+<h3>Route format</h3>
+
+<div class="code" data-no-copy>
+  <div class="code-label">kebab-case path</div>
+<pre><code>^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$</code></pre>
+</div>
+
+<p>
+  So <code>projects</code>, <code>order-history</code>, and <code>admin/audit-log</code>
+  are all valid; <code>Projects</code>, <code>order_history</code>, and
+  <code>/projects</code> are not.
+</p>
+
+<h3>Reserved names</h3>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Applies to</th><th>Reserved values</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Any identifier</td>
+      <td><code>CON</code> <code>PRN</code> <code>AUX</code> <code>NUL</code>
+      <code>COM1</code>–<code>COM9</code> <code>LPT1</code>–<code>LPT9</code>
+      <code>System</code> <code>Microsoft</code></td>
+      <td>Reserved device names and namespace roots. Matched case-insensitively.</td>
+    </tr>
+    <tr>
+      <td>Entity names</td>
+      <td><code>User</code> <code>RefreshToken</code></td>
+      <td>Already generated by the authentication model.</td>
+    </tr>
+    <tr>
+      <td>Property names</td>
+      <td><code>Id</code> <code>CreatedAt</code></td>
+      <td>Generated automatically on every entity.</td>
+    </tr>
+    <tr>
+      <td>Page names</td>
+      <td><code>SignIn</code> <code>SignUp</code> <code>Dashboard</code></td>
+      <td>Baseline authentication pages.</td>
+    </tr>
+    <tr>
+      <td>Page routes</td>
+      <td><code>sign-in</code> <code>sign-up</code> <code>dashboard</code></td>
+      <td>Baseline authentication routes.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout note">
+  <span class="callout-title"><code>Task</code> is fine as an entity name</span>
+  <p>The handler templates fully qualify <code>System.Threading.Tasks.Task</code>, so there
+  is no shadowing. Other framework type names may still cause build errors in the generated
+  code — if a generated project won’t compile, an entity name colliding with a
+  <code>System</code> type is the first thing to check.</p>
+</div>
+
+<h3>Duplicates</h3>
+
+<p>
+  Detected case-insensitively across entities, pages, page routes, components, and the
+  properties within each entity. <code>Title</code> and <code>title</code> on the same
+  entity is a duplicate.
+</p>
+
+<h3>Size and unknown fields</h3>
+
+<ul>
+  <li>A manifest larger than <strong>1 MiB</strong> is rejected outright.</li>
+  <li>Unknown fields are <strong>ignored with a warning</strong>, not an error, so a manifest
+  written for a newer version still runs.</li>
+  <li>An empty file, or one that parses to nothing, is an error.</li>
+</ul>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> unknown fields — exit code 0</div>
+<pre><code><span class="muted">Generating dotnet-angular-jwt-mvp...</span>
+<span class="warn">warning: Unknown manifest field 'database' was ignored.</span>
+<span class="warn">warning: Unknown property field 'nullable' was ignored.</span>
+<span class="ok">Generated 85 files at '/work/out/Warned'.</span></code></pre>
+</div>
+
+<h3>All errors at once</h3>
+
+<p>
+  The validator aggregates. This manifest breaks eight rules and reports all eight in one
+  run:
+</p>
+
+<div class="code">
+  <div class="code-label">bad.yaml</div>
+<pre><code>name: broken name
+entities:
+  - name: User
+    properties:
+      - name: Id
+        type: string
+      - name: Amount
+        type: money
+      - name: Amount
+        type: int
+pages:
+  - name: Dashboard
+    route: Bad_Route
+components:
+  - name: Card
+    library: widgets</code></pre>
+</div>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> exit code 1</div>
+<pre><code><span class="muted">Generating dotnet-angular-jwt-mvp...</span>
+<span class="err">Input validation failed:
+- Solution name 'broken name' must be a PascalCase identifier containing only ASCII letters and digits.
+- Entity name 'User' is reserved by the authentication model.
+- Property name 'User.Id' is generated automatically and must not be declared.
+- Property 'User.Amount' has unsupported type 'money'. Supported types: string, int, long, decimal, bool, DateTime, Guid.
+- Duplicate properties on entity 'User' value 'Amount'.
+- Page 'Dashboard' conflicts with a baseline authentication page or route.
+- Page 'Dashboard' route 'Bad_Route' must contain only kebab-case path segments.
+- Component 'Card' has unsupported library 'widgets'. Supported libraries: api, components, domain.</span></code></pre>
+</div>
+
+<p>No directory was created. See <a href="errors.html">Errors &amp; exit codes</a> for the
+complete message catalogue.</p>
+
+<h2>Naming transforms</h2>
+
+<p>
+  You write PascalCase; the generator derives everything else. <code>OrderHistory</code>
+  becomes:
+</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Form</th><th>Value</th><th>Used for</th></tr></thead>
+  <tbody>
+    <tr><td class="nowrap">PascalCase</td><td class="nowrap"><code>OrderHistory</code></td><td>C# class names, Angular component class names</td></tr>
+    <tr><td class="nowrap">kebab-case</td><td class="nowrap"><code>order-history</code></td><td>Folders, file names, default routes, selectors</td></tr>
+    <tr><td class="nowrap">camelCase</td><td class="nowrap"><code>orderHistory</code></td><td>JSON payloads, TypeScript members</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>
+  Acronyms are handled: <code>APIKeyList</code> becomes <code>api-key-list</code>, not
+  <code>a-p-i-key-list</code>.
+</p>
+
+<h2>Worked example</h2>
+
+<p>
+  A fuller manifest with comments. Strip the comments before real use — they are here to
+  explain, not to be kept.
+</p>
+
+<div class="code">
+  <div class="code-label">example-manifest.yaml</div>
+<pre><code># Solution name. PascalCase, no spaces. Becomes the .sln name, the namespace root,
+# the Angular workspace prefix (kebab-cased), and the directory created under --output.
+name: Acme
+
+# Optional default output directory. Overridden by --output on the command line.
+# output: ./generated
+
+entities:
+  - name: Project
+    # Each property must use a C# type the templates understand:
+    #   string, int, long, decimal, bool, DateTime, Guid
+    # Id (Guid) and CreatedAt (DateTime) are added automatically — don't list them here.
+    properties:
+      - { name: Title,        type: string }
+      - { name: Description,  type: string }
+      - { name: BudgetCents,  type: long }
+      - { name: StartsOn,     type: DateTime }
+      - { name: IsActive,     type: bool }
+
+  - name: TaskItem
+    # Avoid naming an entity `User` or `RefreshToken` — those are reserved by the
+    # built-in identity entities. `Task` works (templates handle the collision
+    # with System.Threading.Tasks.Task) but `TaskItem` reads better.
+    properties:
+      - { name: Title,       type: string }
+      - { name: IsComplete,  type: bool }
+      - { name: DueOn,       type: DateTime }
+
+pages:
+  # The CLI always emits sign-in / sign-up / dashboard pages. List additional
+  # pages here. Each gets a folder under projects/&lt;name&gt;-app/src/app/pages/,
+  # a route in app.routes.ts, and a matching Playwright page object under e2e/pages/.
+  - { name: Projects, route: projects, requiresAuth: true }
+  - { name: Backlog,  route: backlog,  requiresAuth: true }
+  - { name: About,    route: about,    requiresAuth: false }
+
+components:
+  # Optional. Empty stubs created in the chosen library. Use `domain` when the
+  # component will depend on the api library, `components` when it's pure UI.
+  - { name: ProjectCard,  library: domain }
+  - { name: EmptyState,   library: components }</code></pre>
+</div>
+
+<p>
+  That manifest generates <code>77 + 8·2 + 3·3 + 3·2 = 108</code> files. The arithmetic is
+  explained on <a href="generated.html">Generated output</a>.
+</p>
+
+<nav class="page-nav" aria-label="Pagination">
+  <a href="commands.html"><span class="dir">Previous</span><span class="label">← Command reference</span></a>
+  <a class="next" href="generated.html"><span class="dir">Next</span><span class="label">Generated output →</span></a>
+</nav>
+
+</main>
+
+<aside class="toc" id="toc" aria-label="On this page"></aside>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <h2>Documentation</h2>
+      <ul>
+        <li><a href="install.html">Installation</a></li>
+        <li><a href="quickstart.html">Quickstart</a></li>
+        <li><a href="commands.html">Command reference</a></li>
+        <li><a href="manifest.html">Manifest schema</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Reference</h2>
+      <ul>
+        <li><a href="generated.html">Generated output</a></li>
+        <li><a href="output-safety.html">Output safety</a></li>
+        <li><a href="errors.html">Errors &amp; exit codes</a></li>
+        <li><a href="limitations.html">Limitations</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Project</h2>
+      <ul>
+        <li><a href="https://github.com/QuinntyneBrown/mvp">Repository</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CHANGELOG.md">Changelog</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SECURITY.md">Security policy</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Packages</h2>
+      <ul>
+        <li><a href="https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core">QuinntyneBrown.Mvp.Core</a></li>
+        <li><a href="library.html">Library API</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SUPPORT.md">Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-legal">
+    <p>Copyright © 2026 Quinntyne Brown and contributors. Released under the MIT License.</p>
+    <p>Documentation for <code>mvp</code> 2.1.0. Generated code, versions, and messages on this
+    site are captured from that release.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Command reference — mvp</title>
+<meta name="description" content="Every mvp command and option: the full-stack dotnet-angular-jwt-mvp generator and the eight incremental project generators, with real output for each.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/styles.css">
+<script src="assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<header class="site-header">
+  <button type="button" class="icon-button" id="nav-toggle" aria-expanded="false" aria-controls="sidebar" aria-label="Toggle navigation">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+  </button>
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#512bd4"/><path d="M7 22V10h3.4l3.1 6.2L16.6 10H20v12h-3v-6.6l-2.3 4.6h-2.4L10 15.4V22H7z" fill="#fff"/><path d="M21.8 10h3.1l1.6 5.3 1.6-5.3h1.3l-2.4 8h-2.6l-2.6-8z" fill="#fff" opacity=".62"/></svg>
+    <span class="brand-name">mvp</span>
+    <span class="version-pill">2.1.0</span>
+  </a>
+  <span class="header-spacer"></span>
+  <nav class="header-links" aria-label="External">
+    <a class="desktop-only" href="commands.html">Commands</a>
+    <a class="desktop-only" href="manifest.html">Manifest</a>
+    <a href="https://github.com/QuinntyneBrown/mvp">GitHub</a>
+    <button type="button" class="icon-button" id="theme-toggle" aria-label="Switch theme">
+      <svg class="theme-icon-dark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6.2 1.6a6.4 6.4 0 108.2 8.2A5.4 5.4 0 016.2 1.6z"/></svg>
+      <svg class="theme-icon-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><path d="M8 1v1.6M8 13.4V15M15 8h-1.6M2.6 8H1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1M12.9 12.9l-1.1-1.1M4.2 4.2L3.1 3.1"/></svg>
+    </button>
+  </nav>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Documentation">
+  <h2>Getting started</h2>
+  <ul>
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="install.html">Installation</a></li>
+    <li><a href="quickstart.html">Quickstart</a></li>
+  </ul>
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="commands.html">Command reference</a></li>
+    <li><a href="manifest.html">Manifest schema</a></li>
+    <li><a href="generated.html">Generated output</a></li>
+    <li><a href="output-safety.html">Output safety</a></li>
+    <li><a href="errors.html">Errors &amp; exit codes</a></li>
+  </ul>
+  <h2>Before you commit</h2>
+  <ul>
+    <li><a href="limitations.html">Limitations</a></li>
+    <li><a href="library.html">Library API</a></li>
+  </ul>
+</nav>
+
+<main id="content">
+
+<p class="eyebrow">Reference</p>
+<h1>Command reference</h1>
+<p class="lede">
+  One command group, nine generators. Everything on this page is captured from
+  <code>mvp</code> 2.1.0 — run <code>mvp new &lt;command&gt; --help</code> for the
+  authoritative options on your installed build.
+</p>
+
+<h2>Command tree</h2>
+
+<div class="code" data-no-copy>
+  <div class="code-label">structure</div>
+<pre><code>mvp
+└── new
+    ├── dotnet-angular-jwt-mvp   the full authenticated solution
+    ├── solution                 .NET solution + API + core + infrastructure + Angular app
+    ├── api                      .NET Web API project
+    ├── core                     .NET core class library
+    ├── infrastructure           .NET infrastructure class library
+    ├── app                      Angular application
+    ├── api-library              Angular API library
+    ├── components-library       Angular components library
+    └── domain-library           Angular domain library</code></pre>
+</div>
+
+<h2>Global options</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="nowrap"><code>--diagnostic</code></td>
+      <td class="nowrap"><code>false</code></td>
+      <td>Include stack traces and internal details in errors. Applies to every subcommand.
+      This is the <em>only</em> way to see internal exception detail — without it, messages
+      never expose stack traces or machine-local paths.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>--version</code></td>
+      <td class="nowrap">—</td>
+      <td>Print the version and source revision, e.g. <code>2.1.0+36ae856…</code>.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>-?</code>, <code>-h</code>, <code>--help</code></td>
+      <td class="nowrap">—</td>
+      <td>Show help for the root command or any subcommand.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Shared generation options</h2>
+
+<p>Every <code>new</code> subcommand accepts these three:</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="nowrap"><code>-n</code>, <code>--name</code></td>
+      <td class="nowrap">—</td>
+      <td>PascalCase solution or project name. <strong>Required</strong> on the eight
+      incremental commands; optional on <code>dotnet-angular-jwt-mvp</code>, where it may
+      come from the manifest instead.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>-o</code>, <code>--output</code></td>
+      <td class="nowrap">current directory</td>
+      <td>Output directory. Missing parent directories are created — after validation, never
+      before.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>-f</code>, <code>--force</code></td>
+      <td class="nowrap"><code>false</code></td>
+      <td>Replace an existing target using a recoverable backup and atomic move. Without it,
+      an existing target is a conflict and exits <code>2</code>.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>How the name is resolved</h3>
+
+<p>
+  For <code>dotnet-angular-jwt-mvp</code>, <code>--name</code> wins over the manifest’s
+  <code>name:</code> field. If neither is supplied, validation fails with exit code
+  <code>1</code> before anything is written.
+</p>
+
+<h3>How the output directory is resolved</h3>
+
+<ol>
+  <li><code>--output</code>, if supplied.</li>
+  <li>Otherwise the manifest’s <code>output:</code> field (full-stack command only).</li>
+  <li>Otherwise the current working directory.</li>
+</ol>
+
+<p>
+  The final target is always <code>&lt;resolved output&gt;/&lt;target directory&gt;</code>,
+  where the target directory name is listed per command below.
+</p>
+
+<h2><code>mvp new dotnet-angular-jwt-mvp</code></h2>
+
+<p>
+  The primary generator. Produces the complete JWT-authenticated .NET 10 and Angular 22
+  solution from options, from a YAML manifest, or from both.
+</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Option</th><th>Required</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td class="nowrap"><code>-n</code>, <code>--name</code></td><td class="nowrap"><span class="badge neutral">optional</span></td><td>PascalCase solution name. Overrides the manifest.</td></tr>
+    <tr><td class="nowrap"><code>-o</code>, <code>--output</code></td><td class="nowrap"><span class="badge neutral">optional</span></td><td>Output directory.</td></tr>
+    <tr><td class="nowrap"><code>-c</code>, <code>--config</code></td><td class="nowrap"><span class="badge neutral">optional</span></td><td>YAML manifest describing entities, pages, and components.</td></tr>
+    <tr><td class="nowrap"><code>-f</code>, <code>--force</code></td><td class="nowrap"><span class="badge neutral">optional</span></td><td>Replace an existing target.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p><strong>Target directory:</strong> <code>&lt;output&gt;/&lt;Name&gt;</code>.
+<strong>File count:</strong> <code>77 + 8·entities + 3·pages + 3·components</code>.</p>
+
+<h3>From a manifest</h3>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>mvp new dotnet-angular-jwt-mvp --config samples/sample-mvp.yaml --output ./out</code></pre>
+</div>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> exit code 0</div>
+<pre><code><span class="muted">Generating dotnet-angular-jwt-mvp...</span>
+<span class="ok">Generated 102 files at '/work/out/Acme'.</span></code></pre>
+</div>
+
+<h3>From a name alone</h3>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>mvp new dotnet-angular-jwt-mvp --name Contoso --output ./out</code></pre>
+</div>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> exit code 0</div>
+<pre><code><span class="muted">Generating dotnet-angular-jwt-mvp...</span>
+<span class="ok">Generated 77 files at '/work/out/Contoso'.</span></code></pre>
+</div>
+
+<p>
+  You still get the full authenticated baseline — registration, sign-in, the guard, the
+  interceptor, the Angular libraries, and the Playwright suite. What you don’t get is any
+  domain of your own.
+</p>
+
+<h3>Replacing an existing target</h3>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>mvp new dotnet-angular-jwt-mvp --config samples/sample-mvp.yaml --output ./out --force</code></pre>
+</div>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> exit code 0</div>
+<pre><code><span class="muted">Generating dotnet-angular-jwt-mvp...</span>
+<span class="ok">Generated 102 files at '/work/out/Acme'.</span>
+<span class="ok">Replaced the existing target '/work/out/Acme' using transactional backup and rollback.</span></code></pre>
+</div>
+
+<div class="callout warning">
+  <span class="callout-title">--force replaces the whole tree</span>
+  <p>It is safe in the sense that a failed publication rolls back — not in the sense that
+  your edits survive. Anything you changed inside the target is gone. Generate somewhere
+  else and merge.</p>
+</div>
+
+<h3>Manifest warnings</h3>
+
+<p>
+  Unknown fields do not fail the run. They are reported on <strong>stderr</strong> and
+  ignored, so a manifest written for a newer version still works:
+</p>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> exit code 0</div>
+<pre><code><span class="muted">Generating dotnet-angular-jwt-mvp...</span>
+<span class="warn">warning: Unknown manifest field 'database' was ignored.</span>
+<span class="warn">warning: Unknown property field 'nullable' was ignored.</span>
+<span class="ok">Generated 85 files at '/work/out/Warned'.</span></code></pre>
+</div>
+
+<h2>Incremental commands</h2>
+
+<p>
+  Eight focused generators for when you want one project rather than a solution. All of
+  them require <code>--name</code>, and none of them read a manifest.
+</p>
+
+<div class="table-scroll">
+<table>
+  <thead>
+    <tr><th>Command</th><th>Target directory</th><th>Files</th><th>Produces</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="nowrap"><code>solution</code></td><td class="nowrap"><code>&lt;Name&gt;/</code></td><td class="nowrap">15</td><td>A .NET solution, API, core, infrastructure, and Angular app.</td></tr>
+    <tr><td class="nowrap"><code>api</code></td><td class="nowrap"><code>&lt;Name&gt;.Api/</code></td><td class="nowrap">2</td><td>A .NET Web API project.</td></tr>
+    <tr><td class="nowrap"><code>core</code></td><td class="nowrap"><code>&lt;Name&gt;.Core/</code></td><td class="nowrap">2</td><td>A .NET core class library.</td></tr>
+    <tr><td class="nowrap"><code>infrastructure</code></td><td class="nowrap"><code>&lt;Name&gt;.Infrastructure/</code></td><td class="nowrap">2</td><td>A .NET infrastructure class library.</td></tr>
+    <tr><td class="nowrap"><code>app</code></td><td class="nowrap"><code>&lt;Name&gt;.App/</code></td><td class="nowrap">8</td><td>An Angular application.</td></tr>
+    <tr><td class="nowrap"><code>api-library</code></td><td class="nowrap"><code>&lt;Name&gt;.Api/</code></td><td class="nowrap">4</td><td>An Angular API library.</td></tr>
+    <tr><td class="nowrap"><code>components-library</code></td><td class="nowrap"><code>&lt;Name&gt;.Components/</code></td><td class="nowrap">4</td><td>An Angular components library.</td></tr>
+    <tr><td class="nowrap"><code>domain-library</code></td><td class="nowrap"><code>&lt;Name&gt;.Domain/</code></td><td class="nowrap">4</td><td>An Angular domain library.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout warning">
+  <span class="callout-title"><code>api</code> and <code>api-library</code> collide</span>
+  <p>Both target <code>&lt;Name&gt;.Api/</code>. Running one after the other in the same
+  output directory produces a conflict and exit code <code>2</code>, not a merge. Use
+  different names or different output directories.</p>
+</div>
+
+<h3><code>mvp new solution</code></h3>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>mvp new solution --name Smoke --output ./out</code></pre>
+</div>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> exit code 0</div>
+<pre><code><span class="muted">Generating solution...</span>
+<span class="ok">Generated 15 files at '/work/out/Smoke'.</span></code></pre>
+</div>
+
+<div class="code" data-no-copy>
+  <div class="code-label">out/Smoke</div>
+<pre><code>Smoke.sln
+src/Smoke.Api/Program.cs
+src/Smoke.Api/Smoke.Api.csproj
+src/Smoke.App/angular.json
+src/Smoke.App/package.json
+src/Smoke.App/README.md
+src/Smoke.App/src/app/app.component.ts
+src/Smoke.App/src/index.html
+src/Smoke.App/src/main.ts
+src/Smoke.App/src/styles.scss
+src/Smoke.App/tsconfig.json
+src/Smoke.Core/Class1.cs
+src/Smoke.Core/Smoke.Core.csproj
+src/Smoke.Infrastructure/Class1.cs
+src/Smoke.Infrastructure/Smoke.Infrastructure.csproj</code></pre>
+</div>
+
+<div class="callout note">
+  <span class="callout-title">This is not the authenticated solution</span>
+  <p><code>new solution</code> is a plain skeleton — no authentication, no MediatR, no EF
+  Core, no Playwright. For the full stack, use
+  <code>new dotnet-angular-jwt-mvp</code>.</p>
+</div>
+
+<h3><code>mvp new api</code>, <code>core</code>, <code>infrastructure</code></h3>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>mvp new api --name OrderDesk --output ./out</code></pre>
+</div>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> exit code 0</div>
+<pre><code><span class="muted">Generating api...</span>
+<span class="ok">Generated 2 files at '/work/out/OrderDesk.Api'.</span></code></pre>
+</div>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Command</th><th>Files produced</th></tr></thead>
+  <tbody>
+    <tr><td class="nowrap"><code>api</code></td><td><code>OrderDesk.Api.csproj</code> (<code>Microsoft.NET.Sdk.Web</code>), <code>Program.cs</code></td></tr>
+    <tr><td class="nowrap"><code>core</code></td><td><code>OrderDesk.Core.csproj</code>, <code>Class1.cs</code></td></tr>
+    <tr><td class="nowrap"><code>infrastructure</code></td><td><code>OrderDesk.Infrastructure.csproj</code>, <code>Class1.cs</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3><code>mvp new app</code></h3>
+
+<p>The only command with an extra option.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Option</th><th>Default</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="nowrap"><code>--use-angular-cli</code></td>
+      <td class="nowrap"><code>false</code></td>
+      <td>Use the installed Angular CLI instead of packaged templates.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>mvp new app --name OrderDesk --output ./out</code></pre>
+</div>
+
+<div class="code" data-no-copy>
+  <div class="code-label">out/OrderDesk.App — 8 files</div>
+<pre><code>angular.json
+package.json
+README.md
+src/app/app.component.ts
+src/index.html
+src/main.ts
+src/styles.scss
+tsconfig.json</code></pre>
+</div>
+
+<h4>The <code>--use-angular-cli</code> opt-in</h4>
+
+<p>
+  This is the <strong>only</strong> code path in the whole tool that starts an external
+  process. It runs your locally installed <code>ng</code> with exactly these arguments,
+  passed as a list rather than a concatenated string:
+</p>
+
+<div class="code" data-no-copy>
+  <div class="code-label">child process</div>
+<pre><code>ng new &lt;name-kebab&gt;-app --directory . --routing --style scss --standalone --skip-git --skip-install --defaults</code></pre>
+</div>
+
+<p>
+  The result is still staged and published transactionally. If <code>ng</code> is missing
+  or fails, you get exit code <code>3</code> — see
+  <a href="errors.html#external-tool-failures">external tool failures</a>.
+</p>
+
+<div class="callout note">
+  <span class="callout-title">Prefer the default</span>
+  <p>Without this flag, generation is offline, deterministic, and version-stable. With it,
+  you inherit whatever your machine’s Angular CLI produces.</p>
+</div>
+
+<h3><code>mvp new api-library</code>, <code>components-library</code>, <code>domain-library</code></h3>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>mvp new api-library --name OrderDesk --output ./out</code></pre>
+</div>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> exit code 0</div>
+<pre><code><span class="muted">Generating api-library...</span>
+<span class="ok">Generated 4 files at '/work/out/OrderDesk.Api'.</span></code></pre>
+</div>
+
+<p>Each library produces the same four files, named for its role:</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Command</th><th>Directory</th><th>Service file</th></tr></thead>
+  <tbody>
+    <tr><td class="nowrap"><code>api-library</code></td><td class="nowrap"><code>OrderDesk.Api/</code></td><td class="nowrap"><code>src/lib/api.service.ts</code></td></tr>
+    <tr><td class="nowrap"><code>components-library</code></td><td class="nowrap"><code>OrderDesk.Components/</code></td><td class="nowrap"><code>src/lib/components.service.ts</code></td></tr>
+    <tr><td class="nowrap"><code>domain-library</code></td><td class="nowrap"><code>OrderDesk.Domain/</code></td><td class="nowrap"><code>src/lib/domain.service.ts</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Plus <code>package.json</code>, <code>README.md</code>, and
+<code>src/lib/public-api.ts</code> in every case.</p>
+
+<h2>Output conventions</h2>
+
+<p>Success output is the same shape for every command:</p>
+
+<div class="code" data-no-copy>
+  <div class="code-label">stdout</div>
+<pre><code>Generating &lt;command&gt;...
+Generated &lt;n&gt; files at '&lt;absolute target path&gt;'.</code></pre>
+</div>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Line</th><th>Stream</th><th>When</th></tr></thead>
+  <tbody>
+    <tr><td><code>Generating &lt;command&gt;...</code></td><td class="nowrap">stdout</td><td>Always, at the start.</td></tr>
+    <tr><td><code>warning: &lt;text&gt;</code> (manifest)</td><td class="nowrap">stderr</td><td>Unknown manifest fields, before generation.</td></tr>
+    <tr><td><code>Generated &lt;n&gt; files at '&lt;path&gt;'.</code></td><td class="nowrap">stdout</td><td>On success.</td></tr>
+    <tr><td><code>Replaced the existing target …</code></td><td class="nowrap">stdout</td><td>Only when <code>--force</code> replaced something.</td></tr>
+    <tr><td><code>warning: &lt;text&gt;</code> (result)</td><td class="nowrap">stdout</td><td>Post-generation warnings, such as a failed backup cleanup.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>
+  Because warnings and errors go to stderr while results go to stdout, you can pipe
+  generation output without swallowing diagnostics.
+</p>
+
+<h2>Exit codes at a glance</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td class="nowrap"><code>0</code></td><td>Success.</td></tr>
+    <tr><td class="nowrap"><code>1</code></td><td>Invalid syntax, manifest, or input.</td></tr>
+    <tr><td class="nowrap"><code>2</code></td><td>Output conflict — the target exists and <code>--force</code> was not given.</td></tr>
+    <tr><td class="nowrap"><code>3</code></td><td>Generator or external-tool failure.</td></tr>
+    <tr><td class="nowrap"><code>70</code></td><td>Unexpected internal failure.</td></tr>
+    <tr><td class="nowrap"><code>130</code></td><td>Cancelled.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Full detail and every message on the
+<a href="errors.html">Errors &amp; exit codes</a> page.</p>
+
+<nav class="page-nav" aria-label="Pagination">
+  <a href="quickstart.html"><span class="dir">Previous</span><span class="label">← Quickstart</span></a>
+  <a class="next" href="manifest.html"><span class="dir">Next</span><span class="label">Manifest schema →</span></a>
+</nav>
+
+</main>
+
+<aside class="toc" id="toc" aria-label="On this page"></aside>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <h2>Documentation</h2>
+      <ul>
+        <li><a href="install.html">Installation</a></li>
+        <li><a href="quickstart.html">Quickstart</a></li>
+        <li><a href="commands.html">Command reference</a></li>
+        <li><a href="manifest.html">Manifest schema</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Reference</h2>
+      <ul>
+        <li><a href="generated.html">Generated output</a></li>
+        <li><a href="output-safety.html">Output safety</a></li>
+        <li><a href="errors.html">Errors &amp; exit codes</a></li>
+        <li><a href="limitations.html">Limitations</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Project</h2>
+      <ul>
+        <li><a href="https://github.com/QuinntyneBrown/mvp">Repository</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CHANGELOG.md">Changelog</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SECURITY.md">Security policy</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Packages</h2>
+      <ul>
+        <li><a href="https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core">QuinntyneBrown.Mvp.Core</a></li>
+        <li><a href="library.html">Library API</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SUPPORT.md">Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-legal">
+    <p>Copyright © 2026 Quinntyne Brown and contributors. Released under the MIT License.</p>
+    <p>Documentation for <code>mvp</code> 2.1.0. Generated code, versions, and messages on this
+    site are captured from that release.</p>
+  </div>
+</footer>
+
+</body>
+</html>

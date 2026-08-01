@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Errors &amp; exit codes — mvp</title>
+<meta name="description" content="Every exit code mvp returns and every error and warning message it emits, with the cause and the fix for each.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/styles.css">
+<script src="assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<header class="site-header">
+  <button type="button" class="icon-button" id="nav-toggle" aria-expanded="false" aria-controls="sidebar" aria-label="Toggle navigation">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+  </button>
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#512bd4"/><path d="M7 22V10h3.4l3.1 6.2L16.6 10H20v12h-3v-6.6l-2.3 4.6h-2.4L10 15.4V22H7z" fill="#fff"/><path d="M21.8 10h3.1l1.6 5.3 1.6-5.3h1.3l-2.4 8h-2.6l-2.6-8z" fill="#fff" opacity=".62"/></svg>
+    <span class="brand-name">mvp</span>
+    <span class="version-pill">2.1.0</span>
+  </a>
+  <span class="header-spacer"></span>
+  <nav class="header-links" aria-label="External">
+    <a class="desktop-only" href="commands.html">Commands</a>
+    <a class="desktop-only" href="manifest.html">Manifest</a>
+    <a href="https://github.com/QuinntyneBrown/mvp">GitHub</a>
+    <button type="button" class="icon-button" id="theme-toggle" aria-label="Switch theme">
+      <svg class="theme-icon-dark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6.2 1.6a6.4 6.4 0 108.2 8.2A5.4 5.4 0 016.2 1.6z"/></svg>
+      <svg class="theme-icon-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><path d="M8 1v1.6M8 13.4V15M15 8h-1.6M2.6 8H1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1M12.9 12.9l-1.1-1.1M4.2 4.2L3.1 3.1"/></svg>
+    </button>
+  </nav>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Documentation">
+  <h2>Getting started</h2>
+  <ul>
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="install.html">Installation</a></li>
+    <li><a href="quickstart.html">Quickstart</a></li>
+  </ul>
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="commands.html">Command reference</a></li>
+    <li><a href="manifest.html">Manifest schema</a></li>
+    <li><a href="generated.html">Generated output</a></li>
+    <li><a href="output-safety.html">Output safety</a></li>
+    <li><a href="errors.html">Errors &amp; exit codes</a></li>
+  </ul>
+  <h2>Before you commit</h2>
+  <ul>
+    <li><a href="limitations.html">Limitations</a></li>
+    <li><a href="library.html">Library API</a></li>
+  </ul>
+</nav>
+
+<main id="content">
+
+<p class="eyebrow">Reference</p>
+<h1>Errors &amp; exit codes</h1>
+<p class="lede">
+  Exit codes are stable and safe to script against. Every message below is emitted verbatim
+  by <code>mvp</code> 2.1.0, with <code>&lt;…&gt;</code> marking the parts filled in at
+  runtime.
+</p>
+
+<h2>Exit codes</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Code</th><th>Name</th><th>Raised when</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="nowrap"><code>0</code></td><td class="nowrap">Success</td>
+      <td>Generation completed. Warnings may still have been printed.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>1</code></td><td class="nowrap">InvalidInput</td>
+      <td>Manifest validation failed, the manifest file was missing or unreadable, access
+      was denied, or the command line itself was invalid.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>2</code></td><td class="nowrap">Conflict</td>
+      <td>The target directory already exists and <code>--force</code> was not supplied.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>3</code></td><td class="nowrap">GenerationFailure</td>
+      <td>A template, filesystem, or external-tool failure during generation.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>70</code></td><td class="nowrap">InternalError</td>
+      <td>An unexpected failure the tool has no specific handling for. Please report it.</td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>130</code></td><td class="nowrap">Cancelled</td>
+      <td>The run was cancelled, typically with <kbd>Ctrl</kbd>+<kbd>C</kbd>.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout note">
+  <span class="callout-title">Scripting</span>
+  <p>Exit code <code>2</code> means “already generated”, not “broken”. In an idempotent
+  script, treat <code>0</code> and <code>2</code> as acceptable and everything else as a
+  failure.</p>
+</div>
+
+<h2><code>--diagnostic</code></h2>
+
+<p>
+  By default no message exposes a stack trace or internal detail. Adding
+  <code>--diagnostic</code> to any command replaces the message with the full exception
+  text — including a stack trace — for the failure kinds that carry one.
+</p>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>mvp new dotnet-angular-jwt-mvp --config mvp.yaml --output ./out --diagnostic</code></pre>
+</div>
+
+<p>
+  Include that output when reporting a bug. Leave the flag off in scripts and CI logs — it
+  can surface machine-local paths.
+</p>
+
+<h2>Which stream goes where</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Output</th><th>Stream</th></tr></thead>
+  <tbody>
+    <tr><td>Progress and success lines</td><td class="nowrap">stdout</td></tr>
+    <tr><td>Manifest warnings (unknown fields)</td><td class="nowrap">stderr</td></tr>
+    <tr><td>Post-generation warnings (for example, backup cleanup)</td><td class="nowrap">stdout</td></tr>
+    <tr><td>All errors</td><td class="nowrap">stderr</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 data-toc="Validation errors">Validation errors <span class="badge accent">exit 1</span></h2>
+
+<p>
+  Validation is aggregate: every problem is reported in one run, prefixed with
+  <code>Input validation failed:</code> and one <code>-&nbsp;</code> line each. Nothing is
+  written to disk.
+</p>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> shape</div>
+<pre><code><span class="err">Input validation failed:
+- &lt;first problem&gt;
+- &lt;second problem&gt;</span></code></pre>
+</div>
+
+<p>
+  <code>&lt;label&gt;</code> below is one of <code>Solution name</code>,
+  <code>Name</code>, <code>Entity &lt;n&gt; name</code>,
+  <code>Property &lt;n&gt; on '&lt;Entity&gt;'</code>, <code>Page &lt;n&gt; name</code>, or
+  <code>Component &lt;n&gt; name</code>. Positions are 1-based.
+</p>
+
+<div class="entry">
+  <div class="message">&lt;label&gt; is required. Supply --name or set 'name:' in the manifest.</div>
+  <p><strong>Cause.</strong> No name was supplied on the command line or in the manifest.</p>
+  <p><strong>Fix.</strong> Add <code>--name Contoso</code>, or set <code>name:</code> at the
+  top of the manifest. <code>--name</code> wins when both are present.</p>
+</div>
+
+<div class="entry">
+  <div class="message">&lt;label&gt; '&lt;value&gt;' must be a PascalCase identifier containing only ASCII letters and digits.</div>
+  <p><strong>Cause.</strong> The value does not match <code>^[A-Z][A-Za-z0-9]*$</code> —
+  it has spaces, punctuation, accented characters, or a lowercase first letter.</p>
+  <p><strong>Fix.</strong> Rename it. <code>order desk</code> → <code>OrderDesk</code>;
+  <code>order_desk</code> → <code>OrderDesk</code>.</p>
+</div>
+
+<div class="entry">
+  <div class="message">&lt;label&gt; '&lt;value&gt;' is reserved and cannot be used.</div>
+  <p><strong>Cause.</strong> The value is a reserved device name or namespace root:
+  <code>CON</code>, <code>PRN</code>, <code>AUX</code>, <code>NUL</code>,
+  <code>COM1</code>–<code>COM9</code>, <code>LPT1</code>–<code>LPT9</code>,
+  <code>System</code>, or <code>Microsoft</code>. Matched case-insensitively.</p>
+  <p><strong>Fix.</strong> Choose a different name.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Entity name '&lt;Entity&gt;' is reserved by the authentication model.</div>
+  <p><strong>Cause.</strong> You declared an entity called <code>User</code> or
+  <code>RefreshToken</code>; both are already generated.</p>
+  <p><strong>Fix.</strong> Rename yours — <code>Account</code>, <code>Member</code>,
+  <code>Profile</code> — or extend the generated <code>User</code> class after generating.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Property name '&lt;Entity&gt;.&lt;Property&gt;' is generated automatically and must not be declared.</div>
+  <p><strong>Cause.</strong> You declared <code>Id</code> or <code>CreatedAt</code>. Every
+  entity gets <code>Id</code> as a <code>Guid</code> and <code>CreatedAt</code> as a
+  <code>DateTime</code>.</p>
+  <p><strong>Fix.</strong> Remove the property.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Property '&lt;Entity&gt;.&lt;Property&gt;' has unsupported type '&lt;type&gt;'. Supported types: string, int, long, decimal, bool, DateTime, Guid.</div>
+  <p><strong>Cause.</strong> The type is outside the supported set, or spelled differently —
+  matching is exact, so <code>String</code>, <code>datetime</code>, and <code>double</code>
+  all fail.</p>
+  <p><strong>Fix.</strong> Use one of the seven listed types, matching case exactly. For
+  money, <code>decimal</code> or an integer minor-unit field such as
+  <code>BudgetCents: long</code> both work.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Page '&lt;Page&gt;' conflicts with a baseline authentication page or route.</div>
+  <p><strong>Cause.</strong> The page name is <code>SignIn</code>, <code>SignUp</code>, or
+  <code>Dashboard</code>, or its route is <code>sign-in</code>, <code>sign-up</code>, or
+  <code>dashboard</code>. All three are always generated.</p>
+  <p><strong>Fix.</strong> Drop the page from the manifest and edit the generated one, or
+  pick a different name and route.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Page '&lt;Page&gt;' route '&lt;route&gt;' must contain only kebab-case path segments.</div>
+  <p><strong>Cause.</strong> The route does not match
+  <code>^[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*$</code>.</p>
+  <p><strong>Fix.</strong> Lowercase it, replace underscores and spaces with hyphens, and
+  drop any leading or trailing slash. <code>Order_History</code> →
+  <code>order-history</code>.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Component '&lt;Component&gt;' has unsupported library '&lt;library&gt;'. Supported libraries: api, components, domain.</div>
+  <p><strong>Cause.</strong> <code>library</code> is not one of the three workspace
+  libraries.</p>
+  <p><strong>Fix.</strong> Use <code>components</code> for pure UI, <code>domain</code> for
+  components that know about your models, <code>api</code> for HTTP concerns. Omitting the
+  field defaults to <code>components</code>.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Duplicate &lt;label&gt; value '&lt;value&gt;'.</div>
+  <p><strong>Cause.</strong> Two entries collide. <code>&lt;label&gt;</code> is
+  <code>entities</code>, <code>pages</code>, <code>page routes</code>,
+  <code>components</code>, or <code>properties on entity '&lt;Entity&gt;'</code>. Comparison
+  is case-insensitive, so <code>Title</code> and <code>title</code> collide.</p>
+  <p><strong>Fix.</strong> Remove or rename one of them.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Output directory cannot be empty.</div>
+  <p><strong>Cause.</strong> The resolved output path was blank.</p>
+  <p><strong>Fix.</strong> Supply <code>--output</code>, or remove an empty
+  <code>output:</code> from the manifest so the current directory is used.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Output path is invalid: &lt;reason&gt;</div>
+  <p><strong>Cause.</strong> The output path could not be resolved — invalid characters, an
+  unsupported form, or a path too long for the platform.</p>
+  <p><strong>Fix.</strong> Use a shorter absolute path, or a simple relative one such as
+  <code>./out</code>.</p>
+</div>
+
+<h2 data-toc="Manifest loading errors">Manifest loading errors <span class="badge accent">exit 1</span></h2>
+
+<div class="entry">
+  <div class="message">Manifest file '&lt;path&gt;' was not found.</div>
+  <p><strong>Cause.</strong> <code>--config</code> points at a path that does not exist.</p>
+  <p><strong>Fix.</strong> Check the path; it is resolved relative to your current
+  directory, not to the output directory.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Manifest exceeds the 1024 KiB size limit.</div>
+  <p><strong>Cause.</strong> The file is larger than 1 MiB.</p>
+  <p><strong>Fix.</strong> A manifest this large almost certainly points at the wrong file.
+  Split the work into several smaller solutions if it is genuine.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Manifest could not be read: &lt;reason&gt;</div>
+  <p><strong>Cause.</strong> An I/O failure — the file is locked by another process, or on
+  an unavailable volume.</p>
+  <p><strong>Fix.</strong> Close whatever holds the file and retry.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Manifest is empty.</div>
+  <div class="message">Manifest is empty or invalid.</div>
+  <p><strong>Cause.</strong> The file is blank, whitespace only, or parses to nothing (for
+  example, entirely comments).</p>
+  <p><strong>Fix.</strong> At minimum, give it a <code>name:</code> line.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Manifest YAML is invalid: &lt;reason&gt;</div>
+  <p><strong>Cause.</strong> The file is not well-formed YAML. Inconsistent indentation and
+  tab characters are the usual culprits.</p>
+  <p><strong>Fix.</strong> YAML requires spaces, never tabs. The reason text names the line
+  and column.</p>
+</div>
+
+<h2 data-toc="Warnings">Warnings <span class="badge ok">exit 0</span></h2>
+
+<p>Warnings never stop a run.</p>
+
+<div class="entry">
+  <div class="message warn">Unknown &lt;location&gt; field '&lt;key&gt;' was ignored.</div>
+  <p><strong>Cause.</strong> The manifest contains a field the schema does not define.
+  <code>&lt;location&gt;</code> is <code>manifest</code>, <code>entity</code>,
+  <code>property</code>, <code>page</code>, or <code>component</code>. Printed to
+  <strong>stderr</strong>.</p>
+  <p><strong>Fix.</strong> Usually a typo — <code>route</code> misspelled as
+  <code>path</code>, or <code>requiresAuth</code> as <code>requireAuth</code>. Unknown
+  fields are tolerated so a manifest written for a newer version still runs, which means a
+  typo silently does nothing. Check the <a href="manifest.html">schema</a> against the
+  warning.</p>
+</div>
+
+<div class="entry">
+  <div class="message warn">Generation succeeded, but backup cleanup failed: &lt;reason&gt;</div>
+  <p><strong>Cause.</strong> A <code>--force</code> replacement published successfully, but
+  the temporary backup directory could not be deleted.</p>
+  <p><strong>Fix.</strong> Your generated tree is correct and complete. Delete the leftover
+  <code>.&lt;Name&gt;.mvp-backup-*</code> directory beside the target by hand.</p>
+</div>
+
+<h2 data-toc="Conflicts">Conflicts <span class="badge accent">exit 2</span></h2>
+
+<div class="entry">
+  <div class="message">The target '&lt;path&gt;' already exists. Re-run with --force to replace it safely.</div>
+  <p><strong>Cause.</strong> The target directory exists and <code>--force</code> was not
+  given. This is a refusal, not a failure — nothing was touched.</p>
+  <p><strong>Fix.</strong> Generate into a different <code>--output</code>, delete the
+  existing directory yourself, or pass <code>--force</code> to replace it wholesale. See
+  <a href="output-safety.html">Output safety</a> before choosing <code>--force</code>.</p>
+</div>
+
+<h2 data-toc="Generation failures">Generation failures <span class="badge accent">exit 3</span></h2>
+
+<div class="entry">
+  <div class="message">Generation could not be committed to '&lt;path&gt;'.</div>
+  <p><strong>Cause.</strong> Rendering succeeded but publication failed — a permission
+  problem, a lock held by an editor or antivirus scanner, or a full disk.</p>
+  <p><strong>Fix.</strong> Close anything holding files in the target, check free space and
+  permissions, then retry. If <code>--force</code> was in play, the previous tree has
+  already been restored.</p>
+</div>
+
+<div class="entry">
+  <div class="message">The target path must have a parent directory.</div>
+  <p><strong>Cause.</strong> The resolved target is a filesystem root, so there is nowhere
+  to place the staging directory.</p>
+  <p><strong>Fix.</strong> Point <code>--output</code> at a real directory rather than a
+  drive root.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Template output path '&lt;path&gt;' escapes the target directory.</div>
+  <p><strong>Cause.</strong> A rendered path resolved outside the target root. Containment
+  is enforced on every write.</p>
+  <p><strong>Fix.</strong> Input validation should make this unreachable — please report it
+  with <code>--diagnostic</code> output.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Packaged template resource '&lt;name&gt;' was not found.</div>
+  <div class="message">The packaged full-stack template manifest was not found.</div>
+  <div class="message">The packaged full-stack template manifest is missing or empty.</div>
+  <div class="message">Invalid packaged template manifest entry: '&lt;line&gt;'.</div>
+  <p><strong>Cause.</strong> The tool’s embedded templates are missing or malformed —
+  a damaged or hand-modified installation.</p>
+  <p><strong>Fix.</strong> Reinstall the tool. If a clean install still fails, report it.</p>
+</div>
+
+<h3>External tool failures</h3>
+
+<p>Only reachable through <code>mvp new app --use-angular-cli</code>.</p>
+
+<div class="entry">
+  <div class="message">Angular CLI could not be started. Install Angular CLI or omit --use-angular-cli to use packaged templates.</div>
+  <p><strong>Cause.</strong> <code>ng</code> (or <code>ng.cmd</code> on Windows) is not on
+  your <code>PATH</code>.</p>
+  <p><strong>Fix.</strong> Drop the flag — the packaged templates need no Angular CLI — or
+  install it with <code>npm install -g @angular/cli</code>.</p>
+</div>
+
+<div class="entry">
+  <div class="message">Angular CLI generation failed: &lt;detail&gt;</div>
+  <p><strong>Cause.</strong> <code>ng</code> started but returned a non-zero exit code.
+  <code>&lt;detail&gt;</code> is its stderr, or <code>exit code &lt;n&gt;</code> when it
+  said nothing.</p>
+  <p><strong>Fix.</strong> Read the detail. A version incompatibility between your Angular
+  CLI and the expected arguments is the common cause; the packaged template path avoids the
+  problem entirely.</p>
+</div>
+
+<h2 data-toc="Internal errors">Internal errors <span class="badge danger">exit 70</span></h2>
+
+<div class="entry">
+  <div class="message">An unexpected internal error occurred.</div>
+  <p><strong>Cause.</strong> A failure with no specific handling. The message is
+  deliberately terse so nothing internal leaks.</p>
+  <p><strong>Fix.</strong> Re-run with <code>--diagnostic</code> for the full exception and
+  <a href="https://github.com/QuinntyneBrown/mvp/issues">open an issue</a> with that output,
+  your manifest, and the exact command line.</p>
+</div>
+
+<h2 data-toc="Cancellation">Cancellation <span class="badge accent">exit 130</span></h2>
+
+<div class="entry">
+  <div class="message">Generation cancelled.</div>
+  <p><strong>Cause.</strong> You interrupted the run.</p>
+  <p><strong>Effect.</strong> The staging directory is removed, the target is untouched, and
+  any child process tree is killed. Nothing to clean up.</p>
+</div>
+
+<h2>Common situations</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Symptom</th><th>What is happening</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>dotnet tool install -g Mvp.Cli</code> cannot find the package</td>
+      <td>The tool is not published to NuGet.org. Pack it from source and use
+      <code>--add-source</code> — see <a href="install.html">Installation</a>.</td>
+    </tr>
+    <tr>
+      <td><code>mvp</code> is not recognised after installing</td>
+      <td>The .NET tools directory is not on your <code>PATH</code>, or the shell predates
+      the install. Open a new terminal.</td>
+    </tr>
+    <tr>
+      <td>Changes to the source have no effect</td>
+      <td>You are running an installed copy. Re-pack and <code>dotnet tool update</code>, or
+      use <code>dotnet run --project src/Mvp.Cli --</code>.</td>
+    </tr>
+    <tr>
+      <td>A manifest field seems to be ignored</td>
+      <td>Look for an <code>Unknown … field</code> warning on stderr — the name is probably
+      misspelled.</td>
+    </tr>
+    <tr>
+      <td>The generated backend does not compile</td>
+      <td>Most often an entity name colliding with a framework type.
+      <code>Task</code> is handled; others may not be. Rename and regenerate.</td>
+    </tr>
+    <tr>
+      <td>Generated data disappears on restart</td>
+      <td>Expected. The default store is in-memory; set
+      <code>ConnectionStrings:Default</code> to use SQL Server.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<nav class="page-nav" aria-label="Pagination">
+  <a href="output-safety.html"><span class="dir">Previous</span><span class="label">← Output safety</span></a>
+  <a class="next" href="limitations.html"><span class="dir">Next</span><span class="label">Limitations →</span></a>
+</nav>
+
+</main>
+
+<aside class="toc" id="toc" aria-label="On this page"></aside>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <h2>Documentation</h2>
+      <ul>
+        <li><a href="install.html">Installation</a></li>
+        <li><a href="quickstart.html">Quickstart</a></li>
+        <li><a href="commands.html">Command reference</a></li>
+        <li><a href="manifest.html">Manifest schema</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Reference</h2>
+      <ul>
+        <li><a href="generated.html">Generated output</a></li>
+        <li><a href="output-safety.html">Output safety</a></li>
+        <li><a href="errors.html">Errors &amp; exit codes</a></li>
+        <li><a href="limitations.html">Limitations</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Project</h2>
+      <ul>
+        <li><a href="https://github.com/QuinntyneBrown/mvp">Repository</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CHANGELOG.md">Changelog</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SECURITY.md">Security policy</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Packages</h2>
+      <ul>
+        <li><a href="https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core">QuinntyneBrown.Mvp.Core</a></li>
+        <li><a href="library.html">Library API</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SUPPORT.md">Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-legal">
+    <p>Copyright © 2026 Quinntyne Brown and contributors. Released under the MIT License.</p>
+    <p>Documentation for <code>mvp</code> 2.1.0. Generated code, versions, and messages on this
+    site are captured from that release.</p>
+  </div>
+</footer>
+
+</body>
+</html>

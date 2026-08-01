@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Limitations — mvp</title>
+<meta name="description" content="What mvp deliberately does not do, which requirements are still partial or planned, and what the generated solution leaves for you to build.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/styles.css">
+<script src="assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<header class="site-header">
+  <button type="button" class="icon-button" id="nav-toggle" aria-expanded="false" aria-controls="sidebar" aria-label="Toggle navigation">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+  </button>
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#512bd4"/><path d="M7 22V10h3.4l3.1 6.2L16.6 10H20v12h-3v-6.6l-2.3 4.6h-2.4L10 15.4V22H7z" fill="#fff"/><path d="M21.8 10h3.1l1.6 5.3 1.6-5.3h1.3l-2.4 8h-2.6l-2.6-8z" fill="#fff" opacity=".62"/></svg>
+    <span class="brand-name">mvp</span>
+    <span class="version-pill">2.1.0</span>
+  </a>
+  <span class="header-spacer"></span>
+  <nav class="header-links" aria-label="External">
+    <a class="desktop-only" href="commands.html">Commands</a>
+    <a class="desktop-only" href="manifest.html">Manifest</a>
+    <a href="https://github.com/QuinntyneBrown/mvp">GitHub</a>
+    <button type="button" class="icon-button" id="theme-toggle" aria-label="Switch theme">
+      <svg class="theme-icon-dark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6.2 1.6a6.4 6.4 0 108.2 8.2A5.4 5.4 0 016.2 1.6z"/></svg>
+      <svg class="theme-icon-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><path d="M8 1v1.6M8 13.4V15M15 8h-1.6M2.6 8H1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1M12.9 12.9l-1.1-1.1M4.2 4.2L3.1 3.1"/></svg>
+    </button>
+  </nav>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Documentation">
+  <h2>Getting started</h2>
+  <ul>
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="install.html">Installation</a></li>
+    <li><a href="quickstart.html">Quickstart</a></li>
+  </ul>
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="commands.html">Command reference</a></li>
+    <li><a href="manifest.html">Manifest schema</a></li>
+    <li><a href="generated.html">Generated output</a></li>
+    <li><a href="output-safety.html">Output safety</a></li>
+    <li><a href="errors.html">Errors &amp; exit codes</a></li>
+  </ul>
+  <h2>Before you commit</h2>
+  <ul>
+    <li><a href="limitations.html">Limitations</a></li>
+    <li><a href="library.html">Library API</a></li>
+  </ul>
+</nav>
+
+<main id="content">
+
+<p class="eyebrow">Before you commit</p>
+<h1>Limitations</h1>
+<p class="lede">
+  <code>mvp</code> ships the skeleton and conventions of a working product, not the product.
+  This page is the honest inventory of what it leaves to you — read it before you build on
+  the output.
+</p>
+
+<h2>When to use something else</h2>
+
+<p>The tool is opinionated about the stack. It is the wrong choice when you want:</p>
+
+<ul>
+  <li>A different frontend — Next.js, React, Vue, Svelte, or a mobile application.</li>
+  <li>A different backend — Python, Node.js, Go, or anything that is not .NET 10.</li>
+  <li>To <strong>add</strong> features to an existing project. Every command creates a new
+  directory; nothing merges into a tree you already have.</li>
+  <li>A different architecture. The layering, MediatR handlers, and library boundaries are
+  fixed by the templates.</li>
+</ul>
+
+<h2>Explicitly out of scope</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Not provided</th><th>What that means for you</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Hosting, deployment, or CI for the generated solution</td>
+      <td>No Dockerfile, no Bicep or Terraform, no pipeline YAML. Deployment is entirely
+      yours to design.</td>
+    </tr>
+    <tr>
+      <td>Maintenance of generated code after you modify it</td>
+      <td>Once you edit the output, it is your code. There is no upgrade path that
+      re-applies template changes to a tree you have changed.</td>
+    </tr>
+    <tr>
+      <td>Domain breadth beyond what you declare</td>
+      <td>The generator expands exactly the entities, pages, and components in your
+      manifest — and no further.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Not generated in the backend</h2>
+
+<div class="callout warning">
+  <span class="callout-title">Only two operations per entity</span>
+  <p>Each entity gets a <strong>create</strong> command and a <strong>get-by-id</strong>
+  query. Update, delete, list, paging, filtering, and sorting are not generated. You get a
+  pattern to copy, not a CRUD surface.</p>
+</div>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Missing</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Refresh-token rotation</td>
+      <td>A <code>RefreshToken</code> entity and its <code>DbSet</code> are generated, but no
+      rotation, issuing, or revocation logic exists. The entity is a placeholder for work
+      you will do.</td>
+    </tr>
+    <tr>
+      <td>Sign-in throttling and lockout</td>
+      <td>Nothing rate-limits authentication attempts. Add throttling before exposing the
+      API publicly.</td>
+    </tr>
+    <tr>
+      <td>Audit logging</td>
+      <td>No record of who changed what, when.</td>
+    </tr>
+    <tr>
+      <td>Security-headers middleware</td>
+      <td>No HSTS, CSP, or frame-options middleware is wired up.</td>
+    </tr>
+    <tr>
+      <td>Request logging and observability</td>
+      <td>No structured logging pipeline, no redaction, no tracing, no metrics.</td>
+    </tr>
+    <tr>
+      <td>Authorization beyond “authenticated”</td>
+      <td>No roles, claims policies, or per-resource ownership checks.</td>
+    </tr>
+    <tr>
+      <td>EF Core migrations</td>
+      <td><code>EntityFrameworkCore.Design</code> is referenced so you can create them, but
+      none are generated and there is no seeding.</td>
+    </tr>
+    <tr>
+      <td>Email flows</td>
+      <td>No confirmation, no password reset, no notifications.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Not generated in the frontend</h2>
+
+<ul>
+  <li>Pages are <strong>stubs</strong>. A generated page renders a heading; it does not
+  fetch or display your entity data.</li>
+  <li>Components are empty shells with a selector, template, and stylesheet.</li>
+  <li>Only the authentication service is generated in the <code>api</code> library. Typed
+  clients for your own entities are not.</li>
+  <li>No state management beyond the signal-based authentication service.</li>
+  <li>No internationalization, theming system, or design system beyond Angular Material
+  being available as a dependency.</li>
+</ul>
+
+<h2>Delivery status</h2>
+
+<p>
+  Seventy-seven detailed requirements are tracked. Sixty-nine are implemented; the remaining
+  eight are named below rather than left for you to discover.
+</p>
+
+<div class="badge-row">
+  <span class="badge ok">69 implemented</span>
+  <span class="badge warn">5 partial</span>
+  <span class="badge danger">3 planned</span>
+</div>
+
+<h3>Partial</h3>
+
+<div class="entry">
+  <div class="entry-meta"><span class="badge warn">Partial</span><span class="badge neutral">L2-033</span></div>
+  <h3>Session termination and expiry handling</h3>
+  <p>Sign-out is available; automatic handling of an expired token during an active session
+  is targeted for a future release.</p>
+  <p><strong>In practice:</strong> when a token expires mid-session, the application does not
+  detect the resulting failures, clear the session, and redirect. Users see requests fail.
+  Handle <code>401</code> responses in an interceptor yourself.</p>
+</div>
+
+<div class="entry">
+  <div class="entry-meta"><span class="badge warn">Partial</span><span class="badge neutral">L2-040</span></div>
+  <h3>Library boundary rules</h3>
+  <p>The boundaries exist by construction and are documented; automated enforcement is
+  targeted for a future release.</p>
+  <p><strong>In practice:</strong> nothing stops a developer importing across the intended
+  boundaries. Add a lint rule if the separation matters to your team.</p>
+</div>
+
+<div class="entry">
+  <div class="entry-meta"><span class="badge warn">Partial</span><span class="badge neutral">L2-042</span></div>
+  <h3>Viewport declaration and fluid sizing</h3>
+  <p>The viewport declaration is generated; fluid sizing rules across all generated screens
+  are targeted for a future release.</p>
+  <p><strong>In practice:</strong> the meta tag is present, but generated screens are not
+  systematically built with responsive primitives.</p>
+</div>
+
+<div class="entry">
+  <div class="entry-meta"><span class="badge warn">Partial</span><span class="badge neutral">L2-049</span></div>
+  <h3>Signing key must be replaced before use</h3>
+  <p>A non-functional placeholder ships and replacement is documented; refusal to start with
+  the placeholder value is targeted for a future release.</p>
+  <p><strong>In practice — this is the one that can hurt you.</strong> The generated API will
+  start with <code>REPLACE_WITH_AT_LEAST_32_CHARACTER_RANDOM_SECRET_VALUE</code> as its
+  signing key. Nothing refuses to boot, warns at startup, or fails a health check. Replacing
+  it is entirely a matter of you remembering to.</p>
+</div>
+
+<div class="entry">
+  <div class="entry-meta"><span class="badge warn">Partial</span><span class="badge neutral">L2-073</span></div>
+  <h3>Public API contract and compatibility</h3>
+  <p>The <code>QuinntyneBrown.Mvp.Core</code> package is validated for framework
+  compatibility, but no baselined comparison against a previously published version is
+  enforced, so removal of a public member is not yet caught automatically.</p>
+  <p><strong>In practice:</strong> the supported surface is documented and semantic
+  versioning is followed, but nothing in the build fails when a public member disappears.
+  If you take a dependency on the library, pin the version you tested against.</p>
+</div>
+
+<h3>Planned</h3>
+
+<div class="entry">
+  <div class="entry-meta"><span class="badge danger">Planned</span><span class="badge neutral">L2-041</span></div>
+  <h3>Responsive layout across supported viewports</h3>
+  <p>Generated screens are not yet verified usable across the full supported viewport range.
+  Assume you will do layout work for small screens.</p>
+</div>
+
+<div class="entry">
+  <div class="entry-meta"><span class="badge danger">Planned</span><span class="badge neutral">L2-043</span></div>
+  <h3>Accessibility baseline</h3>
+  <p>Generated screens do not yet meet a stated accessibility baseline. Programmatic labels,
+  keyboard order and focus visibility, contrast ratios, error announcement, and document
+  language and heading structure are all unverified. If you need WCAG 2.1 Level AA, budget
+  for that work — the generated markup is a starting point, not a compliant one.</p>
+</div>
+
+<div class="entry">
+  <div class="entry-meta"><span class="badge danger">Planned</span><span class="badge neutral">L2-059</span></div>
+  <h3>Runtime performance budgets for generated solutions</h3>
+  <p>No default performance budgets are enforced on the generated application — not response
+  times, not Largest Contentful Paint, not initial bundle size. Generation itself
+  <em>is</em> budgeted; see <a href="output-safety.html">Output safety</a>.</p>
+</div>
+
+<div class="callout note">
+  <span class="callout-title">Partial and planned sit outside the delivery baseline</span>
+  <p>They are tracked commitments, not promises with dates. Treat everything above as work
+  you own unless and until a release says otherwise.</p>
+</div>
+
+<h2>Operational limits</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Limit</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Manifest file size</td><td class="nowrap">1 MiB</td></tr>
+    <tr><td>Supported property types</td><td>Seven: <code>string</code>, <code>int</code>, <code>long</code>, <code>decimal</code>, <code>bool</code>, <code>DateTime</code>, <code>Guid</code>. No enums, no collections, no nested types, no relationships.</td></tr>
+    <tr><td>Entity relationships</td><td>Not expressible. Properties are scalars; foreign keys and navigation properties are yours to add.</td></tr>
+    <tr><td>Nullability per property</td><td>Not expressible in the manifest.</td></tr>
+    <tr><td>Frontend libraries</td><td>Fixed at three: <code>api</code>, <code>components</code>, <code>domain</code>.</td></tr>
+    <tr><td>Custom templates</td><td>Not supported. Templates are embedded in the tool and cannot be overridden or extended.</td></tr>
+    <tr><td>Regeneration into an existing tree</td><td>Not supported. An existing target is a conflict; <code>--force</code> replaces it wholesale.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Distribution</h2>
+
+<div class="callout danger">
+  <span class="callout-title">The CLI is not published</span>
+  <p>Only <code>QuinntyneBrown.Mvp.Core</code> is on NuGet.org. The <code>Mvp.Cli</code>
+  tool package is built, packed, and smoke-tested on every change, but you must pack and
+  install it from source. There is no <code>dotnet tool install -g Mvp.Cli</code> today.</p>
+</div>
+
+<h2>Security posture</h2>
+
+<p>
+  Generated code is a starting point that has not been reviewed for <em>your</em> threat
+  model. Before any non-evaluation use:
+</p>
+
+<ol>
+  <li>Replace <code>Jwt:SigningKey</code> with at least 32 random characters and move it out
+  of source control.</li>
+  <li>Replace the in-memory store with durable persistence.</li>
+  <li>Set real allowed origins — the default permits <code>http://localhost:4200</code>
+  only, which is correct for development and wrong for production.</li>
+  <li>Add rate limiting, security headers, and audit logging.</li>
+  <li>Decide your token lifetime and refresh strategy; the default is a 60-minute access
+  token with no refresh flow.</li>
+  <li>Run your own security review of the whole application.</li>
+</ol>
+
+<div class="callout note">
+  <span class="callout-title">What the tool does get right</span>
+  <p>Passwords are hashed with BCrypt at work factor 12. Bearer tokens validate issuer,
+  audience, lifetime, and signing key. CORS names an explicit origin rather than a wildcard.
+  The global exception handler returns no internal detail. Manifest input cannot traverse
+  paths or inject process arguments. These are defaults you should keep.</p>
+</div>
+
+<nav class="page-nav" aria-label="Pagination">
+  <a href="errors.html"><span class="dir">Previous</span><span class="label">← Errors &amp; exit codes</span></a>
+  <a class="next" href="library.html"><span class="dir">Next</span><span class="label">Library API →</span></a>
+</nav>
+
+</main>
+
+<aside class="toc" id="toc" aria-label="On this page"></aside>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <h2>Documentation</h2>
+      <ul>
+        <li><a href="install.html">Installation</a></li>
+        <li><a href="quickstart.html">Quickstart</a></li>
+        <li><a href="commands.html">Command reference</a></li>
+        <li><a href="manifest.html">Manifest schema</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Reference</h2>
+      <ul>
+        <li><a href="generated.html">Generated output</a></li>
+        <li><a href="output-safety.html">Output safety</a></li>
+        <li><a href="errors.html">Errors &amp; exit codes</a></li>
+        <li><a href="limitations.html">Limitations</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Project</h2>
+      <ul>
+        <li><a href="https://github.com/QuinntyneBrown/mvp">Repository</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CHANGELOG.md">Changelog</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SECURITY.md">Security policy</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Packages</h2>
+      <ul>
+        <li><a href="https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core">QuinntyneBrown.Mvp.Core</a></li>
+        <li><a href="library.html">Library API</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SUPPORT.md">Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-legal">
+    <p>Copyright © 2026 Quinntyne Brown and contributors. Released under the MIT License.</p>
+    <p>Documentation for <code>mvp</code> 2.1.0. Generated code, versions, and messages on this
+    site are captured from that release.</p>
+  </div>
+</footer>
+
+</body>
+</html>

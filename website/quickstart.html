@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quickstart — mvp</title>
+<meta name="description" content="Generate a JWT-authenticated .NET 10 and Angular 22 solution with mvp, then build the backend, serve the frontend, and run the Playwright end-to-end tests.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/styles.css">
+<script src="assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<header class="site-header">
+  <button type="button" class="icon-button" id="nav-toggle" aria-expanded="false" aria-controls="sidebar" aria-label="Toggle navigation">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+  </button>
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#512bd4"/><path d="M7 22V10h3.4l3.1 6.2L16.6 10H20v12h-3v-6.6l-2.3 4.6h-2.4L10 15.4V22H7z" fill="#fff"/><path d="M21.8 10h3.1l1.6 5.3 1.6-5.3h1.3l-2.4 8h-2.6l-2.6-8z" fill="#fff" opacity=".62"/></svg>
+    <span class="brand-name">mvp</span>
+    <span class="version-pill">2.1.0</span>
+  </a>
+  <span class="header-spacer"></span>
+  <nav class="header-links" aria-label="External">
+    <a class="desktop-only" href="commands.html">Commands</a>
+    <a class="desktop-only" href="manifest.html">Manifest</a>
+    <a href="https://github.com/QuinntyneBrown/mvp">GitHub</a>
+    <button type="button" class="icon-button" id="theme-toggle" aria-label="Switch theme">
+      <svg class="theme-icon-dark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6.2 1.6a6.4 6.4 0 108.2 8.2A5.4 5.4 0 016.2 1.6z"/></svg>
+      <svg class="theme-icon-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><path d="M8 1v1.6M8 13.4V15M15 8h-1.6M2.6 8H1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1M12.9 12.9l-1.1-1.1M4.2 4.2L3.1 3.1"/></svg>
+    </button>
+  </nav>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Documentation">
+  <h2>Getting started</h2>
+  <ul>
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="install.html">Installation</a></li>
+    <li><a href="quickstart.html">Quickstart</a></li>
+  </ul>
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="commands.html">Command reference</a></li>
+    <li><a href="manifest.html">Manifest schema</a></li>
+    <li><a href="generated.html">Generated output</a></li>
+    <li><a href="output-safety.html">Output safety</a></li>
+    <li><a href="errors.html">Errors &amp; exit codes</a></li>
+  </ul>
+  <h2>Before you commit</h2>
+  <ul>
+    <li><a href="limitations.html">Limitations</a></li>
+    <li><a href="library.html">Library API</a></li>
+  </ul>
+</nav>
+
+<main id="content">
+
+<p class="eyebrow">Getting started</p>
+<h1>Quickstart</h1>
+<p class="lede">
+  From nothing to a running application with a working sign-up flow. Generation takes
+  seconds; the slow part is <code>npm install</code>.
+</p>
+
+<div class="callout note">
+  <span class="callout-title">This is the sequence CI runs</span>
+  <p>Every step below is exercised on Windows, Linux, and macOS on each change to the
+  repository, including building the generated backend and frontend. If it breaks, the
+  build goes red.</p>
+</div>
+
+<h2>1. Describe what you want</h2>
+
+<p>
+  Save this as <code>mvp.yaml</code>. Every section is optional except <code>name</code> —
+  see the <a href="manifest.html">manifest schema</a> for the full contract.
+</p>
+
+<div class="code">
+  <div class="code-label">mvp.yaml</div>
+<pre><code>name: Acme
+
+entities:
+  - name: Project
+    properties:
+      - name: Title
+        type: string
+      - name: Description
+        type: string
+      - name: BudgetCents
+        type: long
+
+  - name: Task
+    properties:
+      - name: Title
+        type: string
+      - name: IsComplete
+        type: bool
+
+pages:
+  - name: Projects
+    route: projects
+    requiresAuth: true
+  - name: Settings
+    route: settings
+    requiresAuth: true
+
+components:
+  - name: ProjectCard
+    library: domain</code></pre>
+</div>
+
+<p>
+  This is <code>samples/sample-mvp.yaml</code> from the repository verbatim, so you can
+  point <code>--config</code> straight at it instead.
+</p>
+
+<h2>2. Generate</h2>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>mvp new dotnet-angular-jwt-mvp --config mvp.yaml --output ./out</code></pre>
+</div>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> output</div>
+<pre><code><span class="muted">Generating dotnet-angular-jwt-mvp...</span>
+<span class="ok">Generated 102 files at '/work/out/Acme'.</span></code></pre>
+</div>
+
+<p>
+  102 files: 77 baseline, plus 8 per entity, 3 per page, and 3 per component. Nothing was
+  written until the whole manifest validated. See
+  <a href="generated.html">Generated output</a> for the full inventory.
+</p>
+
+<div class="callout note">
+  <span class="callout-title">No manifest? No problem.</span>
+  <p><code>mvp new dotnet-angular-jwt-mvp --name Acme --output ./out</code> produces the
+  same 77-file authenticated baseline with no custom entities, pages, or components.</p>
+</div>
+
+<h2>3. Replace the signing key</h2>
+
+<p>
+  Do this before anything else. The generated <code>appsettings.json</code> ships a
+  deliberately non-functional placeholder:
+</p>
+
+<div class="code">
+  <div class="code-label">out/Acme/backend/src/Acme.Api/appsettings.json</div>
+<pre><code>"Jwt": {
+  "Issuer": "Acme",
+  "Audience": "Acme",
+  "SigningKey": "REPLACE_WITH_AT_LEAST_32_CHARACTER_RANDOM_SECRET_VALUE",
+  "AccessTokenMinutes": 60
+}</code></pre>
+</div>
+
+<div class="callout danger">
+  <span class="callout-title">The application will still start with the placeholder</span>
+  <p>Refusing to boot on the placeholder value is a planned behaviour, not a shipped one.
+  Nothing stops you deploying with it, so replacing it is entirely on you. Use at least 32
+  random characters and keep real secrets out of source control — user secrets, environment
+  variables, or a key vault.</p>
+</div>
+
+<p>Generate a suitable value:</p>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code># PowerShell
+[Convert]::ToBase64String((1..48 | ForEach-Object { Get-Random -Max 256 }))
+
+# bash
+openssl rand -base64 48</code></pre>
+</div>
+
+<h2>4. Build and run the backend</h2>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>cd out/Acme/backend
+dotnet build
+dotnet run --project src/Acme.Api</code></pre>
+</div>
+
+<p>
+  The API listens on <code>http://localhost:5000</code> and starts against an in-memory
+  database, so there is nothing to install or migrate. Two endpoints are live immediately:
+</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Method</th><th>Route</th><th>Body</th><th>Returns</th></tr></thead>
+  <tbody>
+    <tr><td class="nowrap"><code>POST</code></td><td class="nowrap"><code>/api/auth/register</code></td><td><code>{ email, password }</code></td><td><code>AuthResult</code> with a bearer token</td></tr>
+    <tr><td class="nowrap"><code>POST</code></td><td class="nowrap"><code>/api/auth/sign-in</code></td><td><code>{ email, password }</code></td><td><code>AuthResult</code> with a bearer token</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Each manifest entity also gets a controller — <code>ProjectController</code> and
+<code>TaskController</code> here — exposing create and get-by-id.</p>
+
+<div class="callout warning">
+  <span class="callout-title">In-memory data is disposable</span>
+  <p>The default store is <code>UseInMemoryDatabase</code>. Every restart is a clean slate.
+  To use SQL Server, set <code>ConnectionStrings:Default</code> to a real connection string —
+  that is the only change required; the switch is already wired.</p>
+</div>
+
+<h2>5. Serve the frontend</h2>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>cd out/Acme/frontend
+npm install
+npm start</code></pre>
+</div>
+
+<p>
+  The application serves at <code>http://localhost:4200</code>, which is exactly the origin
+  the generated backend allows through CORS. Sign up, and the auth interceptor attaches the
+  bearer token to every subsequent request while the guard keeps <code>/dashboard</code>
+  and your authenticated pages protected.
+</p>
+
+<div class="callout warning">
+  <span class="callout-title">Budget a few minutes</span>
+  <p><code>npm install</code> typically takes one to three minutes on a first run. Nothing
+  is wrong; the Angular toolchain is large.</p>
+</div>
+
+<h2>6. Run the end-to-end tests</h2>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>cd out/Acme/frontend
+npx playwright install
+npm run e2e</code></pre>
+</div>
+
+<p>
+  <code>npx playwright install</code> downloads browser binaries and is needed once per
+  machine. The generated <code>e2e/tests/auth.spec.ts</code> covers two journeys — a new
+  user registering and reaching the dashboard, and an existing user signing in — using the
+  page-object classes under <code>e2e/pages/</code>. Every page in your manifest gets its
+  own page object, so extending the suite means writing assertions, not scaffolding.
+</p>
+
+<h2>Where the pieces landed</h2>
+
+<div class="code" data-no-copy>
+  <div class="code-label">out/Acme</div>
+<pre><code>out/Acme/
+├── README.md                      generated setup notes
+├── .gitignore
+├── backend/
+│   ├── Acme.sln
+│   ├── Directory.Build.props       net10.0, nullable, warnings-as-errors
+│   ├── Directory.Packages.props    centrally managed versions
+│   ├── global.json
+│   └── src/
+│       ├── Acme.Domain/            entities — no dependencies
+│       ├── Acme.Application/       MediatR handlers, validators, DTOs
+│       ├── Acme.Infrastructure/    EF Core, JWT issuing, BCrypt hashing
+│       └── Acme.Api/               Program.cs, controllers, appsettings.json
+└── frontend/
+    ├── angular.json
+    ├── package.json
+    ├── playwright.config.ts
+    ├── tsconfig.json
+    ├── e2e/
+    │   ├── pages/                  one page object per page
+    │   └── tests/auth.spec.ts
+    └── projects/
+        ├── acme-app/               the application
+        ├── api/                    typed HTTP clients and models
+        ├── components/             presentational components
+        └── domain/                 domain components — ProjectCard lives here</code></pre>
+</div>
+
+<h2>Next steps</h2>
+
+<ul>
+  <li>Add entities, pages, and components to the manifest and regenerate into a fresh
+  directory — see the <a href="manifest.html">manifest schema</a>.</li>
+  <li>Read <a href="limitations.html">Limitations</a> before you build on this. Only
+  create and get-by-id are generated per entity; update, delete, and list are yours.</li>
+  <li>Configure durable persistence, allowed origins, observability, and deployment before
+  any non-evaluation use.</li>
+</ul>
+
+<div class="callout note">
+  <span class="callout-title">Regenerating over existing work</span>
+  <p>Re-running against an existing target exits with code <code>2</code> rather than
+  overwriting it. <code>--force</code> replaces it through a recoverable backup — but it
+  replaces the <em>whole tree</em>, including your edits. Generate into a new directory and
+  merge instead.</p>
+</div>
+
+<nav class="page-nav" aria-label="Pagination">
+  <a href="install.html"><span class="dir">Previous</span><span class="label">← Installation</span></a>
+  <a class="next" href="commands.html"><span class="dir">Next</span><span class="label">Command reference →</span></a>
+</nav>
+
+</main>
+
+<aside class="toc" id="toc" aria-label="On this page"></aside>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <h2>Documentation</h2>
+      <ul>
+        <li><a href="install.html">Installation</a></li>
+        <li><a href="quickstart.html">Quickstart</a></li>
+        <li><a href="commands.html">Command reference</a></li>
+        <li><a href="manifest.html">Manifest schema</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Reference</h2>
+      <ul>
+        <li><a href="generated.html">Generated output</a></li>
+        <li><a href="output-safety.html">Output safety</a></li>
+        <li><a href="errors.html">Errors &amp; exit codes</a></li>
+        <li><a href="limitations.html">Limitations</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Project</h2>
+      <ul>
+        <li><a href="https://github.com/QuinntyneBrown/mvp">Repository</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CHANGELOG.md">Changelog</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SECURITY.md">Security policy</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Packages</h2>
+      <ul>
+        <li><a href="https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core">QuinntyneBrown.Mvp.Core</a></li>
+        <li><a href="library.html">Library API</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SUPPORT.md">Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-legal">
+    <p>Copyright © 2026 Quinntyne Brown and contributors. Released under the MIT License.</p>
+    <p>Documentation for <code>mvp</code> 2.1.0. Generated code, versions, and messages on this
+    site are captured from that release.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mvp — scaffold a .NET 10 + Angular 22 MVP</title>
+<meta name="description" content="mvp is an open-source .NET command-line tool that scaffolds a JWT-authenticated .NET 10 backend, an Angular 22 workspace, and Playwright end-to-end tests from a small YAML manifest.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/styles.css">
+<script src="assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<header class="site-header">
+  <button type="button" class="icon-button" id="nav-toggle" aria-expanded="false" aria-controls="sidebar" aria-label="Toggle navigation">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+  </button>
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#512bd4"/><path d="M7 22V10h3.4l3.1 6.2L16.6 10H20v12h-3v-6.6l-2.3 4.6h-2.4L10 15.4V22H7z" fill="#fff"/><path d="M21.8 10h3.1l1.6 5.3 1.6-5.3h1.3l-2.4 8h-2.6l-2.6-8z" fill="#fff" opacity=".62"/></svg>
+    <span class="brand-name">mvp</span>
+    <span class="version-pill">2.1.0</span>
+  </a>
+  <span class="header-spacer"></span>
+  <nav class="header-links" aria-label="External">
+    <a class="desktop-only" href="commands.html">Commands</a>
+    <a class="desktop-only" href="manifest.html">Manifest</a>
+    <a href="https://github.com/QuinntyneBrown/mvp">GitHub</a>
+    <button type="button" class="icon-button" id="theme-toggle" aria-label="Switch theme">
+      <svg class="theme-icon-dark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6.2 1.6a6.4 6.4 0 108.2 8.2A5.4 5.4 0 016.2 1.6z"/></svg>
+      <svg class="theme-icon-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><path d="M8 1v1.6M8 13.4V15M15 8h-1.6M2.6 8H1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1M12.9 12.9l-1.1-1.1M4.2 4.2L3.1 3.1"/></svg>
+    </button>
+  </nav>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Documentation">
+  <h2>Getting started</h2>
+  <ul>
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="install.html">Installation</a></li>
+    <li><a href="quickstart.html">Quickstart</a></li>
+  </ul>
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="commands.html">Command reference</a></li>
+    <li><a href="manifest.html">Manifest schema</a></li>
+    <li><a href="generated.html">Generated output</a></li>
+    <li><a href="output-safety.html">Output safety</a></li>
+    <li><a href="errors.html">Errors &amp; exit codes</a></li>
+  </ul>
+  <h2>Before you commit</h2>
+  <ul>
+    <li><a href="limitations.html">Limitations</a></li>
+    <li><a href="library.html">Library API</a></li>
+  </ul>
+</nav>
+
+<main id="content">
+
+<div class="hero">
+  <p class="eyebrow">.NET global tool</p>
+  <h1>Start with the domain, not the plumbing.</h1>
+  <p class="lede">
+    <code>mvp</code> turns a small YAML manifest into a buildable full-stack starting point:
+    a layered .NET 10 backend, an Angular 22 workspace, JWT authentication, and Playwright
+    end-to-end tests. Generation is offline, deterministic, and transactional.
+  </p>
+  <div class="hero-actions">
+    <a class="button" href="quickstart.html">Quickstart</a>
+    <a class="button secondary" href="commands.html">Command reference</a>
+    <a class="button secondary" href="limitations.html">What it can’t do</a>
+  </div>
+</div>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> generate the sample solution</div>
+<pre><code><span class="prompt">$ </span>mvp new dotnet-angular-jwt-mvp --config samples/sample-mvp.yaml --output ./out
+<span class="muted">Generating dotnet-angular-jwt-mvp...</span>
+<span class="ok">Generated 102 files at '/work/out/Acme'.</span></code></pre>
+</div>
+
+<h2>What you get</h2>
+
+<div class="card-grid">
+  <div class="card">
+    <h3>Layered .NET 10 backend</h3>
+    <p>Domain, Application, Infrastructure, and API projects with a one-way dependency
+    direction, MediatR handlers, FluentValidation, and EF Core.</p>
+  </div>
+  <div class="card">
+    <h3>JWT authentication</h3>
+    <p>Register and sign-in endpoints, BCrypt hashing at work factor 12, bearer validation
+    with issuer, audience, lifetime, and signing-key checks.</p>
+  </div>
+  <div class="card">
+    <h3>Angular 22 workspace</h3>
+    <p>A standalone-component application plus <code>api</code>, <code>components</code>,
+    and <code>domain</code> libraries wired through path aliases, with an auth guard and
+    interceptor.</p>
+  </div>
+  <div class="card">
+    <h3>Playwright end-to-end tests</h3>
+    <p>Page-object classes for every generated page and a working registration and
+    sign-in journey.</p>
+  </div>
+  <div class="card">
+    <h3>Manifest-driven scaffolding</h3>
+    <p>Declare entities, pages, and components in YAML. Each one expands into backend
+    handlers, frontend routes, and test page objects.</p>
+  </div>
+  <div class="card">
+    <h3>Focused sub-generators</h3>
+    <p>Eight incremental commands generate a single project — an API, a class library,
+    an Angular app — when you don’t want the whole solution.</p>
+  </div>
+</div>
+
+<h2>Read this before you install</h2>
+
+<div class="callout danger">
+  <span class="callout-title">The CLI is not on NuGet.org</span>
+  <p>Only the engine library, <code>QuinntyneBrown.Mvp.Core</code>, is published. The
+  <code>Mvp.Cli</code> tool package is built and smoke-tested on every change but is
+  <strong>not published</strong>, so <code>dotnet tool install -g Mvp.Cli</code> will not
+  resolve. Pack it from source instead — see <a href="install.html">Installation</a>.</p>
+</div>
+
+<div class="table-scroll">
+<table>
+  <thead>
+    <tr><th>Package</th><th>What it is</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="nowrap"><code>QuinntyneBrown.Mvp.Core</code></td>
+      <td>Manifest validation, template rendering, and the transactional generation engine.</td>
+      <td class="nowrap"><span class="badge ok">On NuGet.org</span></td>
+    </tr>
+    <tr>
+      <td class="nowrap"><code>Mvp.Cli</code> (<code>mvp</code>)</td>
+      <td>The command-line tool built on <code>Mvp.Core</code>.</td>
+      <td class="nowrap"><span class="badge warn">Install from source</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout warning">
+  <span class="callout-title">Under active development</span>
+  <p>Review the generated code before using it in production. Replace the placeholder
+  <code>Jwt:SigningKey</code> and complete an application-specific security review before
+  deployment. Of 77 detailed requirements, 69 are implemented, 5 are partial, and 3 are
+  planned — all named on the <a href="limitations.html">Limitations</a> page.</p>
+</div>
+
+<h2>How it works</h2>
+
+<p>
+  Every run follows the same four steps, and nothing touches your filesystem until the
+  first one passes:
+</p>
+
+<ol>
+  <li><strong>Load.</strong> The YAML manifest is read (1&nbsp;MiB maximum) and deserialized
+  into input objects. Unknown fields are reported as warnings, not failures.</li>
+  <li><strong>Validate.</strong> Names, routes, property types, duplicates, reserved words,
+  and the output path are checked <em>in aggregate</em> — you get every problem at once, not
+  the first one.</li>
+  <li><strong>Render.</strong> Templates embedded in the tool are rendered into a uniquely
+  named staging directory beside the target. No network access is required at any point.</li>
+  <li><strong>Publish.</strong> The staging directory is moved into place atomically. An
+  existing target is a conflict unless you pass <code>--force</code>, which replaces it
+  through a recoverable backup.</li>
+</ol>
+
+<p>See <a href="output-safety.html">Output safety</a> for the staging, backup, and rollback
+details, and <a href="errors.html">Errors &amp; exit codes</a> for what each failure looks
+like.</p>
+
+<h2>Where to go next</h2>
+
+<div class="card-grid">
+  <a class="card" href="install.html">
+    <h3>Installation →</h3>
+    <p>Prerequisites, building from source, and packing the tool for global install.</p>
+  </a>
+  <a class="card" href="quickstart.html">
+    <h3>Quickstart →</h3>
+    <p>Generate, build, run, and test a solution end to end in about ten minutes.</p>
+  </a>
+  <a class="card" href="commands.html">
+    <h3>Command reference →</h3>
+    <p>All nine subcommands, every option, and the exact output each one produces.</p>
+  </a>
+  <a class="card" href="manifest.html">
+    <h3>Manifest schema →</h3>
+    <p>Every YAML field, its default, and the naming rules the validator enforces.</p>
+  </a>
+  <a class="card" href="generated.html">
+    <h3>Generated output →</h3>
+    <p>The complete file inventory, the file-count formula, and the pinned versions.</p>
+  </a>
+  <a class="card" href="library.html">
+    <h3>Library API →</h3>
+    <p>Drive generation from your own code with <code>QuinntyneBrown.Mvp.Core</code>.</p>
+  </a>
+</div>
+
+<nav class="page-nav" aria-label="Pagination">
+  <a class="next" href="install.html"><span class="dir">Next</span><span class="label">Installation →</span></a>
+</nav>
+
+</main>
+
+<aside class="toc" id="toc" aria-label="On this page"></aside>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <h2>Documentation</h2>
+      <ul>
+        <li><a href="install.html">Installation</a></li>
+        <li><a href="quickstart.html">Quickstart</a></li>
+        <li><a href="commands.html">Command reference</a></li>
+        <li><a href="manifest.html">Manifest schema</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Reference</h2>
+      <ul>
+        <li><a href="generated.html">Generated output</a></li>
+        <li><a href="output-safety.html">Output safety</a></li>
+        <li><a href="errors.html">Errors &amp; exit codes</a></li>
+        <li><a href="limitations.html">Limitations</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Project</h2>
+      <ul>
+        <li><a href="https://github.com/QuinntyneBrown/mvp">Repository</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CHANGELOG.md">Changelog</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SECURITY.md">Security policy</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Packages</h2>
+      <ul>
+        <li><a href="https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core">QuinntyneBrown.Mvp.Core</a></li>
+        <li><a href="library.html">Library API</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SUPPORT.md">Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-legal">
+    <p>Copyright © 2026 Quinntyne Brown and contributors. Released under the MIT License.</p>
+    <p>Documentation for <code>mvp</code> 2.1.0. Generated code, versions, and messages on this
+    site are captured from that release.</p>
+  </div>
+</footer>
+
+</body>
+</html>

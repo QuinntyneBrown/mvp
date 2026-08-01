@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generated output — mvp</title>
+<meta name="description" content="The complete file inventory produced by mvp: backend projects, Angular workspace, Playwright tests, per-entity expansion, and the pinned dependency versions.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/styles.css">
+<script src="assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<header class="site-header">
+  <button type="button" class="icon-button" id="nav-toggle" aria-expanded="false" aria-controls="sidebar" aria-label="Toggle navigation">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+  </button>
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#512bd4"/><path d="M7 22V10h3.4l3.1 6.2L16.6 10H20v12h-3v-6.6l-2.3 4.6h-2.4L10 15.4V22H7z" fill="#fff"/><path d="M21.8 10h3.1l1.6 5.3 1.6-5.3h1.3l-2.4 8h-2.6l-2.6-8z" fill="#fff" opacity=".62"/></svg>
+    <span class="brand-name">mvp</span>
+    <span class="version-pill">2.1.0</span>
+  </a>
+  <span class="header-spacer"></span>
+  <nav class="header-links" aria-label="External">
+    <a class="desktop-only" href="commands.html">Commands</a>
+    <a class="desktop-only" href="manifest.html">Manifest</a>
+    <a href="https://github.com/QuinntyneBrown/mvp">GitHub</a>
+    <button type="button" class="icon-button" id="theme-toggle" aria-label="Switch theme">
+      <svg class="theme-icon-dark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6.2 1.6a6.4 6.4 0 108.2 8.2A5.4 5.4 0 016.2 1.6z"/></svg>
+      <svg class="theme-icon-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><path d="M8 1v1.6M8 13.4V15M15 8h-1.6M2.6 8H1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1M12.9 12.9l-1.1-1.1M4.2 4.2L3.1 3.1"/></svg>
+    </button>
+  </nav>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Documentation">
+  <h2>Getting started</h2>
+  <ul>
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="install.html">Installation</a></li>
+    <li><a href="quickstart.html">Quickstart</a></li>
+  </ul>
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="commands.html">Command reference</a></li>
+    <li><a href="manifest.html">Manifest schema</a></li>
+    <li><a href="generated.html">Generated output</a></li>
+    <li><a href="output-safety.html">Output safety</a></li>
+    <li><a href="errors.html">Errors &amp; exit codes</a></li>
+  </ul>
+  <h2>Before you commit</h2>
+  <ul>
+    <li><a href="limitations.html">Limitations</a></li>
+    <li><a href="library.html">Library API</a></li>
+  </ul>
+</nav>
+
+<main id="content">
+
+<p class="eyebrow">Reference</p>
+<h1>Generated output</h1>
+<p class="lede">
+  Exactly what lands on disk, and why the file count is what it is. Every tree on this page
+  was captured from a real run of <code>mvp</code> 2.1.0.
+</p>
+
+<h2>The file-count formula</h2>
+
+<div class="code" data-no-copy>
+  <div class="code-label">dotnet-angular-jwt-mvp</div>
+<pre><code>files = 77 + (8 × entities) + (3 × pages) + (3 × components)</code></pre>
+</div>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Manifest</th><th>Arithmetic</th><th>Files</th></tr></thead>
+  <tbody>
+    <tr><td>Name only</td><td class="nowrap"><code>77</code></td><td class="nowrap">77</td></tr>
+    <tr><td><code>samples/sample-mvp.yaml</code> — 2 entities, 2 pages, 1 component</td><td class="nowrap"><code>77 + 16 + 6 + 3</code></td><td class="nowrap">102</td></tr>
+    <tr><td>1 entity, 1 page, 1 component</td><td class="nowrap"><code>77 + 8 + 3 + 3</code></td><td class="nowrap">91</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>
+  The 77 baseline files are the solution scaffolding, the authentication vertical slice, the
+  Angular workspace, and the Playwright harness — everything that exists regardless of what
+  you declare.
+</p>
+
+<h2>Top-level layout</h2>
+
+<div class="code" data-no-copy>
+  <div class="code-label">out/Acme</div>
+<pre><code>out/Acme/
+├── README.md                setup notes for the generated solution
+├── .gitignore
+├── backend/
+│   ├── Acme.sln
+│   ├── Directory.Build.props
+│   ├── Directory.Packages.props
+│   ├── global.json
+│   ├── .gitignore
+│   └── src/
+│       ├── Acme.Domain/
+│       ├── Acme.Application/
+│       ├── Acme.Infrastructure/
+│       └── Acme.Api/
+└── frontend/
+    ├── angular.json
+    ├── package.json
+    ├── playwright.config.ts
+    ├── tsconfig.json
+    ├── .gitignore
+    ├── e2e/
+    └── projects/</code></pre>
+</div>
+
+<h2>Backend</h2>
+
+<p>
+  Four projects with a strict one-way dependency direction: Domain ← Application ←
+  Infrastructure ← Api. <code>Directory.Build.props</code> sets <code>net10.0</code>,
+  nullable reference types, implicit usings, warnings-as-errors, and NuGet auditing;
+  <code>Directory.Packages.props</code> centralises versions.
+</p>
+
+<h3><code>Acme.Domain</code> — entities, no dependencies</h3>
+
+<div class="code" data-no-copy>
+  <div class="code-label">backend/src/Acme.Domain</div>
+<pre><code>Acme.Domain.csproj      no package references at all
+User.cs
+RefreshToken.cs
+Project.cs              ← one file per manifest entity
+Task.cs                 ←</code></pre>
+</div>
+
+<h3><code>Acme.Application</code> — use cases</h3>
+
+<div class="code" data-no-copy>
+  <div class="code-label">backend/src/Acme.Application</div>
+<pre><code>Acme.Application.csproj
+DependencyInjection.cs                 AddApplication()
+Abstractions/
+├── IAppDbContext.cs
+├── IClock.cs
+├── ICurrentUser.cs
+├── IJwtTokenIssuer.cs
+└── IPasswordHasher.cs
+Auth/
+├── AuthResult.cs
+├── RegisterCommand.cs / Handler / Validator
+├── SignInCommand.cs / Handler / Validator
+├── InvalidCredentialsException.cs
+└── EmailAlreadyRegisteredException.cs
+Behaviors/
+└── ValidationBehavior.cs              FluentValidation as a MediatR pipeline step
+Project/                               ← one folder per manifest entity
+Task/                                  ←</code></pre>
+</div>
+
+<h3><code>Acme.Infrastructure</code> — the outside world</h3>
+
+<div class="code" data-no-copy>
+  <div class="code-label">backend/src/Acme.Infrastructure</div>
+<pre><code>Acme.Infrastructure.csproj
+AppDbContext.cs
+BCryptPasswordHasher.cs         WorkFactor = 12
+JwtOptions.cs
+JwtTokenIssuer.cs
+SystemClock.cs
+HttpContextCurrentUser.cs
+DependencyInjection.cs          AddInfrastructure(configuration)</code></pre>
+</div>
+
+<h3><code>Acme.Api</code> — the HTTP surface</h3>
+
+<div class="code" data-no-copy>
+  <div class="code-label">backend/src/Acme.Api</div>
+<pre><code>Acme.Api.csproj
+Program.cs
+appsettings.json
+Controllers/
+├── AuthController.cs           POST /api/auth/register, POST /api/auth/sign-in
+├── RegisterRequest.cs
+├── SignInRequest.cs
+├── ProjectController.cs        ← one controller per manifest entity
+└── TaskController.cs           ←</code></pre>
+</div>
+
+<h3>What <code>Program.cs</code> configures</h3>
+
+<ul>
+  <li><strong>JWT bearer authentication</strong> validating issuer, audience, lifetime, and
+  signing key, with a 30-second clock skew.</li>
+  <li><strong>CORS</strong> restricted to <code>http://localhost:4200</code> with
+  credentials allowed — an explicit origin, never a wildcard.</li>
+  <li><strong>A global exception handler</strong> mapping validation failures to
+  <code>400</code> with a <code>{ title, errors }</code> body, authentication failures to
+  <code>400</code> with a title, and everything else to a <code>500</code> that leaks
+  nothing.</li>
+</ul>
+
+<h3>Per entity — 8 files</h3>
+
+<div class="code" data-no-copy>
+  <div class="code-label">entity: Project</div>
+<pre><code>Domain/Project.cs
+Application/Project/CreateProjectCommand.cs
+Application/Project/CreateProjectCommandHandler.cs
+Application/Project/CreateProjectCommandValidator.cs
+Application/Project/GetProjectByIdQuery.cs
+Application/Project/GetProjectByIdQueryHandler.cs
+Application/Project/ProjectDto.cs
+Api/Controllers/ProjectController.cs</code></pre>
+</div>
+
+<div class="callout warning">
+  <span class="callout-title">Create and get-by-id only</span>
+  <p>Update, delete, list, and paging are not generated. You get the pattern to copy, not a
+  complete CRUD surface. See <a href="limitations.html">Limitations</a>.</p>
+</div>
+
+<h2>Frontend</h2>
+
+<p>
+  An Angular 22 workspace containing one application and three libraries, wired together
+  through TypeScript path aliases in the workspace <code>tsconfig.json</code>:
+  <code>@acme/api</code>, <code>@acme/components</code>, <code>@acme/domain</code>.
+  Strict mode and strict templates are on.
+</p>
+
+<div class="code" data-no-copy>
+  <div class="code-label">frontend/projects</div>
+<pre><code>acme-app/                       the application
+├── tsconfig.app.json
+└── src/
+    ├── main.ts, index.html, styles.scss
+    └── app/
+        ├── app.config.ts        router, http, animations, AUTH_SERVICE token
+        ├── app.routes.ts        lazy routes, guarded where required
+        ├── app.component.ts/.html/.scss
+        ├── auth-state.service.ts   signal-based, localStorage-backed
+        ├── auth.guard.ts           CanActivateFn redirecting to sign-in
+        ├── auth.interceptor.ts     attaches the bearer token
+        └── pages/
+            ├── sign-in/         always generated
+            ├── sign-up/         always generated
+            ├── dashboard/       always generated
+            ├── projects/        ← one folder per manifest page
+            └── settings/        ←
+api/                            typed HTTP clients and models
+└── src/
+    ├── public-api.ts
+    └── lib/
+        ├── auth.service.ts
+        ├── auth.service.contract.ts   IAuthService + AUTH_SERVICE injection token
+        ├── auth-result.model.ts
+        ├── sign-in-request.model.ts
+        └── register-request.model.ts
+components/                     presentational components
+└── src/public-api.ts
+domain/                         domain components
+└── src/
+    ├── public-api.ts
+    └── lib/project-card/       ← one folder per manifest component
+        ├── project-card.component.ts
+        ├── project-card.component.html
+        └── project-card.component.scss</code></pre>
+</div>
+
+<h3>Routes</h3>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Path</th><th>Goes to</th><th>Guarded</th></tr></thead>
+  <tbody>
+    <tr><td class="nowrap"><code>''</code></td><td>Sign in</td><td class="nowrap">no</td></tr>
+    <tr><td class="nowrap"><code>sign-in</code></td><td>Sign in</td><td class="nowrap">no</td></tr>
+    <tr><td class="nowrap"><code>sign-up</code></td><td>Sign up</td><td class="nowrap">no</td></tr>
+    <tr><td class="nowrap"><code>dashboard</code></td><td>Dashboard</td><td class="nowrap">yes</td></tr>
+    <tr><td class="nowrap"><code>&lt;your routes&gt;</code></td><td>Your pages</td><td class="nowrap">when <code>requiresAuth</code></td></tr>
+    <tr><td class="nowrap"><code>**</code></td><td>Sign in</td><td class="nowrap">no</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Every route is loaded lazily with <code>loadComponent</code>.</p>
+
+<h2>End-to-end tests</h2>
+
+<div class="code" data-no-copy>
+  <div class="code-label">frontend/e2e</div>
+<pre><code>pages/
+├── base.page.ts        abstract BasePage with a byTestId helper
+├── sign-in.page.ts
+├── sign-up.page.ts
+├── dashboard.page.ts
+├── projects.page.ts    ← one page object per manifest page
+└── settings.page.ts    ←
+tests/
+└── auth.spec.ts        registration journey + sign-in journey</code></pre>
+</div>
+
+<p>
+  Run them with <code>npm run e2e</code> after <code>npx playwright install</code>. The
+  page-object pattern is set up for you; the breadth of coverage is not.
+</p>
+
+<h2>Pinned versions</h2>
+
+<p>
+  Generated projects pin their dependencies rather than floating, so a solution generated
+  today builds the same way tomorrow.
+</p>
+
+<h3>Backend packages</h3>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Project</th><th>Packages</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="nowrap">Domain</td>
+      <td>None.</td>
+    </tr>
+    <tr>
+      <td class="nowrap">Application</td>
+      <td><code>MediatR 12.5.0</code>, <code>FluentValidation 12.1.1</code>,
+      <code>FluentValidation.DependencyInjectionExtensions 12.1.1</code>,
+      <code>Microsoft.Extensions.DependencyInjection.Abstractions 10.0.10</code>,
+      <code>Microsoft.EntityFrameworkCore 10.0.10</code></td>
+    </tr>
+    <tr>
+      <td class="nowrap">Infrastructure</td>
+      <td><code>Microsoft.EntityFrameworkCore 10.0.10</code>,
+      <code>…SqlServer 10.0.10</code>, <code>…InMemory 10.0.10</code>,
+      <code>Microsoft.IdentityModel.Tokens 8.21.0</code>,
+      <code>System.IdentityModel.Tokens.Jwt 8.21.0</code>,
+      <code>BCrypt.Net-Next 4.0.3</code></td>
+    </tr>
+    <tr>
+      <td class="nowrap">Api</td>
+      <td><code>Microsoft.AspNetCore.Authentication.JwtBearer 10.0.10</code>,
+      <code>Microsoft.EntityFrameworkCore.Design 10.0.10</code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>Frontend packages</h3>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Kind</th><th>Packages</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="nowrap">Runtime</td>
+      <td><code>@angular/* ^22.1.0</code> (including <code>material</code> and
+      <code>cdk</code>), <code>rxjs ~7.8.2</code>, <code>tslib ^2.3.0</code>,
+      <code>zone.js ~0.16.2</code></td>
+    </tr>
+    <tr>
+      <td class="nowrap">Development</td>
+      <td><code>@angular/build ^22.1.2</code>, <code>@angular/cli ^22.1.2</code>,
+      <code>@angular/compiler-cli ^22.1.0</code>, <code>@playwright/test ^1.62.1</code>,
+      <code>@types/node ^24.13.3</code>, <code>typescript ~6.0.3</code></td>
+    </tr>
+    <tr>
+      <td class="nowrap">Engines</td>
+      <td><code>node: ^24.15.0 || &gt;=26.0.0</code></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>npm scripts</h3>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Script</th><th>Runs</th></tr></thead>
+  <tbody>
+    <tr><td class="nowrap"><code>npm start</code></td><td><code>ng serve</code></td></tr>
+    <tr><td class="nowrap"><code>npm run build</code></td><td><code>ng build</code></td></tr>
+    <tr><td class="nowrap"><code>npm test</code></td><td><code>ng test</code></td></tr>
+    <tr><td class="nowrap"><code>npm run e2e</code></td><td><code>playwright test</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Persistence</h2>
+
+<p>
+  <code>AddInfrastructure</code> switches on <code>ConnectionStrings:Default</code>:
+</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Value</th><th>Provider</th></tr></thead>
+  <tbody>
+    <tr><td class="nowrap">Empty, or <code>InMemory</code></td><td><code>UseInMemoryDatabase</code> — the shipped default</td></tr>
+    <tr><td class="nowrap">Anything else</td><td><code>UseSqlServer</code> with that connection string</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="callout warning">
+  <span class="callout-title">The default store is disposable</span>
+  <p>In-memory data does not survive a process restart. That is deliberate — it makes the
+  first run work with nothing installed — but it is not a database. Migrations are not
+  generated either; <code>EntityFrameworkCore.Design</code> is referenced so you can create
+  them yourself.</p>
+</div>
+
+<h2>Incremental command output</h2>
+
+<p>
+  The eight focused commands produce far less. Full file lists are on the
+  <a href="commands.html#incremental-commands">command reference</a>.
+</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Command</th><th>Files</th><th>Contains authentication?</th></tr></thead>
+  <tbody>
+    <tr><td class="nowrap"><code>solution</code></td><td class="nowrap">15</td><td>No</td></tr>
+    <tr><td class="nowrap"><code>app</code></td><td class="nowrap">8</td><td>No</td></tr>
+    <tr><td class="nowrap"><code>api-library</code> / <code>components-library</code> / <code>domain-library</code></td><td class="nowrap">4 each</td><td>No</td></tr>
+    <tr><td class="nowrap"><code>api</code> / <code>core</code> / <code>infrastructure</code></td><td class="nowrap">2 each</td><td>No</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Guarantees about the files</h2>
+
+<ul>
+  <li><strong>Deterministic.</strong> The same manifest produces byte-identical output.</li>
+  <li><strong>UTF-8 without a byte-order mark</strong>, with LF line endings everywhere,
+  regardless of the platform you generate on.</li>
+  <li><strong>Contained.</strong> Every emitted path is relative and inside the target
+  directory; a template that tried to escape is rejected.</li>
+  <li><strong>Complete or absent.</strong> Files appear only after the whole tree renders
+  successfully — see <a href="output-safety.html">Output safety</a>.</li>
+</ul>
+
+<nav class="page-nav" aria-label="Pagination">
+  <a href="manifest.html"><span class="dir">Previous</span><span class="label">← Manifest schema</span></a>
+  <a class="next" href="output-safety.html"><span class="dir">Next</span><span class="label">Output safety →</span></a>
+</nav>
+
+</main>
+
+<aside class="toc" id="toc" aria-label="On this page"></aside>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <h2>Documentation</h2>
+      <ul>
+        <li><a href="install.html">Installation</a></li>
+        <li><a href="quickstart.html">Quickstart</a></li>
+        <li><a href="commands.html">Command reference</a></li>
+        <li><a href="manifest.html">Manifest schema</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Reference</h2>
+      <ul>
+        <li><a href="generated.html">Generated output</a></li>
+        <li><a href="output-safety.html">Output safety</a></li>
+        <li><a href="errors.html">Errors &amp; exit codes</a></li>
+        <li><a href="limitations.html">Limitations</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Project</h2>
+      <ul>
+        <li><a href="https://github.com/QuinntyneBrown/mvp">Repository</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CHANGELOG.md">Changelog</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SECURITY.md">Security policy</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Packages</h2>
+      <ul>
+        <li><a href="https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core">QuinntyneBrown.Mvp.Core</a></li>
+        <li><a href="library.html">Library API</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SUPPORT.md">Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-legal">
+    <p>Copyright © 2026 Quinntyne Brown and contributors. Released under the MIT License.</p>
+    <p>Documentation for <code>mvp</code> 2.1.0. Generated code, versions, and messages on this
+    site are captured from that release.</p>
+  </div>
+</footer>
+
+</body>
+</html>

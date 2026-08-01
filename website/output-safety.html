@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Output safety — mvp</title>
+<meta name="description" content="How mvp writes files: aggregate validation before any mutation, staged rendering, atomic publication, explicit conflicts, recoverable --force, and path containment.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/styles.css">
+<script src="assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+
+<header class="site-header">
+  <button type="button" class="icon-button" id="nav-toggle" aria-expanded="false" aria-controls="sidebar" aria-label="Toggle navigation">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+  </button>
+  <a class="brand" href="index.html">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#512bd4"/><path d="M7 22V10h3.4l3.1 6.2L16.6 10H20v12h-3v-6.6l-2.3 4.6h-2.4L10 15.4V22H7z" fill="#fff"/><path d="M21.8 10h3.1l1.6 5.3 1.6-5.3h1.3l-2.4 8h-2.6l-2.6-8z" fill="#fff" opacity=".62"/></svg>
+    <span class="brand-name">mvp</span>
+    <span class="version-pill">2.1.0</span>
+  </a>
+  <span class="header-spacer"></span>
+  <nav class="header-links" aria-label="External">
+    <a class="desktop-only" href="commands.html">Commands</a>
+    <a class="desktop-only" href="manifest.html">Manifest</a>
+    <a href="https://github.com/QuinntyneBrown/mvp">GitHub</a>
+    <button type="button" class="icon-button" id="theme-toggle" aria-label="Switch theme">
+      <svg class="theme-icon-dark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6.2 1.6a6.4 6.4 0 108.2 8.2A5.4 5.4 0 016.2 1.6z"/></svg>
+      <svg class="theme-icon-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><path d="M8 1v1.6M8 13.4V15M15 8h-1.6M2.6 8H1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1M12.9 12.9l-1.1-1.1M4.2 4.2L3.1 3.1"/></svg>
+    </button>
+  </nav>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Documentation">
+  <h2>Getting started</h2>
+  <ul>
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="install.html">Installation</a></li>
+    <li><a href="quickstart.html">Quickstart</a></li>
+  </ul>
+  <h2>Reference</h2>
+  <ul>
+    <li><a href="commands.html">Command reference</a></li>
+    <li><a href="manifest.html">Manifest schema</a></li>
+    <li><a href="generated.html">Generated output</a></li>
+    <li><a href="output-safety.html">Output safety</a></li>
+    <li><a href="errors.html">Errors &amp; exit codes</a></li>
+  </ul>
+  <h2>Before you commit</h2>
+  <ul>
+    <li><a href="limitations.html">Limitations</a></li>
+    <li><a href="library.html">Library API</a></li>
+  </ul>
+</nav>
+
+<main id="content">
+
+<p class="eyebrow">Reference</p>
+<h1>Output safety</h1>
+<p class="lede">
+  A code generator that half-writes a tree is worse than one that refuses to run. Every
+  <code>mvp</code> command either produces a complete result or leaves your filesystem
+  exactly as it found it.
+</p>
+
+<h2>The order of operations</h2>
+
+<ol>
+  <li><strong>Load</strong> the manifest, if one was given.</li>
+  <li><strong>Validate</strong> everything — names, routes, types, duplicates, reserved
+  words, and the resolved output path.</li>
+  <li><strong>Create parent directories</strong>, but only now, after validation passed.</li>
+  <li><strong>Check for a conflict.</strong> If the target exists and <code>--force</code>
+  was not given, stop with exit code <code>2</code>.</li>
+  <li><strong>Render</strong> every file into a uniquely named staging directory beside the
+  target.</li>
+  <li><strong>Publish</strong> by moving the staging directory into place.</li>
+</ol>
+
+<div class="callout ok">
+  <span class="callout-title">Nothing is written before step 3</span>
+  <p>An invalid name produces no directory at all — not an empty one, not a partial one.
+  You can safely re-run a failed command after fixing the manifest.</p>
+</div>
+
+<h2>Staging and publication</h2>
+
+<p>
+  Rendering never targets the final path. The tool creates two possible siblings of the
+  target, both hidden by a leading dot and suffixed with a fresh identifier so concurrent
+  runs cannot collide:
+</p>
+
+<div class="code" data-no-copy>
+  <div class="code-label">alongside the target</div>
+<pre><code>out/
+├── Acme                                  ← the target
+├── .Acme.mvp-stage-&lt;32 hex characters&gt;   ← rendered here first
+└── .Acme.mvp-backup-&lt;32 hex characters&gt;  ← only when --force replaces something</code></pre>
+</div>
+
+<p>
+  Because staging is a sibling rather than a temp-directory copy, publication is a move
+  within one filesystem — fast, and atomic as far as the operating system allows. The
+  staging directory is removed in a <code>finally</code> block whether the run succeeds,
+  fails, or is cancelled.
+</p>
+
+<h2>Conflicts are explicit</h2>
+
+<p>
+  An existing target is never silently overwritten and never merged into.
+</p>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> exit code 2</div>
+<pre><code><span class="muted">Generating dotnet-angular-jwt-mvp...</span>
+<span class="err">The target '/work/out/Acme' already exists. Re-run with --force to replace it safely.</span></code></pre>
+</div>
+
+<p>
+  This makes the tool safe to put in a script: a conflict is a distinct exit code you can
+  branch on, not an ambiguous failure.
+</p>
+
+<h2><code>--force</code> and rollback</h2>
+
+<p>When you do pass <code>--force</code>, replacement runs as a sequence that can be undone:</p>
+
+<ol>
+  <li>Render the new tree into staging.</li>
+  <li>Move the existing target aside into the backup directory.</li>
+  <li>Move staging into the target position.</li>
+  <li>Delete the backup.</li>
+</ol>
+
+<p>
+  If step 3 fails, the backup is moved back and the original exception is rethrown — you
+  end up with the tree you started with. If only step 4 fails, generation has already
+  succeeded, so it is reported as a warning rather than an error:
+</p>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> exit code 0</div>
+<pre><code><span class="muted">Generating dotnet-angular-jwt-mvp...</span>
+<span class="ok">Generated 102 files at '/work/out/Acme'.</span>
+<span class="ok">Replaced the existing target '/work/out/Acme' using transactional backup and rollback.</span>
+<span class="warn">warning: Generation succeeded, but backup cleanup failed: &lt;reason&gt;</span></code></pre>
+</div>
+
+<div class="callout danger">
+  <span class="callout-title">Recoverable is not the same as non-destructive</span>
+  <p>The rollback protects you from a <em>failed</em> replacement. A <em>successful</em> one
+  replaces the entire target directory, and anything you wrote inside it is gone. Generate
+  into a new directory and merge your changes across.</p>
+</div>
+
+<h2>Path containment</h2>
+
+<p>
+  Manifest values reach the filesystem as directory and file names, so every write is
+  re-resolved against the target root and rejected if it escapes:
+</p>
+
+<div class="message">Template output path '&lt;path&gt;' escapes the target directory.</div>
+
+<p>
+  Names are validated as PascalCase identifiers long before this point, so
+  <code>--name ../Escape</code> fails at validation. Containment is the second line of
+  defence — it holds even if a template is wrong.
+</p>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> exit code 1 — nothing created</div>
+<pre><code><span class="prompt">$ </span>mvp new core --name ../Escape --output ./out
+<span class="muted">Generating core...</span>
+<span class="err">Input validation failed:
+- Name '../Escape' must be a PascalCase identifier containing only ASCII letters and digits.</span></code></pre>
+</div>
+
+<p>
+  The same principle applies to the one external process the tool can start: arguments for
+  <code>--use-angular-cli</code> are passed as a list, never as a concatenated command
+  string, so no manifest value can inject an argument.
+</p>
+
+<h2>File encoding</h2>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Property</th><th>Always</th></tr></thead>
+  <tbody>
+    <tr><td class="nowrap">Encoding</td><td>UTF-8 with no byte-order mark</td></tr>
+    <tr><td class="nowrap">Line endings</td><td>LF, normalized from any CRLF in the templates</td></tr>
+    <tr><td class="nowrap">Paths</td><td>Relative, forward-slash separated, ordinal-sorted in the result</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>
+  This holds on every platform, so a solution generated on Windows and one generated on
+  Linux are byte-identical and produce no line-ending noise in version control.
+</p>
+
+<h2>Determinism</h2>
+
+<p>
+  The same manifest always produces the same bytes — no timestamps, no ordering by
+  filesystem enumeration, no random identifiers inside generated content. This is asserted
+  in the test suite by generating twice into separate workspaces and comparing file by
+  file, which makes template changes visible in review instead of showing up as noise.
+</p>
+
+<h2>Cancellation</h2>
+
+<p>
+  Press <kbd>Ctrl</kbd>+<kbd>C</kbd> and the run stops cleanly:
+</p>
+
+<div class="terminal">
+  <div class="terminal-label"><span class="dots"><i></i><i></i><i></i></span> exit code 130</div>
+<pre><code><span class="err">Generation cancelled.</span></code></pre>
+</div>
+
+<ul>
+  <li>The staging directory is deleted.</li>
+  <li>The target is untouched — it is only ever created by the final move.</li>
+  <li>If <code>--use-angular-cli</code> had started a child process, the whole process tree
+  is killed and awaited rather than orphaned.</li>
+</ul>
+
+<h2>Offline by construction</h2>
+
+<p>
+  Templates are embedded resources inside the tool. Generation makes no network requests
+  and restores no packages — the generated projects <em>declare</em> their dependencies, and
+  restoring them is a separate step you run afterwards. That means generation works on an
+  air-gapped machine and its speed does not depend on a package feed.
+</p>
+
+<h2>Performance budgets</h2>
+
+<p>These are enforced by the test suite, not aspirations:</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Scenario</th><th>Budget</th></tr></thead>
+  <tbody>
+    <tr><td>5 entities, 5 pages, 5 components</td><td class="nowrap">under 30 seconds</td></tr>
+    <tr><td>Name-only manifest</td><td class="nowrap">under 10 seconds</td></tr>
+    <tr><td>Peak working set, any run</td><td class="nowrap">under 512 MiB</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>
+  In practice generation completes in well under a second; the budgets exist as a ceiling
+  that a regression would breach.
+</p>
+
+<div class="callout note">
+  <span class="callout-title">These budgets cover generation only</span>
+  <p>Runtime performance of the <em>generated</em> application — response times, bundle
+  size, Largest Contentful Paint — is not yet enforced. See
+  <a href="limitations.html">Limitations</a>.</p>
+</div>
+
+<nav class="page-nav" aria-label="Pagination">
+  <a href="generated.html"><span class="dir">Previous</span><span class="label">← Generated output</span></a>
+  <a class="next" href="errors.html"><span class="dir">Next</span><span class="label">Errors &amp; exit codes →</span></a>
+</nav>
+
+</main>
+
+<aside class="toc" id="toc" aria-label="On this page"></aside>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <h2>Documentation</h2>
+      <ul>
+        <li><a href="install.html">Installation</a></li>
+        <li><a href="quickstart.html">Quickstart</a></li>
+        <li><a href="commands.html">Command reference</a></li>
+        <li><a href="manifest.html">Manifest schema</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Reference</h2>
+      <ul>
+        <li><a href="generated.html">Generated output</a></li>
+        <li><a href="output-safety.html">Output safety</a></li>
+        <li><a href="errors.html">Errors &amp; exit codes</a></li>
+        <li><a href="limitations.html">Limitations</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Project</h2>
+      <ul>
+        <li><a href="https://github.com/QuinntyneBrown/mvp">Repository</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CHANGELOG.md">Changelog</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SECURITY.md">Security policy</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Packages</h2>
+      <ul>
+        <li><a href="https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core">QuinntyneBrown.Mvp.Core</a></li>
+        <li><a href="library.html">Library API</a></li>
+        <li><a href="https://github.com/QuinntyneBrown/mvp/blob/main/SUPPORT.md">Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-legal">
+    <p>Copyright © 2026 Quinntyne Brown and contributors. Released under the MIT License.</p>
+    <p>Documentation for <code>mvp</code> 2.1.0. Generated code, versions, and messages on this
+    site are captured from that release.</p>
+  </div>
+</footer>
+
+</body>
+</html>
