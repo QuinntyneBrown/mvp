@@ -13,6 +13,10 @@ the accessibility baseline for each screen.
 
 ## Description
 
+Every file below is generated code, rendered from templates embedded in
+`Mvp.Core`. The workspace shape is fixed by those templates rather than by the
+command line above them.
+
 - **`angular.json`** — workspace inventory for the application and three
   libraries.
 - **`tsconfig.json` path aliases** — stable imports such as `@acme/api`,

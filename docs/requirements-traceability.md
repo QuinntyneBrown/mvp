@@ -19,5 +19,8 @@ This register names the automated evidence for every L2 requirement marked `Impl
 | L2-063, L2-064, L2-065 | `IncrementalGenerationTests`, `AngularCliOptInTests`, `TemplateResourceTests`, the three-OS `build-test` matrix, and `DocumentationTests` |
 | L2-066, L2-067, L2-068 | `TransactionalGenerationOutputTests`, `CommandIntegrationTests`, and `FullStackGenerationTests.GenerateAsync_IsDeterministicForTheSameManifest` |
 | L2-069, L2-070 | `DocumentationTests` and the generated README assertion in `FullStackGenerationTests` |
+| L2-071, L2-077 | The `build-test` pack step and the `security-package-consumers` pack step in `ci.yml`, the tag-and-version gate in `release.yml`, and `DocumentationTests` |
+| L2-072, L2-074, L2-076 | `CommandIntegrationTests` exercises `AddMvpCore` through the composed host; `CliExceptionPolicyTests`, `ManifestValidatorTests`, and `TransactionalGenerationOutputTests` cover the typed error vocabulary and the returned-outcome boundary |
+| L2-075 | `TemplateResourceTests` and `FullStackGenerationTests` |
 
 Requirements marked `Partial` or `Planned` remain in the baseline but are intentionally excluded from the implemented-evidence gate until their acceptance criteria are release-gated.

@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Embed the generation engine
+
+Container(host, "Host process", ".NET application", "Registers the engine and calls it")
+Container_Boundary(engine, "Mvp.Core") {
+  Component(registration, "ServiceCollectionExtensions", "DI entry point", "AddMvpCore registers every collaborator")
+  Component(loader, "IManifestLoader", "YAML boundary", "Reads a manifest file into input models")
+  Component(validator, "ManifestValidator", "Validation", "Reports every violation at once as ValidatedManifest or an exception")
+  Component(full, "IFullStackGenerator", "Generation boundary", "Renders a complete solution from a validated manifest")
+  Component(incremental, "IIncrementalGenerator", "Generation boundary", "Renders one solution part")
+  Component(resources, "TemplateResources", "Resource reader", "Resolves embedded templates by assembly-derived name")
+  Component(output, "ITransactionalGenerationOutput", "Output boundary", "Stages, publishes, and rolls back")
+  Component(errors, "Mvp.Core.Errors", "Error vocabulary", "Typed failures a host maps to its own outcomes")
+}
+
+Rel(host, registration, "Calls once")
+Rel(host, loader, "Loads manifest through")
+Rel(host, validator, "Validates through")
+Rel(host, full, "Generates through")
+Rel(host, incremental, "Generates through")
+Rel(validator, errors, "Throws ManifestValidationException from")
+Rel(full, resources, "Renders templates from")
+Rel(incremental, resources, "Renders templates from")
+Rel(full, output, "Commits through")
+Rel(incremental, output, "Commits through")
+Rel(output, errors, "Throws GenerationConflictException from")
+@enduml

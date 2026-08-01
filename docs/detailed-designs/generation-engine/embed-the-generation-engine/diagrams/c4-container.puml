@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Embed the generation engine
+
+Person(developer, "Library consumer", "Drives generation from code")
+System_Boundary(product, "mvp") {
+  Container(host, "Host process", ".NET application", "Owns presentation, logging, and process lifetime")
+  Container(engine, "Mvp.Core", ".NET library, package QuinntyneBrown.Mvp.Core", "Loads, validates, renders, and publishes")
+  Container(templates, "Embedded templates", "Assembly resources", "112 Liquid templates carried inside the engine assembly")
+}
+System_Ext(storage, "Local file system", "Staging directory and published target")
+
+Rel(developer, host, "Runs")
+Rel(host, engine, "Resolves services from", "AddMvpCore")
+Rel(engine, templates, "Reads by resource name")
+Rel(engine, storage, "Stages then publishes")
+@enduml

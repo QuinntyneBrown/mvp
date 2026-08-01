@@ -5,15 +5,16 @@ title Containers — Invoke the CLI
 
 Person(consumer, "Consumer", "Invokes mvp from a shell")
 System_Boundary(mvp, "mvp") {
-  Container(cli, "CLI process", ".NET / System.CommandLine", "Parses commands and options")
-  Container(services, "Generation features", ".NET", "Validate and execute the selected capability")
-  Container(policy, "Outcome policy", ".NET", "Maps typed failures and cancellation to exit codes")
+  Container(cli, "Mvp.Cli", ".NET tool package Mvp.Cli / System.CommandLine", "Parses commands and options")
+  Container(policy, "Outcome policy", ".NET, in Mvp.Cli", "Maps typed failures and cancellation to exit codes")
+  Container(engine, "Mvp.Core", ".NET library, package QuinntyneBrown.Mvp.Core", "Validates and executes the selected capability")
 }
 System_Ext(shell, "Operating-system shell", "Starts the process and receives its exit code")
 
 Rel(consumer, shell, "Enters command")
 Rel(shell, cli, "Starts", "Process invocation")
-Rel(cli, services, "Dispatches validated input")
+Rel(cli, engine, "Dispatches validated input", "AddMvpCore service graph")
 Rel(cli, policy, "Reports outcomes through")
+Rel(engine, policy, "Raises typed failures to")
 Rel(cli, shell, "Returns outcome", "Exit code")
 @enduml

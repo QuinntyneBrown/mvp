@@ -14,6 +14,10 @@ handling, cross-origin access, error disclosure, and the default database mode.
 
 ## Description
 
+Every element below is generated code, rendered from templates embedded in
+`Mvp.Core`. The layering described here is a property of those templates, so it
+holds for any host that drives the engine.
+
 - **Generated project references** — the Domain project has no inward
   dependency, Application depends on Domain, Infrastructure implements
   Application abstractions, and API composes the runtime.

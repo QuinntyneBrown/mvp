@@ -1,0 +1,60 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+title Class structure — Embed the generation engine
+
+class ServiceCollectionExtensions {
+  +{static} AddMvpCore(services: IServiceCollection): IServiceCollection
+}
+interface IManifestLoader {
+  +Load(path: string): ManifestLoadResult
+}
+class ManifestValidator {
+  +Validate(manifest, nameOverride, outputOverride, warnings): ValidatedManifest
+}
+interface IFullStackGenerator {
+  +GenerateAsync(manifest: ValidatedManifest, force: bool, cancellationToken): Task<GenerationResult>
+}
+interface IIncrementalGenerator {
+  +GenerateAsync(request: GenerationRequest, cancellationToken): Task<GenerationResult>
+}
+interface ITransactionalGenerationOutput {
+  +CommitAsync(targetPath, force, generateInStagingDirectory, cancellationToken): Task<GenerationResult>
+}
+class "GenerationRequest «record»" as GenerationRequest {
+  +Kind: GenerationKind
+  +Name: string
+  +OutputRoot: string
+  +Force: bool
+  +UseAngularCli: bool
+}
+class "GenerationResult «record»" as GenerationResult {
+  +TargetPath: string
+  +Artifacts: IReadOnlyList<string>
+  +ReplacedExistingOutput: bool
+  +Warnings: IReadOnlyList<string>
+}
+class GenerationException
+class ExternalToolException
+class GenerationConflictException
+class ManifestValidationException {
+  +Errors: IReadOnlyList<string>
+}
+
+ServiceCollectionExtensions ..> IManifestLoader : registers
+ServiceCollectionExtensions ..> ManifestValidator : registers
+ServiceCollectionExtensions ..> IFullStackGenerator : registers
+ServiceCollectionExtensions ..> IIncrementalGenerator : registers
+ServiceCollectionExtensions ..> ITransactionalGenerationOutput : registers
+IManifestLoader ..> ManifestValidator : supplies input models
+ManifestValidator ..> ManifestValidationException : throws
+IFullStackGenerator ..> ITransactionalGenerationOutput : commits through
+IIncrementalGenerator ..> ITransactionalGenerationOutput : commits through
+IIncrementalGenerator ..> GenerationRequest : accepts
+ITransactionalGenerationOutput ..> GenerationResult : returns
+ITransactionalGenerationOutput ..> GenerationConflictException : throws
+GenerationException <|-- ExternalToolException
+@enduml

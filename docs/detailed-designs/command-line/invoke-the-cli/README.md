@@ -18,16 +18,20 @@ input to a generator or reports a failure to the invoking shell.
   engine and its embedded templates live in the referenced `Mvp.Core`
   library, whose assembly `PackAsTool` bundles into the tool package, so the
   tool remains self-contained and offline.
-- **`Program`** — process composition root. It creates the host, registers the
-  service graph, constructs the root command, disables the framework exception
-  printer, and returns the parser's exit code.
-- **`RootCommandFactory`** — builds the root, `new` group, and nine generation
-  subcommands through one shared command path.
+- **`Program`** (`Mvp.Cli`) — process composition root. It creates the host,
+  registers the service graph through `AddMvpCli`, which chains `AddMvpCore`,
+  constructs the root command, disables the framework exception printer, and
+  returns the parser's exit code.
+- **`RootCommandFactory`** (`Mvp.Cli`) — builds the root, `new` group, and nine
+  generation subcommands through one shared command path.
 - **`Option<T>` instances** — typed definitions for `--name`/`-n`,
   `--output`/`-o`, and, where applicable, `--config`/`-c`.
-- **`IIncrementalGenerator` and `IFullStackGenerator`** — the two application
-  boundaries selected after parsing and validation.
-- **`CliExceptionPolicy`** — one exception boundary for every command. It maps
+- **`IIncrementalGenerator` and `IFullStackGenerator`** (`Mvp.Core`) — the two
+  engine boundaries selected after parsing and validation. The command line is
+  one host over them; `docs/detailed-designs/generation-engine/embed-the-generation-engine/`
+  describes the same boundaries seen from a library consumer.
+- **`CliExceptionPolicy`** (`Mvp.Cli`) — one exception boundary for every
+  command. It maps
   validation, conflict, generation, internal, and cancellation outcomes to
   `1`, `2`, `3`, `70`, and `130`; stack traces require `--diagnostic`.
 
@@ -55,8 +59,9 @@ and returns its exit status to the shell.
 
 ### Containers
 
-The command-line process parses input and dispatches generation through the
-registered service graph.
+The tool package and the engine library are separate containers. `Mvp.Cli`
+parses input and owns the outcome policy; `Mvp.Core` validates and executes the
+selected capability.
 
 ![C4 container view for invoking the CLI](diagrams/c4-container.png)
 

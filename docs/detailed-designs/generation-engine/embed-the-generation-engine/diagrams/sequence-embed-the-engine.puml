@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour — Generate from a host application
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Library consumer" as actor
+box "Frontend — Host application" #E0F2FE
+  participant "Composition root" as root
+  participant "Host code" as host
+end box
+box "Backend — Mvp.Core engine" #D1FADF
+  participant "IManifestLoader" as loader
+  participant "ManifestValidator" as validator
+  participant "IFullStackGenerator" as generator
+  participant "ITransactionalGenerationOutput" as output
+end box
+box "Backend — Local storage" #ECFDF3
+  participant "Staging and target directories" as storage
+end box
+actor -> root : Start the host
+root -> root : AddMvpCore()
+root -> host : Resolve engine services
+host -> loader : Load(path)
+loader --> host : ManifestLoadResult with warnings
+host -> validator : Validate(manifest, overrides, warnings)
+alt manifest is valid
+  validator --> host : ValidatedManifest
+  host -> generator : GenerateAsync(manifest, force, cancellationToken)
+  generator -> output : CommitAsync(targetPath, force, render)
+  output -> storage : Render into staging directory
+  alt target free or force set
+    output -> storage : Publish staging directory to target
+    output --> generator : GenerationResult
+    generator --> host : GenerationResult with artifacts and warnings
+    host --> actor : Present outcome in the host's own form
+  else target exists and force not set
+    output --> generator : GenerationConflictException
+    generator --> host : GenerationConflictException
+    host --> actor : Present conflict in the host's own form
+  end
+else manifest is invalid
+  validator --> host : ManifestValidationException with every violation
+  host --> actor : Present violations in the host's own form
+end
+@enduml

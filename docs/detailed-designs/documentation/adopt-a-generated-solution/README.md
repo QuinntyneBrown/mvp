@@ -15,7 +15,8 @@ and the README placed at the root of each generated solution.
 
 - **`samples/sample-mvp.yaml`** — worked manifest that declares two entities,
   two authenticated pages, and one component.
-- **Generated root `README.md`** — describes the backend, frontend, and
+- **Generated root `README.md`** — rendered from a template embedded in
+  `Mvp.Core`. It describes the backend, frontend, and
   Playwright layout. It provides backend build and run commands, frontend
   installation and start commands, and browser installation and test commands.
 - **Persistence guidance** — states that the default store is in memory and
@@ -33,6 +34,9 @@ and the README placed at the root of each generated solution.
 - **Documentation index and traceability** — `docs/README.md` routes readers,
   while `docs/requirements-traceability.md` binds implemented L2 requirements
   to named tests and CI jobs.
+- **Engine package readme** — `src/Mvp.Core/README.md` ships inside the
+  `QuinntyneBrown.Mvp.Core` package and is the adoption path for a library
+  consumer, as distinct from the root `README.md`, which documents the tool.
 
 ## Requirements
 

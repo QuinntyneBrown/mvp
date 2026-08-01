@@ -13,18 +13,23 @@ restoration to the consumer.
 
 ## Description
 
-- **`RootCommandFactory`** — full-stack command entry. It resolves overrides,
-  loads and validates the manifest, and invokes the generator inside the common
-  exception policy.
-- **`IFullStackGenerator` and `FullStackGenerator`** — local application
+Full-stack generation lives entirely in `Mvp.Core`. `Mvp.Cli` contributes the
+command entry and nothing else, so a library consumer calling
+`IFullStackGenerator` directly produces the same tree.
+
+- **`RootCommandFactory`** (`Mvp.Cli`) — full-stack command entry. It resolves
+  overrides, loads and validates the manifest, and invokes the generator inside
+  the common exception policy.
+- **`IFullStackGenerator` and `FullStackGenerator`** (`Mvp.Core`) — engine
   boundary and renderer for manifest-based generation.
-- **Embedded Liquid templates** — MIT-attributed, tool-owned backend, frontend,
-  component, page, entity, and end-to-end assets. Template paths are declared
-  in an embedded manifest and checked for containment before each write.
-- **`ValidatedManifest`** — immutable generation model containing the solution
-  name, normalized output, entities, pages, components, and warnings.
-- **`TransactionalGenerationOutput`** — renders the complete source tree in a
-  sibling stage and commits it atomically.
+- **Embedded Liquid templates** (`Mvp.Core`) — MIT-attributed, product-owned
+  backend, frontend, component, page, entity, and end-to-end assets. Template
+  paths are declared in an embedded manifest and checked for containment before
+  each write.
+- **`ValidatedManifest`** (`Mvp.Core`) — immutable generation model containing
+  the solution name, normalized output, entities, pages, components, and warnings.
+- **`TransactionalGenerationOutput`** (`Mvp.Core`) — renders the complete source
+  tree in a sibling stage and commits it atomically.
 - **Generated solution tree** — `backend/`, `frontend/`, and `frontend/e2e/`
   roots. The checked-in `out/Acme` sample demonstrates the current output.
 - **Baseline output** — sign-in, sign-up, and dashboard screens plus the

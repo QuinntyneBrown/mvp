@@ -13,26 +13,31 @@ reported cancellation state.
 
 ## Description
 
-- **`CliExceptionPolicy`** — maps typed failures to stable exit codes and emits
-  concise stderr by default. `--diagnostic` opts into internal detail.
-- **Command actions** — report generation start, pass the invocation cancellation
-  token, and print the final artifact count and committed target.
-- **`ProcessRunner`** — starts optional external tooling without a shell,
-  redirects standard output and error into structured logs, forwards the
-  cancellation token to `WaitForExitAsync`, kills the complete child tree on
-  cancellation, and returns captured output plus the child exit code.
-- **`IncrementalGenerator`** — uses packaged Angular templates by default and
-  calls Angular CLI only under explicit `--use-angular-cli`.
+Run safety is divided between the two assemblies. `Mvp.Core` owns the
+guarantees — containment, staging, rollback, cancellation, and locality — so
+they hold for every host. `Mvp.Cli` owns presentation of the outcome.
+
+- **`CliExceptionPolicy`** (`Mvp.Cli`) — maps typed failures to stable exit codes
+  and emits concise stderr by default. `--diagnostic` opts into internal detail.
+- **Command actions** (`Mvp.Cli`) — report generation start, pass the invocation
+  cancellation token, and print the final artifact count and committed target.
+- **`ProcessRunner`** (`Mvp.Core`) — starts optional external tooling without a
+  shell, captures standard output and error, forwards the cancellation token to
+  `WaitForExitAsync`, kills the complete child tree on cancellation, and returns
+  the captured streams and the child exit code in a `ProcessResult` for the host
+  to present.
+- **`IncrementalGenerator`** (`Mvp.Core`) — uses packaged Angular templates by
+  default and calls Angular CLI only under explicit `--use-angular-cli`.
 - **Path construction** — uses `Path.Combine` and
   `Directory.GetCurrentDirectory()` for platform-native paths and defaults.
-- **`TransactionalGenerationOutput`** — creates missing parents only after
+- **`TransactionalGenerationOutput`** (`Mvp.Core`) — creates missing parents only after
   validation, renders into a unique sibling stage, and publishes with one move.
   Existing targets conflict unless `--force`; forced runs use a sibling backup
   and rollback if publication fails.
 - **Local generation boundary** — manifest reading and artifact writing stay on
-  the local machine. The current generation services define no telemetry or
-  content-upload client.
-- **`SafeFileWriter`** — proves every rendered relative path remains contained
+  the local machine. `Mvp.Core` defines no telemetry or content-upload client
+  and takes no dependency on an HTTP client.
+- **`SafeFileWriter`** (`Mvp.Core`) — proves every rendered relative path remains contained
   by the staging root and applies UTF-8 without BOM plus LF line endings.
 - **Cancellation boundary** — the invocation token flows through rendering,
   async writes, output publication, and child-process termination.

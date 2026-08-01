@@ -11,18 +11,22 @@ incremental generator, which selects a packaged template plan by artifact kind.
 
 ## Description
 
-- **`RootCommandFactory`** — registers all eight incremental command names and
-  shared `--name`, `--output`, and `--force` options.
-- **`GenerationKind`, `GenerationRequest`, and `GenerationResult`** — strong
-  types that describe the selected artifact, normalized input, and committed
-  output without command-specific service duplication.
-- **`IIncrementalGenerator` and `IncrementalGenerator`** — choose the embedded
+The eight command names belong to `Mvp.Cli`; the request type, the plan, and
+the rendering belong to `Mvp.Core`. A library consumer selects the same eight
+parts by constructing a `GenerationRequest` instead of typing a command name.
+
+- **`RootCommandFactory`** (`Mvp.Cli`) — registers all eight incremental command
+  names and shared `--name`, `--output`, and `--force` options.
+- **`GenerationKind`, `GenerationRequest`, and `GenerationResult`** (`Mvp.Core`)
+  — strong types that describe the selected artifact, normalized input, and
+  committed output without command-specific service duplication.
+- **`IIncrementalGenerator` and `IncrementalGenerator`** (`Mvp.Core`) — choose the embedded
   template plan and render .NET 10 or Angular 22 files through `SafeFileWriter`.
-- **Packaged templates** — solution, API, Core, Infrastructure, app, and three
-  library variants live as independently syntax-checkable resources.
-- **`IProcessRunner`** — used only when app generation explicitly receives
-  `--use-angular-cli`; tokenized arguments and cancellation apply.
-- **`TransactionalGenerationOutput`** — gives every incremental command the
+- **Packaged templates** (`Mvp.Core`) — solution, API, Core, Infrastructure, app,
+  and three library variants live as independently syntax-checkable resources.
+- **`IProcessRunner`** (`Mvp.Core`) — used only when app generation explicitly
+  receives `--use-angular-cli`; tokenized arguments and cancellation apply.
+- **`TransactionalGenerationOutput`** (`Mvp.Core`) — gives every incremental command the
   same conflict, `--force`, stage, commit, and rollback semantics.
 
 Packaged generation is the offline default and never probes the machine for an

@@ -13,23 +13,28 @@ directory is created.
 
 ## Description
 
-- **`RootCommandFactory`** — owns `--config`, `--name`, and `--output`. A
-  command-line name overrides the manifest before required-name validation; a
-  command-line output overrides the manifest output.
-- **`IManifestLoader` and `YamlManifestLoader`** — bounded YamlDotNet adapter.
+Option resolution belongs to the host; loading, validation, and the validated
+model belong to `Mvp.Core`, so a library consumer that resolves overrides its
+own way reaches the same validated input.
+
+- **`RootCommandFactory`** (`Mvp.Cli`) — owns `--config`, `--name`, and
+  `--output`. A command-line name overrides the manifest before required-name
+  validation; a command-line output overrides the manifest output.
+- **`IManifestLoader` and `YamlManifestLoader`** (`Mvp.Core`) — bounded YamlDotNet adapter.
   It limits files to 1 MiB, applies camel-case field naming, rejects malformed
   YAML/type tags, and reports ignored unknown fields as warnings.
-- **`MvpManifest`** — solution declaration with `Name`, `Output`, `Entities`,
-  `Pages`, and `Components`.
+- **`MvpManifest`** (`Mvp.Core`) — solution declaration with `Name`, `Output`,
+  `Entities`, `Pages`, and `Components`.
 - **`MvpManifestEntity` and `MvpManifestProperty`** — entity declarations. A
   property defaults its type to `string`.
 - **`MvpManifestPage`** — page declaration. `RequiresAuth` defaults to `true`;
   an omitted route is normalized to kebab-case.
 - **`MvpManifestComponent`** — component declaration. `Library` defaults to
   `components`.
-- **`ManifestValidator`** — aggregates identifier, duplicate, reserved-name,
-  property-type, route, and library violations, then normalizes the output root.
-- **`ValidatedManifest`** — immutable generator input with exact property types,
+- **`ManifestValidator`** (`Mvp.Core`) — aggregates identifier, duplicate,
+  reserved-name, property-type, route, and library violations, then normalizes
+  the output root.
+- **`ValidatedManifest`** (`Mvp.Core`) — immutable generator input with exact property types,
   normalized routes, a `FrontendLibrary` enum, and loader warnings.
 
 The loader uses a data deserializer and performs no command execution or

@@ -15,6 +15,11 @@ sign-out behavior.
 
 ## Description
 
+Every type below is generated code, rendered from templates embedded in
+`Mvp.Core`. None of it is a runtime dependency of the product: the authentication
+vertical slice is emitted into the consumer's solution and owned by the adopting
+team from that point on.
+
 - **`SignUpPage` and `SignInPage`** — standalone Angular pages that collect
   credentials through Angular Material forms and call `AUTH_SERVICE`.
 - **`IAuthService`, `AUTH_SERVICE`, and `AuthService`** — frontend contract,

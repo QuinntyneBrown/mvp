@@ -13,6 +13,11 @@ begins.
 
 ## Description
 
+Every asset below is rendered from a template embedded in `Mvp.Core`, so a
+solution generated from a library consumer carries the same test harness as one
+generated from the command line. The governance tests named at the end of this
+section belong to the repository's own test project.
+
 - **`playwright.config.ts`** — sets the test directory, Chromium project,
   frontend base URL, retry policy, trace capture, and frontend web server.
 - **`BasePage`** — abstract page-object base that owns the Playwright `Page`,

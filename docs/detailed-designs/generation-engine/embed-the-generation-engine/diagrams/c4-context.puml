@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Embed the generation engine
+
+Person(developer, "Library consumer", "Embeds scaffolding in an application of their own")
+System(host, "Consumer application", "Host process that drives the engine and owns presentation")
+System(engine, "QuinntyneBrown.Mvp.Core", "Generation engine distributed as a NuGet package")
+System_Ext(storage, "Local file system", "Receives the published solution tree")
+System_Ext(feed, "NuGet.org", "Distributes the engine package")
+
+Rel(developer, host, "Builds and runs")
+Rel(host, engine, "Registers and calls", "AddMvpCore")
+Rel(engine, storage, "Publishes generated tree", "Transactional write")
+Rel(developer, feed, "Restores package from", "dotnet add package")
+@enduml
