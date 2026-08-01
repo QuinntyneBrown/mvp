@@ -1,6 +1,7 @@
 # Documentation site
 
-The public documentation site for the `mvp` CLI. Hand-written static HTML with no build
+The public documentation site for the `mvp` CLI, live at
+<https://happy-mud-0689bad0f.7.azurestaticapps.net>. Hand-written static HTML with no build
 step, no dependencies, and no external requests.
 
 ## Layout
