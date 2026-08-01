@@ -118,12 +118,13 @@
 
 <h2>Read this before you install</h2>
 
-<div class="callout danger">
-  <span class="callout-title">The CLI is not on NuGet.org</span>
-  <p>Only the engine library, <code>QuinntyneBrown.Mvp.Core</code>, is published. The
-  <code>Mvp.Cli</code> tool package is built and smoke-tested on every change but is
-  <strong>not published</strong>, so <code>dotnet tool install -g Mvp.Cli</code> will not
-  resolve. Pack it from source instead — see <a href="install.html">Installation</a>.</p>
+<div class="callout">
+  <span class="callout-title">Stable and prerelease builds</span>
+  <p><code>dotnet tool install -g Mvp.Cli</code> installs the latest stable version. Every
+  commit to <code>main</code> also publishes a prerelease, available with
+  <code>--prerelease</code>. Prereleases pass the same test matrix but are not
+  release-reviewed and can change between builds — see
+  <a href="install.html">Installation</a>.</p>
 </div>
 
 <div class="table-scroll">
@@ -140,7 +141,7 @@
     <tr>
       <td class="nowrap"><code>Mvp.Cli</code> (<code>mvp</code>)</td>
       <td>The command-line tool built on <code>Mvp.Core</code>.</td>
-      <td class="nowrap"><span class="badge warn">Install from source</span></td>
+      <td class="nowrap"><span class="badge ok">On NuGet.org</span></td>
     </tr>
   </tbody>
 </table>

@@ -22,9 +22,11 @@ jobs:
   publish:
     needs: validate
     runs-on: ubuntu-latest
+    # The approval gate lives on this environment and applies to stable releases only. The
+    # per-commit prerelease publish in publish-preview.yml deliberately runs unattended.
     environment:
       name: nuget
-      url: https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core
+      url: https://www.nuget.org/packages/Mvp.Cli
     permissions:
       contents: write # create the GitHub release
     steps:
@@ -82,20 +84,30 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Push QuinntyneBrown.Mvp.Core to NuGet.org
+      - name: Push packages to NuGet.org
         shell: bash
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
           set -euo pipefail
           v='${{ steps.version.outputs.version }}'
-          # Named explicitly, never a glob: artifacts/*.nupkg would also push Mvp.Cli, which is
-          # intentionally not published. dotnet nuget push uploads the matching .snupkg alongside.
-          # --skip-duplicate keeps a re-run after a later-step failure idempotent.
-          dotnet nuget push "artifacts/QuinntyneBrown.Mvp.Core.$v.nupkg" \
-            --source https://api.nuget.org/v3/index.json \
-            --api-key "$NUGET_API_KEY" \
-            --skip-duplicate
+
+          # An absent key otherwise surfaces as an opaque 401 from the push itself.
+          if [ -z "${NUGET_API_KEY:-}" ]; then
+            echo "::error::NUGET_API_KEY is not set. Add it as a repository secret: gh secret set NUGET_API_KEY --repo ${{ github.repository }}"
+            exit 1
+          fi
+
+          # Named explicitly, never a glob, so a stray artifact can never be published by
+          # accident. dotnet nuget push uploads the matching .snupkg alongside each package.
+          # --skip-duplicate keeps a re-run after a later-step failure idempotent, and makes
+          # this tolerant of a preview build that already claimed part of the version range.
+          for package in "QuinntyneBrown.Mvp.Core.$v.nupkg" "Mvp.Cli.$v.nupkg"; do
+            dotnet nuget push "artifacts/$package" \
+              --source https://api.nuget.org/v3/index.json \
+              --api-key "$NUGET_API_KEY" \
+              --skip-duplicate
+          done
 
       - name: Extract release notes from CHANGELOG
         shell: bash

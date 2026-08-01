@@ -13,8 +13,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - A `website` workflow that runs the reference check and deploys the site to Azure Static Web Apps on changes under `website/**`, with per-pull-request preview environments. Deployment requires an `AZURE_STATIC_WEB_APPS_API_TOKEN` repository secret.
 - Requirements `L1-018` and `L2-071` through `L2-077`, which baseline `QuinntyneBrown.Mvp.Core` as a supported product surface: package distribution, the `AddMvpCore` entry point, the supported public API, the typed error vocabulary, the embedded templates, host independence, and the release contract. `L2-073` is `Partial` because package validation is not yet baselined against a published version.
 - A detailed design for embedding the generation engine, at `docs/detailed-designs/generation-engine/embed-the-generation-engine/`, with rendered C4, class, and sequence diagrams.
+- `Mvp.Cli` is published to NuGet.org and installable with `dotnet tool install -g Mvp.Cli`.
+- A `publish-preview` workflow that publishes an `Mvp.Cli` prerelease, versioned `X.Y.Z-preview.N`, from every commit to `main`. It runs unattended after `ci` passes and refuses to publish a preview of a version that has already been released. Install the newest build with `dotnet tool install -g Mvp.Cli --prerelease`.
 
 ### Changed
+
+- Tagged stable releases now publish `Mvp.Cli` alongside `QuinntyneBrown.Mvp.Core`.
+- `NUGET_API_KEY` moves from the `nuget` environment to a repository secret, so the unattended preview publish can read it without inheriting the environment's approval gate. The gate still applies to tagged stable releases. The key's scope must cover both `QuinntyneBrown.Mvp.*` and `Mvp.Cli`.
+- Release rehearsal tags use `-rc.N`; `-preview.N` is reserved for the automated per-commit stream.
 
 - The L1 requirements now describe two artifacts rather than one, and define *generation engine*, *host*, and *library consumer*.
 - Existing detailed designs name the assembly that owns each type, and the command-line container diagram shows the `Mvp.Cli` and `Mvp.Core` package boundary.

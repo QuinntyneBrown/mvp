@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 
 ## What this repository is
 
-This repository ships two artifacts: `QuinntyneBrown.Mvp.Core`, a NuGet library holding the generation engine, and `mvp` (`PackageId` `Mvp.Cli`), a thin .NET 10 global tool over it that scaffolds layered .NET backends, Angular 22 workspaces, and Playwright end-to-end tests. Only the library is published to NuGet.org. Generation uses templates embedded in `Mvp.Core` and requires no network access.
+This repository ships two artifacts: `QuinntyneBrown.Mvp.Core`, a NuGet library holding the generation engine, and `mvp` (`PackageId` `Mvp.Cli`), a thin .NET 10 global tool over it that scaffolds layered .NET backends, Angular 22 workspaces, and Playwright end-to-end tests. Both publish to NuGet.org: stable versions from a `v*` tag, plus an `Mvp.Cli` prerelease from every commit to `main`. Generation uses templates embedded in `Mvp.Core` and requires no network access.
 
 Generated output under `out/` is disposable consumer output and is gitignored. Do not treat it as repository source.
 
@@ -39,7 +39,7 @@ The SDK is pinned by `global.json`. Repository-wide compiler, analyzer, formatti
 Two projects. The dependency direction is one-way: `Mvp.Cli` → `Mvp.Core`.
 
 ```text
-src/Mvp.Cli/                     the command-line front end (package Mvp.Cli, unpublished)
+src/Mvp.Cli/                     the command-line front end (package Mvp.Cli)
   ├── Program.cs
   ├── Bootstrap/                 AddMvpCli, exception policy, exit codes
   └── Commands/RootCommandFactory.cs

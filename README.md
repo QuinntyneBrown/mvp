@@ -11,10 +11,10 @@
 
 ## Packages
 
-| Package | Description | Status |
+| Package | Description | Release cadence |
 | --- | --- | --- |
-| [`QuinntyneBrown.Mvp.Core`](https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core) | Manifest validation, template rendering, and transactional generation engine | Published on NuGet.org |
-| `Mvp.Cli` (`mvp`) | Command-line tool built on `Mvp.Core` | Not published; install from source |
+| [`QuinntyneBrown.Mvp.Core`](https://www.nuget.org/packages/QuinntyneBrown.Mvp.Core) | Manifest validation, template rendering, and transactional generation engine | Stable, from a version tag |
+| [`Mvp.Cli`](https://www.nuget.org/packages/Mvp.Cli) (`mvp`) | Command-line tool built on `Mvp.Core` | Stable from a version tag; a prerelease from every commit to main |
 
 Use the library directly when you want to drive generation from your own code; see its
 [readme](src/Mvp.Core/README.md).
@@ -71,14 +71,30 @@ dotnet run --project src/Mvp.Cli -- new dotnet-angular-jwt-mvp --config samples/
 
 The generated solution is written to `./out/Acme` because the sample manifest names the solution `Acme`.
 
-### Install as a global tool from source
+### Install as a global tool
 
-The `QuinntyneBrown.Mvp.Core` library is published to NuGet.org; the `Mvp.Cli` tool package is not yet. You can package and install the tool from source:
+```shell
+dotnet tool install --global Mvp.Cli
+mvp --help
+```
+
+Every commit to `main` publishes a prerelease build, so the newest code is one flag away:
+
+```shell
+dotnet tool install --global Mvp.Cli --prerelease
+```
+
+Prereleases are versioned `X.Y.Z-preview.N`. They pass the same cross-platform test matrix and packaged-consumer smoke test as a stable release, but they are not release-reviewed and their behaviour can change between builds. Use a stable version unless you need something that has not shipped yet.
+
+Update or remove an installed tool with `dotnet tool update --global Mvp.Cli` and `dotnet tool uninstall --global Mvp.Cli`.
+
+### Install from source
+
+To run a local change as a tool, package and install it from a local source:
 
 ```shell
 dotnet pack src/Mvp.Cli --configuration Release --output ./nupkgs
 dotnet tool install --global --add-source ./nupkgs Mvp.Cli
-mvp --help
 ```
 
 To reinstall a locally packaged version, uninstall the existing tool first or use `dotnet tool update` with the same package source.

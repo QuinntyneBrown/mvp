@@ -33,17 +33,18 @@ See `references/forge-shape.md` for the full file-level inventory when the user 
 Before running the CLI:
 
 1. **.NET 10 SDK** — verify with `dotnet --list-sdks` and look for a `10.x` entry. (`dotnet --version` only reports the SDK selected for the current directory; this repository's `global.json` pins the supported feature band.)
-2. **The `mvp` tool installed globally.** As of writing, the `Mvp.Cli` *tool* package is not yet on nuget.org (the `QuinntyneBrown.Mvp.Core` library it is built on is), so install from a local clone of the mvp repo:
+2. **The `mvp` tool installed globally**, from nuget.org:
+   ```
+   dotnet tool install -g Mvp.Cli
+   ```
+   To upgrade later: `dotnet tool update -g Mvp.Cli`.
+
+   Every commit to `main` publishes a prerelease, so `dotnet tool install -g Mvp.Cli --prerelease` gets the newest build. Prefer the stable version unless the user needs something that has not shipped yet. To run an unreleased local change instead, pack from a clone:
    ```
    cd C:\projects\mvp
    dotnet pack src/Mvp.Cli -c Release -o ./nupkgs
    dotnet tool install -g --add-source ./nupkgs Mvp.Cli
    ```
-   Once `Mvp.Cli` is published to nuget.org, the shorter form will work:
-   ```
-   dotnet tool install -g Mvp.Cli
-   ```
-   To upgrade later: `dotnet tool update -g Mvp.Cli`.
 
    **Verify the install before continuing**: run `mvp --help`. You should see `new` listed as a subcommand. If the shell reports `mvp: command not found` or `'mvp' is not recognized`, the global tools directory isn't on PATH — that's typically `%USERPROFILE%\.dotnet\tools` on Windows or `~/.dotnet/tools` on macOS/Linux. Add it, restart the shell, and re-verify.
 3. **Node.js 24.15+** — only needed when the user wants to install or run the generated Angular 22 frontend. It is not required for packaged scaffolding itself.

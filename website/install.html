@@ -154,27 +154,45 @@ dotnet run --project src/Mvp.Cli -- --help</code></pre>
 
 <h2>Option 2 — install as a global tool</h2>
 
-<div class="callout danger">
-  <span class="callout-title">There is no published tool package</span>
-  <p><code>dotnet tool install -g Mvp.Cli</code> fails, because <code>Mvp.Cli</code> is not
-  on NuGet.org. It is built, packed, and smoke-tested on every change, but only the engine
-  library <code>QuinntyneBrown.Mvp.Core</code> is published. You must pack the tool
-  yourself and install from that local folder.</p>
-</div>
-
 <div class="code">
   <div class="code-label">shell</div>
-<pre><code>dotnet pack src/Mvp.Cli --configuration Release --output ./nupkgs
-dotnet tool install --global --add-source ./nupkgs Mvp.Cli
+<pre><code>dotnet tool install --global Mvp.Cli
 mvp --help</code></pre>
 </div>
 
 <p>
-  <code>--add-source ./nupkgs</code> is what makes this work; without it NuGet has no
-  source that contains the package. The tool is self-contained — <code>Mvp.Core.dll</code>
-  and every template are bundled into the package rather than pulled as a NuGet
-  dependency, so the installed tool works offline.
+  The tool is self-contained — <code>Mvp.Core.dll</code> and every template are bundled
+  into the package rather than pulled as a NuGet dependency, so the installed tool works
+  offline.
 </p>
+
+<h3>Prerelease builds</h3>
+
+<p>
+  Every commit to <code>main</code> publishes a prerelease, versioned
+  <code>X.Y.Z-preview.N</code>. Install the newest one with:
+</p>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>dotnet tool install --global Mvp.Cli --prerelease</code></pre>
+</div>
+
+<div class="callout warning">
+  <span class="callout-title">What a prerelease is and is not</span>
+  <p>A prerelease passes the same cross-platform test matrix and packaged-consumer smoke
+  test as a stable release. It is <strong>not</strong> release-reviewed, its behaviour can
+  change between builds, and no changelog entry describes it. Use a stable version unless
+  you need something that has not shipped yet.</p>
+</div>
+
+<h3>Update and uninstall</h3>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>dotnet tool update --global Mvp.Cli
+dotnet tool uninstall --global Mvp.Cli</code></pre>
+</div>
 
 <h3>Install to an isolated path instead</h3>
 
@@ -185,9 +203,21 @@ mvp --help</code></pre>
 
 <div class="code">
   <div class="code-label">shell</div>
-<pre><code>dotnet pack src/Mvp.Cli -c Release -o ./nupkgs
-dotnet tool install --tool-path ./tool --add-source ./nupkgs Mvp.Cli
+<pre><code>dotnet tool install --tool-path ./tool Mvp.Cli
 ./tool/mvp --help</code></pre>
+</div>
+
+<h3>Install an unreleased local change</h3>
+
+<p>
+  To run code that has not been published, pack from a clone and install from that folder.
+  <code>--add-source ./nupkgs</code> is what points NuGet at it:
+</p>
+
+<div class="code">
+  <div class="code-label">shell</div>
+<pre><code>dotnet pack src/Mvp.Cli --configuration Release --output ./nupkgs
+dotnet tool install --global --add-source ./nupkgs Mvp.Cli</code></pre>
 </div>
 
 <h3>Where the global tool lands</h3>

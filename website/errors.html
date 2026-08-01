@@ -425,8 +425,10 @@
   <tbody>
     <tr>
       <td><code>dotnet tool install -g Mvp.Cli</code> cannot find the package</td>
-      <td>The tool is not published to NuGet.org. Pack it from source and use
-      <code>--add-source</code> — see <a href="install.html">Installation</a>.</td>
+      <td>A configured NuGet source is shadowing nuget.org, or you asked for a version that
+      only exists as a prerelease. Add <code>--prerelease</code>, or pass
+      <code>--add-source https://api.nuget.org/v3/index.json</code> — see
+      <a href="install.html">Installation</a>.</td>
     </tr>
     <tr>
       <td><code>mvp</code> is not recognised after installing</td>

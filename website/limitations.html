@@ -286,11 +286,12 @@
 
 <h2>Distribution</h2>
 
-<div class="callout danger">
-  <span class="callout-title">The CLI is not published</span>
-  <p>Only <code>QuinntyneBrown.Mvp.Core</code> is on NuGet.org. The <code>Mvp.Cli</code>
-  tool package is built, packed, and smoke-tested on every change, but you must pack and
-  install it from source. There is no <code>dotnet tool install -g Mvp.Cli</code> today.</p>
+<div class="callout warning">
+  <span class="callout-title">Most builds you can install are prereleases</span>
+  <p>Every commit to <code>main</code> publishes an <code>Mvp.Cli</code> prerelease, so the
+  newest installable build is usually one that has had no release review and no changelog
+  entry. Stable versions are cut from a tag and are the ones to depend on;
+  <code>--prerelease</code> is opt-in for a reason.</p>
 </div>
 
 <h2>Security posture</h2>

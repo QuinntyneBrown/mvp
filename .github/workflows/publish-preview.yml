@@ -1,0 +1,132 @@
+name: publish-preview
+
+# Every commit to main publishes a prerelease build of the mvp tool to NuGet.org.
+#
+# This triggers on ci.yml completing rather than on the push itself. Calling ci.yml through
+# `uses:` would run the three-OS matrix and both generated-consumer npm builds a second time
+# for every commit; waiting on the run that already happened costs nothing extra.
+#
+# Stable releases are not published here. They stay in release.yml behind a tag and the
+# `nuget` environment's approval gate.
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+# A publish that has already pushed to NuGet.org must not be cancelled by the next commit:
+# the version is claimed permanently the moment the upload succeeds.
+concurrency:
+  group: publish-preview
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    # `branches:` filters the head branch but not the event, and a completed run is not
+    # necessarily a successful one. Require both explicitly.
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # workflow_run checks out the default branch head by default, which may already have
+          # moved on. Pin to the commit ci.yml actually validated so the package matches it.
+          ref: ${{ github.event.workflow_run.head_sha }}
+          # Tags are needed by the already-released guard below.
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Compute the prerelease version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          declared=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' Directory.Build.props | head -n 1)
+
+          if [ -z "$declared" ]; then
+            echo "::error::No <Version> found in Directory.Build.props."
+            exit 1
+          fi
+
+          # A prerelease sorts below the stable version it names: 2.1.0-preview.9 is older than
+          # 2.1.0. Once v$declared ships, further $declared-preview.N builds would publish as
+          # older than what users already have. Fail loudly rather than shipping that quietly.
+          if git rev-parse -q --verify "refs/tags/v$declared" >/dev/null 2>&1; then
+            echo "::error::v$declared is already released, so $declared-preview.* would sort below it. Bump <Version> in Directory.Build.props on main to the next planned version."
+            exit 1
+          fi
+
+          # github.run_number is this workflow's own counter: monotonic, and unique per publish.
+          echo "version=$declared-preview.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+      - run: dotnet restore Mvp.sln --locked-mode
+
+      # Version is passed to build and pack alike so the assembly and the package agree.
+      - name: Build and pack at the prerelease version
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          dotnet build Mvp.sln -c Release --no-restore -p:TreatWarningsAsErrors=true -p:Version="$VERSION"
+          dotnet pack Mvp.sln -c Release --no-build --no-restore -o artifacts -p:Version="$VERSION"
+
+      - name: Verify the tool package was produced
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          test -f "artifacts/Mvp.Cli.$VERSION.nupkg"
+          ls -l artifacts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: preview-packages-${{ steps.version.outputs.version }}
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Push Mvp.Cli to NuGet.org
+        shell: bash
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          # An absent key otherwise surfaces as an opaque 401 from the push itself.
+          if [ -z "${NUGET_API_KEY:-}" ]; then
+            echo "::error::NUGET_API_KEY is not set. Add it as a repository secret: gh secret set NUGET_API_KEY --repo ${{ github.repository }}"
+            exit 1
+          fi
+
+          # Named explicitly, never a glob: artifacts/ also holds the Core package, which is
+          # released only from a tag. --skip-duplicate keeps a re-run idempotent.
+          dotnet nuget push "artifacts/Mvp.Cli.$VERSION.nupkg" \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key "$NUGET_API_KEY" \
+            --skip-duplicate
+
+      - name: Summarize
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          {
+            echo "### Published \`Mvp.Cli\` \`$VERSION\`"
+            echo
+            echo '```'
+            echo "dotnet tool install -g Mvp.Cli --version $VERSION"
+            echo '```'
+            echo
+            echo "Latest prerelease: \`dotnet tool install -g Mvp.Cli --prerelease\`"
+          } >> "$GITHUB_STEP_SUMMARY"
