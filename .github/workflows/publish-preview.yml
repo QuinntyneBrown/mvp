@@ -40,7 +40,7 @@ jobs:
           # Tags are needed by the already-released guard below.
           fetch-depth: 0
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
           cache: true
