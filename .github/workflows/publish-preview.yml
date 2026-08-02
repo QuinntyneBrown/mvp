@@ -32,7 +32,7 @@ jobs:
       github.event.workflow_run.event == 'push'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # workflow_run checks out the default branch head by default, which may already have
           # moved on. Pin to the commit ci.yml actually validated so the package matches it.

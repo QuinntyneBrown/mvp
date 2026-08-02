@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event.action != 'closed'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # The site is hand-written static HTML with relative links, so a rename or typo
       # produces a 404 that nothing else would catch. Failing here is cheaper than
       # discovering it in production.
@@ -49,7 +49,7 @@ jobs:
       contents: read
       pull-requests: write # the Azure action comments the preview URL on the PR
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # The site is pre-built by hand: no bundler, no npm install, nothing to compile.
       # skip_app_build tells the action to upload website/ verbatim.
