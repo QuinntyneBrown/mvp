@@ -77,7 +77,7 @@ jobs:
           test -f "artifacts/Mvp.Cli.$v.nupkg"
           ls -l artifacts
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: packages-${{ steps.version.outputs.version }}
           path: artifacts/*
