@@ -32,7 +32,7 @@ jobs:
       # Packs every packable project, so a release never discovers a pack failure for the
       # first time on a tag. IsPackable defaults to false, so the test project cannot leak in.
       - run: dotnet pack Mvp.sln -c Release --no-build --no-restore -o artifacts
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: matrix.os == 'ubuntu-latest'
         with:
           name: packages
